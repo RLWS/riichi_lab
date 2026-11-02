@@ -1,0 +1,38 @@
+{
+  "api_base": "http://127.0.0.1:8000",
+  "health": {
+    "status": "ok"
+  },
+  "models": {
+    "models": {
+      "turn": {
+        "feature_schema": "full_state_v2",
+        "checkpoint": "F:/Code/AI/train_study/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/best_turn.pt",
+        "checkpoint_task": "multitask",
+        "task": "turn",
+        "device": "cuda",
+        "state_dim": 11969,
+        "action_dim": 89,
+        "candidate_limit": 64,
+        "hidden_size": 512,
+        "dropout": 0.1,
+        "default_pass_bias": null,
+        "no_yaku_call_penalty": 0.0
+      },
+      "response": {
+        "feature_schema": "full_state_v2",
+        "checkpoint": "F:/Code/AI/train_study/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/best_response.pt",
+        "checkpoint_task": "multitask",
+        "task": "response",
+        "device": "cuda",
+        "state_dim": 12012,
+        "action_dim": 91,
+        "candidate_limit": 16,
+        "hidden_size": 512,
+        "dropout": 0.1,
+        "default_pass_bias": 1.5,
+        "no_yaku_call_penalty": 0.0
+      }
+    }
+  }
+}

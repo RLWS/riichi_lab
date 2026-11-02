@@ -1,0 +1,62 @@
+# 兼容性记录（A0-5 契约登记）
+
+> 创建时间：2026-11-02。按方案 §3 将兼容性分开为四类记录；本文件是当前基线快照。
+> 基线证据：`tests/fixtures/http_contract/`（黄金请求与响应）、`tests/fixtures/engine/index.json`（引擎夹具）。
+> 升级流程：任一类别变化 -> 重跑 A0-4 契约探测与 A2 对拍（开发计划 §7），再决定是否采纳。
+
+## 1. HTTP 结构
+
+- 服务：train_mj `serve-api`（`python -m mjai.cli serve-api --config configs/api_local.yaml`），本地 `http://127.0.0.1:8000`。
+- 端点：`GET /health`、`GET /v1/models`、`POST /v1/predict/turn`、`POST /v1/predict/response`。
+- 请求：`state` + `legal_actions` + `top_k`；response 追加可选 `pass_bias`（`null`/缺省 = 服务端默认，显式 `0` = 覆盖）。
+- 响应字段：`task`、`selection_mode`（turn=raw；response=calibrated）、`selected_action`、`predictions[]`（`rank/index/action/score/prob`）、response 另有 `pass_bias`、`no_yaku_call_penalty`、`raw_selected_action`；`model` 块见下。
+- **响应不返回编码特征向量**（对拍在开发进程用固定版本编码器完成，方案 §9）。
+- 候选上限：**turn `candidate_limit=64`，response `candidate_limit=16`**（候选绑定超过即明确失败，方案 §5；引擎 response 窗口一般不超过 16，仍以登记值为准）。
+- 错误语义（train_mj serving-api 约定）：400 结构错误 / 401 缺 key / 413 超候选上限 / 422 state 校验失败 / 503 未就绪。
+
+## 2. feature_schema 语义
+
+- 版本：`full_state_v2`；缺失或版本不符 -> 422，不会静默回退。
+- 维度：turn state/action = **11969 / 89**；response = **12012 / 91**。
+- 必需字段以锁定 tag 版本的 `mjai/serving/validation.py::_validate_full_state` 为准（25 个：feature_schema、actor、dealer、seat_wind、round_wind、round_number、match_rounds、remaining_tiles、all_melds、own_melds、scores、discard_history、public_events、riichi_declared_by_player、riichi_turn_by_player、all_discards、dora_indicators、hand、honba、riichi_sticks、turn_number、riichi_declared、temporary_furiten、riichi_furiten、last_discard_actor、last_discard_tile，response 另需 response_target）。
+- 派生量：`remaining_draws_estimate = remaining_tiles / 4`（服务端计算，不是请求字段）。
+- 座位：绝对座位入参，`seat_wind=(actor-dealer)%4` 强校验，服务端统一旋转相对视角。
+- 点数为整数实际点数；`round_wind/round_number` 0..3；`match_rounds ∈ {4,8,null}`；`remaining_tiles` 0..70。
+
+## 3. 模型权重与校准（部署清单）
+
+A0-4 实测基线（`tests/fixtures/http_contract/baseline_models.json`）：
+
+| 项 | turn | response |
+|---|---|---|
+| checkpoint | `runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/best_turn.pt` | `.../best_response.pt` |
+| SHA256 | `30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90` | `e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51` |
+| checkpoint_task | multitask | multitask |
+| device / hidden_size / dropout | cuda / 512 / 0.1 | cuda / 512 / 0.1 |
+| candidate_limit | 64 | 16 |
+| default_pass_bias | null | 1.5 |
+| no_yaku_call_penalty（服务端配置，非请求参数） | 0.0 | 0.0 |
+
+- operating point：`pass_bias=1.5 / no_yaku_call_penalty=0`（train_mj 2026-10-28 校准结论；适配层默认 `pass_bias=null` 透传服务端配置）。
+- checkpoint 路径不能代替哈希；本表哈希即部署清单（方案 §6）。评测期间模型元信息变化 -> 运行失效。
+- `hidden_size` 等网络参数仅记录，不作为适配层兼容性条件（方案 §3）。
+
+## 4. 引擎版本与规则
+
+- 引擎：**riichienv==0.4.11**（PyPI 发行包；发行包与主分支不视为相同，验收以锁定包为准）。
+- 对局配置：`game_mode="4p-red-half"`、`GameRule.default_tenhou()`、种子固定。
+- 运行环境：Windows / Python 3.11.5 / websockets 17.4（`additional_headers` 可用）/ httpx 0.28.1 / PyYAML 6.0.3（依赖锁：`uv.lock`）。
+- 黄金夹具：`tests/fixtures/engine/`，60 局（seeds 1-60），逐决策记录 `new_events` 增量、合法动作（MJAI 形式）、实际动作、Observation base64 序列化往返（全部通过）。
+- 夹具覆盖：cross_kyoku / ryukyoku_end / hora_end / riichi_declare / riichi_accepted / chi / pon / daiminkan / kakan / dora_reveal / post_call_discard / same_tile_tsumogiri_and_tedashi / ankan / multi_ron 已命中；**未命中：chankan（抢杠）——需在 A1/A2 用事件定向构造补齐，登记为待办**。
+
+## 5. 已知缺陷登记（对拍独立失败项）
+
+| 编号 | 内容 | 来源 | 处理 |
+|---|---|---|---|
+| DEF-001 | 训练采样器的抢杠目标取原碰叫牌；实际加杠牌与原叫牌红五属性不同时，目标特征存在差异 | train_mj full-state-api.md"已知训练侧边界" | 适配层始终用实际加杠牌构造候选与 response_target；parity 中该差异单列失败、阻断未经解释的上线，不伪造牌追求逐位一致 |
+
+## 6. train_mj 版本锁定
+
+- train_mj 以 **tag** 固定版本（该仓库每次参数量调整打新 tag）。
+- 已锁定 tag：**v1.3.0**（annotated，2026-11-02 打于 commit `1e5092f344fb69bcdf4697f683f2ecf15b9865d8`，full_state_v2 serving 基线）。
+- `TRAIN_MJ_ROOT` 指向 v1.3.0 的只读 checkout；train_mj 发布新 tag 时重跑 A0-4 契约探测与 A2 后再决定是否升级（开发计划 §7）。

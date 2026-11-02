@@ -1,0 +1,19 @@
+# 自对弈配置（方案 §7、§10；A3 实现）
+engine:
+  game_mode: "4p-red-half"
+  rule: "default_tenhou"      # GameRule.default_tenhou()，锁定引擎规则（方案 §2）
+  seeds: []                   # A3 填入固定种子列表；席位轮换由 runner 生成
+backend:
+  mode: "http"                # 首版仅 http（方案 §1 延期项：库模式）
+  api_base: "http://127.0.0.1:8000"
+  timeout_seconds: 30.0
+  response:
+    pass_bias: null           # null -> 服务端配置；显式 0 必须保留（方案 §3）
+matcher:                      # A+3B / B+3B 席位编排（A3/A4 填入）
+  candidates: []
+  baseline: []
+artifacts:
+  output_dir: "outputs/arena"
+  full_snapshots_first_run: true
+run:
+  games: 0                    # A3 冒烟 ≥100 半庄（仅工程冒烟，不作强度证据）

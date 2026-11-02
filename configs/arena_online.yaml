@@ -1,0 +1,14 @@
+# 在线对局配置（方案 §8、§10；B0/B1 实现）
+# token 不写入配置文件：环境变量 RIICHI_DEV_BOT_TOKEN（方案 §8）
+online:
+  endpoint_validate: "wss://game.riichi.dev/ws/validate"
+  endpoint_ranked: "wss://game.riichi.dev/ws/ranked"
+  send_reserve_seconds: 1.0   # 发送余量；逐请求读取 deadline/grace/bank，不固定 18s（方案 §8）
+backend:
+  api_base: "http://127.0.0.1:8000"
+  timeout_seconds: 10.0
+  response:
+    pass_bias: null
+session:
+  state_file: "outputs/online/session_state.json"
+  decision_log_dir: "outputs/online/decisions"

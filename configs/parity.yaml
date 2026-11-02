@@ -1,0 +1,14 @@
+# 对拍配置（方案 §9；A2 实现）
+# train_mj 以 tag 锁定（方案 §2）：TRAIN_MJ_ROOT 指向固定 tag 的只读 checkout，
+# 默认不依赖开发者磁盘（CI 由任务注入）。
+parity:
+  train_mj_root: null         # 未设置时使用环境变量 TRAIN_MJ_ROOT
+  train_mj_tag: "v1.3.0"      # A0-6 已锁定（full_state_v2 serving 基线，见 docs/compatibility.md §6）
+  fixtures_dir: "tests/fixtures"
+  compare:
+    snapshots: exact          # 快照逐字段精确比较（方案 §9）
+    features_int_bool_exact: true
+    features_float_tolerance: 0.0   # 确定编码要求逐位一致；容差仅在登记后允许
+api_contract:
+  api_base: "http://127.0.0.1:8000"
+  golden_requests_dir: "tests/fixtures/http_contract"
