@@ -7,41 +7,115 @@
     "round_wind": 0,
     "round_number": 0,
     "match_rounds": 8,
-    "remaining_tiles": 62,
+    "remaining_tiles": 69,
     "honba": 0,
     "riichi_sticks": 0,
-    "turn_number": 3,
-    "scores": [25000, 25000, 25000, 25000],
-    "hand": {"1m": 1, "2m": 1, "3m": 1, "4m": 1, "5m": 1, "6m": 1, "7m": 1, "2p": 1, "3p": 1, "4p": 1, "6p": 1, "7p": 1, "8p": 1, "9s": 1},
-    "discard_history": [
-      {"actor": 1, "tile": "1z", "tsumogiri": false, "riichi_discard": false},
-      {"actor": 2, "tile": "2z", "tsumogiri": true, "riichi_discard": false},
-      {"actor": 3, "tile": "3z", "tsumogiri": false, "riichi_discard": false}
+    "turn_number": 1,
+    "scores": [
+      25000,
+      25000,
+      25000,
+      25000
     ],
+    "hand": {
+      "3m": 1,
+      "4m": 1,
+      "1p": 1,
+      "6p": 2,
+      "8p": 1,
+      "9p": 1,
+      "1s": 1,
+      "0s": 1,
+      "7s": 1,
+      "2z": 1,
+      "6z": 2,
+      "9s": 1
+    },
+    "discard_history": [],
     "all_discards": [
       [],
-      ["1z"],
-      ["2z"],
-      ["3z"]
+      [],
+      [],
+      []
     ],
-    "public_events": [
-      {"kind": "dora", "actor": null, "source": null, "tile": "3z", "discard_count": 0}
+    "public_events": [],
+    "dora_indicators": [
+      "1p"
     ],
-    "dora_indicators": ["3z"],
-    "all_melds": [[], [], [], []],
+    "all_melds": [
+      [],
+      [],
+      [],
+      []
+    ],
     "own_melds": [],
     "riichi_declared": false,
-    "riichi_declared_by_player": [false, false, false, false],
-    "riichi_turn_by_player": [null, null, null, null],
+    "riichi_declared_by_player": [
+      false,
+      false,
+      false,
+      false
+    ],
+    "riichi_turn_by_player": [
+      null,
+      null,
+      null,
+      null
+    ],
     "temporary_furiten": false,
     "riichi_furiten": false,
-    "last_discard_actor": 3,
-    "last_discard_tile": "3z"
+    "last_discard_actor": null,
+    "last_discard_tile": null
   },
   "legal_actions": [
-    {"kind": "discard", "tile": "9s"},
-    {"kind": "discard", "tile": "9p"},
-    {"kind": "discard", "tile": "1m"}
+    {
+      "kind": "discard",
+      "tile": "3m"
+    },
+    {
+      "kind": "discard",
+      "tile": "4m"
+    },
+    {
+      "kind": "discard",
+      "tile": "1p"
+    },
+    {
+      "kind": "discard",
+      "tile": "6p"
+    },
+    {
+      "kind": "discard",
+      "tile": "8p"
+    },
+    {
+      "kind": "discard",
+      "tile": "9p"
+    },
+    {
+      "kind": "discard",
+      "tile": "1s"
+    },
+    {
+      "kind": "discard",
+      "tile": "0s"
+    },
+    {
+      "kind": "discard",
+      "tile": "7s"
+    },
+    {
+      "kind": "discard",
+      "tile": "2z"
+    },
+    {
+      "kind": "discard",
+      "tile": "6z"
+    },
+    {
+      "kind": "discard",
+      "tile": "9s"
+    }
   ],
-  "top_k": 3
+  "top_k": 5
 }

@@ -1,0 +1,12 @@
+{
+  "train_mj_tag": "v1.3.0",
+  "train_mj_commit": "1e5092f344fb69bcdf4697f683f2ecf15b9865d8",
+  "device": "cpu",
+  "transport": "fastapi_testclient",
+  "checkpoint_sha256": {
+    "turn": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90",
+    "response": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51"
+  },
+  "turn_status": 200,
+  "response_status": 200
+}

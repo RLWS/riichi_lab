@@ -1,0 +1,648 @@
+{
+  "kind": "multi_ron",
+  "source": "directed_engine_setup",
+  "setup_events": [
+    {
+      "type": "start_kyoku",
+      "bakaze": "E",
+      "kyoku": 1,
+      "honba": 0,
+      "kyotaku": 0,
+      "oya": 0,
+      "scores": [
+        25000,
+        25000,
+        25000,
+        25000
+      ],
+      "dora_marker": "9s",
+      "tehais": [
+        [
+          "4m",
+          "1m",
+          "2m",
+          "3m",
+          "7p",
+          "8p",
+          "9p",
+          "7s",
+          "8s",
+          "9s",
+          "F",
+          "F",
+          "C"
+        ],
+        [
+          "1p",
+          "2p",
+          "3p",
+          "1s",
+          "2s",
+          "3s",
+          "E",
+          "E",
+          "E",
+          "S",
+          "S",
+          "5m",
+          "6m"
+        ],
+        [
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?"
+        ],
+        [
+          "4p",
+          "5p",
+          "6p",
+          "4s",
+          "5s",
+          "6s",
+          "P",
+          "P",
+          "P",
+          "S",
+          "S",
+          "5m",
+          "6m"
+        ]
+      ]
+    },
+    {
+      "type": "tsumo",
+      "actor": 0,
+      "pai": "9m"
+    }
+  ],
+  "trigger": {
+    "actor": 0,
+    "pai": "4m",
+    "type": "dahai",
+    "action_type": "Discard",
+    "engine": {
+      "type": 0,
+      "tile": 12,
+      "consume_tiles": [],
+      "actor": 0
+    }
+  },
+  "responses": [
+    {
+      "player_id": 1,
+      "observation": "eyJwbGF5ZXJfaWQiOjEsImhhbmRzIjpbW10sWzE3LDIwLDM2LDQwLDQ0LDcyLDc2LDgwLDEwOCwxMDgsMTA4LDExMiwxMTJdLFtdLFtdXSwibWVsZHMiOltbXSxbXSxbXSxbXV0sImRpc2NhcmRzIjpbWzEyXSxbXSxbXSxbXV0sImRvcmFfaW5kaWNhdG9ycyI6WzEwNF0sInNjb3JlcyI6WzI1MDAwLDI1MDAwLDI1MDAwLDI1MDAwXSwicmlpY2hpX2RlY2xhcmVkIjpbZmFsc2UsZmFsc2UsZmFsc2UsZmFsc2VdLCJfbGVnYWxfYWN0aW9ucyI6W3siYWN0aW9uX3R5cGUiOiJSb24iLCJ0aWxlIjoxMiwiY29uc3VtZV90aWxlcyI6W10sImFjdG9yIjoxfSx7ImFjdGlvbl90eXBlIjoiQ2hpIiwidGlsZSI6MTIsImNvbnN1bWVfdGlsZXMiOlsxNywyMF0sImFjdG9yIjoxfSx7ImFjdGlvbl90eXBlIjoiUGFzcyIsInRpbGUiOm51bGwsImNvbnN1bWVfdGlsZXMiOltdLCJhY3RvciI6MX1dLCJldmVudHMiOlsie1widHlwZVwiOlwic3RhcnRfZ2FtZVwifSIsIntcImJha2F6ZVwiOlwiRVwiLFwiZG9yYV9tYXJrZXJcIjpcIjNzXCIsXCJob25iYVwiOjAsXCJreW9rdVwiOjEsXCJreW90YWt1XCI6MCxcIm95YVwiOjAsXCJzY29yZXNcIjpbMjUwMDAsMjUwMDAsMjUwMDAsMjUwMDBdLFwidGVoYWlzXCI6W1tcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIl0sW1wiMW1cIixcIjRtXCIsXCI5bVwiLFwiNHBcIixcIjRwXCIsXCI0cFwiLFwiNnBcIixcIjlwXCIsXCI5cFwiLFwiN3NcIixcIjhzXCIsXCJOXCIsXCJQXCJdLFtcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIl0sW1wiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiXV0sXCJ0eXBlXCI6XCJzdGFydF9reW9rdVwifSIsIntcImFjdG9yXCI6MCxcInBhaVwiOlwiP1wiLFwidHlwZVwiOlwidHN1bW9cIn0iLCJ7XCJiYWthemVcIjpcIkVcIixcImRvcmFfbWFya2VyXCI6XCI5c1wiLFwiaG9uYmFcIjowLFwia3lva3VcIjoxLFwia3lvdGFrdVwiOjAsXCJveWFcIjowLFwic2NvcmVzXCI6WzI1MDAwLDI1MDAwLDI1MDAwLDI1MDAwXSxcInRlaGFpc1wiOltbXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCJdLFtcIjFwXCIsXCIycFwiLFwiM3BcIixcIjFzXCIsXCIyc1wiLFwiM3NcIixcIkVcIixcIkVcIixcIkVcIixcIlNcIixcIlNcIixcIjVtXCIsXCI2bVwiXSxbXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCJdLFtcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIl1dLFwidHlwZVwiOlwic3RhcnRfa3lva3VcIn0iLCJ7XCJhY3RvclwiOjAsXCJwYWlcIjpcIj9cIixcInR5cGVcIjpcInRzdW1vXCJ9Iiwie1wiYWN0b3JcIjowLFwicGFpXCI6XCI0bVwiLFwidHN1bW9naXJpXCI6ZmFsc2UsXCJ0eXBlXCI6XCJkYWhhaVwifSJdLCJob25iYSI6MCwicmlpY2hpX3N0aWNrcyI6MCwicm91bmRfd2luZCI6MCwib3lhIjowLCJreW9rdV9pbmRleCI6MCwid2FpdHMiOlszLDZdLCJpc190ZW5wYWkiOnRydWUsInRzdW1vZ2lyaV9mbGFncyI6W1tdLFtdLFtdLFtdXSwicmlpY2hpX3N1dGVoYWlzIjpbbnVsbCxudWxsLG51bGwsbnVsbF0sImxhc3RfdGVkYXNoaXMiOlsxMixudWxsLG51bGwsbnVsbF0sImxhc3RfZGlzY2FyZCI6MTIsImRyYXduX3RpbGUiOm51bGwsImZvcmNlZF90ZWRhc2hpIjpmYWxzZX0=",
+      "state": {
+        "player_id": 1,
+        "hands": [
+          [],
+          [
+            17,
+            20,
+            36,
+            40,
+            44,
+            72,
+            76,
+            80,
+            108,
+            108,
+            108,
+            112,
+            112
+          ],
+          [],
+          []
+        ],
+        "melds": [
+          [],
+          [],
+          [],
+          []
+        ],
+        "discards": [
+          [
+            12
+          ],
+          [],
+          [],
+          []
+        ],
+        "dora_indicators": [
+          104
+        ],
+        "scores": [
+          25000,
+          25000,
+          25000,
+          25000
+        ],
+        "riichi_declared": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "legal_actions": [
+          {
+            "type": 4,
+            "tile": 12,
+            "consume_tiles": [],
+            "actor": 1
+          },
+          {
+            "type": 1,
+            "tile": 12,
+            "consume_tiles": [
+              17,
+              20
+            ],
+            "actor": 1
+          },
+          {
+            "type": 7,
+            "tile": null,
+            "consume_tiles": [],
+            "actor": 1
+          }
+        ],
+        "events": [
+          "{\"type\":\"start_game\"}",
+          "{\"bakaze\":\"E\",\"dora_marker\":\"3s\",\"honba\":0,\"kyoku\":1,\"kyotaku\":0,\"oya\":0,\"scores\":[25000,25000,25000,25000],\"tehais\":[[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"],[\"1m\",\"4m\",\"9m\",\"4p\",\"4p\",\"4p\",\"6p\",\"9p\",\"9p\",\"7s\",\"8s\",\"N\",\"P\"],[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"],[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"]],\"type\":\"start_kyoku\"}",
+          "{\"actor\":0,\"pai\":\"?\",\"type\":\"tsumo\"}",
+          "{\"bakaze\":\"E\",\"dora_marker\":\"9s\",\"honba\":0,\"kyoku\":1,\"kyotaku\":0,\"oya\":0,\"scores\":[25000,25000,25000,25000],\"tehais\":[[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"],[\"1p\",\"2p\",\"3p\",\"1s\",\"2s\",\"3s\",\"E\",\"E\",\"E\",\"S\",\"S\",\"5m\",\"6m\"],[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"],[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"]],\"type\":\"start_kyoku\"}",
+          "{\"actor\":0,\"pai\":\"?\",\"type\":\"tsumo\"}",
+          "{\"actor\":0,\"pai\":\"4m\",\"tsumogiri\":false,\"type\":\"dahai\"}"
+        ],
+        "honba": 0,
+        "riichi_sticks": 0,
+        "round_wind": 0,
+        "oya": 0
+      },
+      "legal_actions": [
+        {
+          "actor": 1,
+          "type": "hora",
+          "action_type": "Ron",
+          "engine": {
+            "type": 4,
+            "tile": 12,
+            "consume_tiles": [],
+            "actor": 1
+          }
+        },
+        {
+          "actor": 1,
+          "consumed": [
+            "5m",
+            "6m"
+          ],
+          "pai": "4m",
+          "type": "chi",
+          "action_type": "Chi",
+          "engine": {
+            "type": 1,
+            "tile": 12,
+            "consume_tiles": [
+              17,
+              20
+            ],
+            "actor": 1
+          }
+        },
+        {
+          "actor": 1,
+          "type": "none",
+          "action_type": "Pass",
+          "engine": {
+            "type": 7,
+            "tile": null,
+            "consume_tiles": [],
+            "actor": 1
+          }
+        }
+      ],
+      "chosen": {
+        "actor": 1,
+        "type": "hora",
+        "action_type": "Ron",
+        "engine": {
+          "type": 4,
+          "tile": 12,
+          "consume_tiles": [],
+          "actor": 1
+        }
+      }
+    },
+    {
+      "player_id": 3,
+      "observation": "eyJwbGF5ZXJfaWQiOjMsImhhbmRzIjpbW10sW10sW10sWzE3LDIwLDQ4LDUzLDU2LDg0LDg5LDkyLDExMiwxMTIsMTI0LDEyNCwxMjRdXSwibWVsZHMiOltbXSxbXSxbXSxbXV0sImRpc2NhcmRzIjpbWzEyXSxbXSxbXSxbXV0sImRvcmFfaW5kaWNhdG9ycyI6WzEwNF0sInNjb3JlcyI6WzI1MDAwLDI1MDAwLDI1MDAwLDI1MDAwXSwicmlpY2hpX2RlY2xhcmVkIjpbZmFsc2UsZmFsc2UsZmFsc2UsZmFsc2VdLCJfbGVnYWxfYWN0aW9ucyI6W3siYWN0aW9uX3R5cGUiOiJSb24iLCJ0aWxlIjoxMiwiY29uc3VtZV90aWxlcyI6W10sImFjdG9yIjozfSx7ImFjdGlvbl90eXBlIjoiUGFzcyIsInRpbGUiOm51bGwsImNvbnN1bWVfdGlsZXMiOltdLCJhY3RvciI6M31dLCJldmVudHMiOlsie1widHlwZVwiOlwic3RhcnRfZ2FtZVwifSIsIntcImJha2F6ZVwiOlwiRVwiLFwiZG9yYV9tYXJrZXJcIjpcIjNzXCIsXCJob25iYVwiOjAsXCJreW9rdVwiOjEsXCJreW90YWt1XCI6MCxcIm95YVwiOjAsXCJzY29yZXNcIjpbMjUwMDAsMjUwMDAsMjUwMDAsMjUwMDBdLFwidGVoYWlzXCI6W1tcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIl0sW1wiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiXSxbXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCJdLFtcIjFtXCIsXCI2bVwiLFwiN21cIixcIjdtXCIsXCIxcFwiLFwiNXByXCIsXCI4cFwiLFwiMXNcIixcIjRzXCIsXCI3c1wiLFwiOXNcIixcIk5cIixcIkNcIl1dLFwidHlwZVwiOlwic3RhcnRfa3lva3VcIn0iLCJ7XCJhY3RvclwiOjAsXCJwYWlcIjpcIj9cIixcInR5cGVcIjpcInRzdW1vXCJ9Iiwie1wiYmFrYXplXCI6XCJFXCIsXCJkb3JhX21hcmtlclwiOlwiOXNcIixcImhvbmJhXCI6MCxcImt5b2t1XCI6MSxcImt5b3Rha3VcIjowLFwib3lhXCI6MCxcInNjb3Jlc1wiOlsyNTAwMCwyNTAwMCwyNTAwMCwyNTAwMF0sXCJ0ZWhhaXNcIjpbW1wiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiLFwiP1wiXSxbXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCIsXCI/XCJdLFtcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIixcIj9cIl0sW1wiNHBcIixcIjVwXCIsXCI2cFwiLFwiNHNcIixcIjVzXCIsXCI2c1wiLFwiUFwiLFwiUFwiLFwiUFwiLFwiU1wiLFwiU1wiLFwiNW1cIixcIjZtXCJdXSxcInR5cGVcIjpcInN0YXJ0X2t5b2t1XCJ9Iiwie1wiYWN0b3JcIjowLFwicGFpXCI6XCI/XCIsXCJ0eXBlXCI6XCJ0c3Vtb1wifSIsIntcImFjdG9yXCI6MCxcInBhaVwiOlwiNG1cIixcInRzdW1vZ2lyaVwiOmZhbHNlLFwidHlwZVwiOlwiZGFoYWlcIn0iXSwiaG9uYmEiOjAsInJpaWNoaV9zdGlja3MiOjAsInJvdW5kX3dpbmQiOjAsIm95YSI6MCwia3lva3VfaW5kZXgiOjAsIndhaXRzIjpbMyw2XSwiaXNfdGVucGFpIjp0cnVlLCJ0c3Vtb2dpcmlfZmxhZ3MiOltbXSxbXSxbXSxbXV0sInJpaWNoaV9zdXRlaGFpcyI6W251bGwsbnVsbCxudWxsLG51bGxdLCJsYXN0X3RlZGFzaGlzIjpbMTIsbnVsbCxudWxsLG51bGxdLCJsYXN0X2Rpc2NhcmQiOjEyLCJkcmF3bl90aWxlIjpudWxsLCJmb3JjZWRfdGVkYXNoaSI6ZmFsc2V9",
+      "state": {
+        "player_id": 3,
+        "hands": [
+          [],
+          [],
+          [],
+          [
+            17,
+            20,
+            48,
+            53,
+            56,
+            84,
+            89,
+            92,
+            112,
+            112,
+            124,
+            124,
+            124
+          ]
+        ],
+        "melds": [
+          [],
+          [],
+          [],
+          []
+        ],
+        "discards": [
+          [
+            12
+          ],
+          [],
+          [],
+          []
+        ],
+        "dora_indicators": [
+          104
+        ],
+        "scores": [
+          25000,
+          25000,
+          25000,
+          25000
+        ],
+        "riichi_declared": [
+          false,
+          false,
+          false,
+          false
+        ],
+        "legal_actions": [
+          {
+            "type": 4,
+            "tile": 12,
+            "consume_tiles": [],
+            "actor": 3
+          },
+          {
+            "type": 7,
+            "tile": null,
+            "consume_tiles": [],
+            "actor": 3
+          }
+        ],
+        "events": [
+          "{\"type\":\"start_game\"}",
+          "{\"bakaze\":\"E\",\"dora_marker\":\"3s\",\"honba\":0,\"kyoku\":1,\"kyotaku\":0,\"oya\":0,\"scores\":[25000,25000,25000,25000],\"tehais\":[[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"],[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"],[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"],[\"1m\",\"6m\",\"7m\",\"7m\",\"1p\",\"5pr\",\"8p\",\"1s\",\"4s\",\"7s\",\"9s\",\"N\",\"C\"]],\"type\":\"start_kyoku\"}",
+          "{\"actor\":0,\"pai\":\"?\",\"type\":\"tsumo\"}",
+          "{\"bakaze\":\"E\",\"dora_marker\":\"9s\",\"honba\":0,\"kyoku\":1,\"kyotaku\":0,\"oya\":0,\"scores\":[25000,25000,25000,25000],\"tehais\":[[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"],[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"],[\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\",\"?\"],[\"4p\",\"5p\",\"6p\",\"4s\",\"5s\",\"6s\",\"P\",\"P\",\"P\",\"S\",\"S\",\"5m\",\"6m\"]],\"type\":\"start_kyoku\"}",
+          "{\"actor\":0,\"pai\":\"?\",\"type\":\"tsumo\"}",
+          "{\"actor\":0,\"pai\":\"4m\",\"tsumogiri\":false,\"type\":\"dahai\"}"
+        ],
+        "honba": 0,
+        "riichi_sticks": 0,
+        "round_wind": 0,
+        "oya": 0
+      },
+      "legal_actions": [
+        {
+          "actor": 3,
+          "type": "hora",
+          "action_type": "Ron",
+          "engine": {
+            "type": 4,
+            "tile": 12,
+            "consume_tiles": [],
+            "actor": 3
+          }
+        },
+        {
+          "actor": 3,
+          "type": "none",
+          "action_type": "Pass",
+          "engine": {
+            "type": 7,
+            "tile": null,
+            "consume_tiles": [],
+            "actor": 3
+          }
+        }
+      ],
+      "chosen": {
+        "actor": 3,
+        "type": "hora",
+        "action_type": "Ron",
+        "engine": {
+          "type": 4,
+          "tile": 12,
+          "consume_tiles": [],
+          "actor": 3
+        }
+      }
+    }
+  ],
+  "mjai_log": [
+    {
+      "type": "start_game"
+    },
+    {
+      "bakaze": "E",
+      "dora_marker": "3s",
+      "honba": 0,
+      "kyoku": 1,
+      "kyotaku": 0,
+      "oya": 0,
+      "scores": [
+        25000,
+        25000,
+        25000,
+        25000
+      ],
+      "tehais": [
+        [
+          "4m",
+          "2p",
+          "2p",
+          "3p",
+          "5p",
+          "7p",
+          "8p",
+          "3s",
+          "6s",
+          "6s",
+          "E",
+          "E",
+          "C"
+        ],
+        [
+          "1m",
+          "4m",
+          "9m",
+          "4p",
+          "4p",
+          "4p",
+          "6p",
+          "9p",
+          "9p",
+          "7s",
+          "8s",
+          "N",
+          "P"
+        ],
+        [
+          "4m",
+          "4m",
+          "7m",
+          "8m",
+          "3p",
+          "8p",
+          "2s",
+          "2s",
+          "7s",
+          "8s",
+          "W",
+          "P",
+          "C"
+        ],
+        [
+          "1m",
+          "6m",
+          "7m",
+          "7m",
+          "1p",
+          "5pr",
+          "8p",
+          "1s",
+          "4s",
+          "7s",
+          "9s",
+          "N",
+          "C"
+        ]
+      ],
+      "type": "start_kyoku"
+    },
+    {
+      "actor": 0,
+      "pai": "W",
+      "type": "tsumo"
+    },
+    {
+      "bakaze": "E",
+      "dora_marker": "9s",
+      "honba": 0,
+      "kyoku": 1,
+      "kyotaku": 0,
+      "oya": 0,
+      "scores": [
+        25000,
+        25000,
+        25000,
+        25000
+      ],
+      "tehais": [
+        [
+          "4m",
+          "1m",
+          "2m",
+          "3m",
+          "7p",
+          "8p",
+          "9p",
+          "7s",
+          "8s",
+          "9s",
+          "F",
+          "F",
+          "C"
+        ],
+        [
+          "1p",
+          "2p",
+          "3p",
+          "1s",
+          "2s",
+          "3s",
+          "E",
+          "E",
+          "E",
+          "S",
+          "S",
+          "5m",
+          "6m"
+        ],
+        [
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?",
+          "?"
+        ],
+        [
+          "4p",
+          "5p",
+          "6p",
+          "4s",
+          "5s",
+          "6s",
+          "P",
+          "P",
+          "P",
+          "S",
+          "S",
+          "5m",
+          "6m"
+        ]
+      ],
+      "type": "start_kyoku"
+    },
+    {
+      "actor": 0,
+      "pai": "9m",
+      "type": "tsumo"
+    },
+    {
+      "actor": 0,
+      "pai": "4m",
+      "tsumogiri": false,
+      "type": "dahai"
+    },
+    {
+      "actor": 1,
+      "deltas": [
+        -2600,
+        2600,
+        0,
+        0
+      ],
+      "target": 0,
+      "type": "hora",
+      "ura_markers": []
+    },
+    {
+      "actor": 3,
+      "deltas": [
+        -5200,
+        0,
+        0,
+        5200
+      ],
+      "target": 0,
+      "type": "hora",
+      "ura_markers": []
+    },
+    {
+      "type": "end_kyoku"
+    },
+    {
+      "bakaze": "E",
+      "dora_marker": "1p",
+      "honba": 0,
+      "kyoku": 2,
+      "kyotaku": 0,
+      "oya": 1,
+      "scores": [
+        17200,
+        27600,
+        25000,
+        30200
+      ],
+      "tehais": [
+        [
+          "1m",
+          "5m",
+          "3p",
+          "7p",
+          "8p",
+          "1s",
+          "2s",
+          "4s",
+          "4s",
+          "5s",
+          "W",
+          "N",
+          "P"
+        ],
+        [
+          "3m",
+          "4m",
+          "1p",
+          "6p",
+          "6p",
+          "8p",
+          "9p",
+          "1s",
+          "5sr",
+          "7s",
+          "S",
+          "F",
+          "F"
+        ],
+        [
+          "2m",
+          "4m",
+          "5m",
+          "7m",
+          "1p",
+          "2p",
+          "4p",
+          "1s",
+          "1s",
+          "6s",
+          "8s",
+          "9s",
+          "S"
+        ],
+        [
+          "2m",
+          "3m",
+          "7m",
+          "9m",
+          "2p",
+          "2p",
+          "5p",
+          "7p",
+          "9p",
+          "2s",
+          "7s",
+          "8s",
+          "C"
+        ]
+      ],
+      "type": "start_kyoku"
+    },
+    {
+      "actor": 1,
+      "pai": "9s",
+      "type": "tsumo"
+    }
+  ]
+}

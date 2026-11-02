@@ -18,9 +18,35 @@ def cmd_probe(args: argparse.Namespace) -> int:
     hidden_size 不作为兼容性条件（方案 §3），报告按原样记录全部元信息。
     """
     base = args.api_base.rstrip("/")
-    with httpx.Client(timeout=args.timeout) as client:
-        health = client.get(f"{base}/health").json()
-        models = client.get(f"{base}/v1/models").json()
+    try:
+        with httpx.Client(timeout=args.timeout) as client:
+            health_response = client.get(f"{base}/health")
+            health_response.raise_for_status()
+            health = health_response.json()
+            if not isinstance(health, dict) or health.get("status") != "ok":
+                raise ValueError("/health must return status=ok")
+            models_response = client.get(f"{base}/v1/models")
+            models_response.raise_for_status()
+            models = models_response.json()
+            if not isinstance(models, dict) or not isinstance(
+                models.get("models"), dict
+            ):
+                raise ValueError("/v1/models must contain a models object")
+            for task in ("turn", "response"):
+                info = models["models"].get(task)
+                if not isinstance(info, dict) or info.get("task") != task:
+                    raise ValueError(f"missing or invalid model task: {task}")
+                for field in ("state_dim", "action_dim", "candidate_limit"):
+                    if type(info.get(field)) is not int or info[field] <= 0:
+                        raise ValueError(f"invalid {task}.{field}")
+                if (
+                    not isinstance(info.get("checkpoint"), str)
+                    or not info["checkpoint"]
+                ):
+                    raise ValueError(f"missing {task}.checkpoint")
+    except (httpx.HTTPError, ValueError) as exc:
+        print(f"rilab probe failed: {exc}", file=sys.stderr)
+        return 1
     report = {"api_base": base, "health": health, "models": models}
     json.dump(report, sys.stdout, ensure_ascii=False, indent=2)
     sys.stdout.write("\n")
@@ -28,7 +54,10 @@ def cmd_probe(args: argparse.Namespace) -> int:
 
 
 def _not_implemented(name: str) -> int:
-    print(f"rilab {name}: not implemented yet (see docs/development-plan.md)", file=sys.stderr)
+    print(
+        f"rilab {name}: not implemented yet (see docs/development-plan.md)",
+        file=sys.stderr,
+    )
     return 2
 
 
@@ -37,7 +66,9 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_probe = sub.add_parser("probe", help="契约探测：/health 与 /v1/models 基线")
-    p_probe.add_argument("--api-base", default="http://127.0.0.1:8000", help="train_mj serve-api 地址")
+    p_probe.add_argument(
+        "--api-base", default="http://127.0.0.1:8000", help="train_mj serve-api 地址"
+    )
     p_probe.add_argument("--timeout", type=float, default=10.0)
     p_probe.set_defaults(func=cmd_probe)
 

@@ -14,20 +14,31 @@ Observation base64 序列化往返校验；终局后保存整局 mjai_log 与结
 from __future__ import annotations
 
 import argparse
+import gzip
 import json
 import platform
 import sys
+from importlib.metadata import version
 from pathlib import Path
 
-import riichienv
 from riichienv import Action, ActionType, GameRule, RiichiEnv
 
-HONOR_TILES = {"1z", "2z", "3z", "4z", "5z", "6z", "7z"}
+HONOR_TILES = {"E", "S", "W", "N", "P", "F", "C"}
 
 
 _ACTION_TYPE_NAMES = (
-    "Discard", "Chi", "Pon", "Daiminkan", "Ankan", "Kakan",
-    "Riichi", "Ron", "Tsumo", "Pass", "Kita", "KyushuKyuhai",
+    "Discard",
+    "Chi",
+    "Pon",
+    "Daiminkan",
+    "Ankan",
+    "Kakan",
+    "Riichi",
+    "Ron",
+    "Tsumo",
+    "Pass",
+    "Kita",
+    "KyushuKyuhai",
 )
 # PyO3 枚举无 .name，str() 为大写变体（如 "DISCARD"）；映射回 CamelCase 供策略分支使用
 _VARIANT_TO_NAME = {
@@ -42,10 +53,8 @@ def type_name(action: Action) -> str:
 
 def tile_str(action: Action) -> str | None:
     """Action -> mjai 牌字符串；tile 为 None 时返回 None。"""
-    mjai = action.to_mjai()
-    if isinstance(mjai, dict):
-        return mjai.get("pai") or mjai.get("tile")
-    return getattr(mjai, "pai", None) or getattr(mjai, "tile", None)
+    mjai = json.loads(action.to_mjai())
+    return mjai.get("pai")
 
 
 def is_terminal_or_honor(tile: str | None) -> bool:
@@ -93,7 +102,11 @@ def choose_action(obs, player_id: int) -> Action:
         if discards:
             drawn = obs.drawn_tile
             for a in discards:
-                if drawn is not None and a.tile == drawn and is_terminal_or_honor(tile_str(a)):
+                if (
+                    drawn is not None
+                    and a.tile == drawn
+                    and is_terminal_or_honor(tile_str(a))
+                ):
                     return a
             isolated = [a for a in discards if is_terminal_or_honor(tile_str(a))]
             return isolated[0] if isolated else discards[0]
@@ -122,49 +135,90 @@ def _shanten_greedy_discard(obs, discards: list[Action]) -> Action:
             s = 8
         tsumogiri_rank = 0 if (drawn is not None and a.tile == drawn) else 1
         key = (s, tsumogiri_rank, a.tile if a.tile is not None else 0)
-        if best is None or key < (best[0], best[1], best[2].tile if best[2].tile is not None else 0):
+        if best is None or key < (
+            best[0],
+            best[1],
+            best[2].tile if best[2].tile is not None else 0,
+        ):
             best = (s, tsumogiri_rank, a)
     return best[2] if best else discards[0]
 
 
 def action_to_json(action: Action) -> dict:
-    mjai = action.to_mjai()
-    if isinstance(mjai, dict):
-        out = dict(mjai)
-    else:
-        out = {}
-    out.setdefault("type", None)
+    """Preserve both MJAI semantics and physical tile identity."""
+    out = json.loads(action.to_mjai())
     out["action_type"] = type_name(action)
+    out["engine"] = action.to_dict()
     return out
+
+
+def observation_state(obs) -> dict:
+    """Normalize PyO3 Meld objects by value, never by object identity."""
+    state = obs.to_dict()
+    state["melds"] = [
+        [
+            {
+                "meld_type": str(m.meld_type),
+                "tiles": list(m.tiles),
+                "called_tile": m.called_tile,
+                "from_who": m.from_who,
+                "opened": m.opened,
+            }
+            for m in row
+        ]
+        for row in state["melds"]
+    ]
+    return json.loads(json.dumps(state))
 
 
 def capture_game(seed: int) -> dict:
     env = RiichiEnv(game_mode="4p-red-half", rule=GameRule.default_tenhou(), seed=seed)
     obs_dict = env.reset()
     decisions: list[dict] = []
+    sampled: set[tuple[int, str]] = set()
     step = 0
     while not env.done():
         actions = {}
-        for pid, obs in obs_dict.items():
+        # Rust response maps have no stable iteration order across processes.
+        for pid, obs in sorted(obs_dict.items()):
             new_events = list(obs.new_events())
             legal = obs.legal_actions()
             chosen = choose_action(obs, pid)
-            # 序列化往返：合法动作数量必须一致（方案 §2 夹具要求）
+            # Check identities and public/private view, not just action counts.
             b64 = obs.serialize_to_base64()
             from riichienv import Observation
 
             obs2 = Observation.deserialize_from_base64(b64)
-            roundtrip_ok = len(obs2.legal_actions()) == len(legal)
-            decisions.append(
-                {
-                    "step": step,
-                    "player_id": pid,
-                    "new_events": new_events,
-                    "legal_actions": [action_to_json(a) for a in legal],
-                    "chosen": action_to_json(chosen),
-                    "serialize_roundtrip_legal_count_ok": roundtrip_ok,
-                }
+            roundtrip_ok = (
+                [action_to_json(a) for a in obs2.legal_actions()]
+                == [action_to_json(a) for a in legal]
+                and observation_state(obs2) == observation_state(obs)
+                and list(obs2.new_events()) == new_events
+                and obs2.drawn_tile == obs.drawn_tile
             )
+            if not roundtrip_ok:
+                raise AssertionError(
+                    f"Observation roundtrip mismatch: seed={seed} step={step} pid={pid}"
+                )
+            decision = {
+                "step": step,
+                "player_id": pid,
+                "new_events": new_events,
+                "legal_actions": [action_to_json(a) for a in legal],
+                "chosen": action_to_json(chosen),
+                "serialize_roundtrip_ok": roundtrip_ok,
+            }
+            # Each seat/action and each hand start gets a reproducible snapshot.
+            # Keep all action records; avoid storing a growing history 44k times.
+            sample_key = (pid, type_name(chosen))
+            if sample_key not in sampled or any(
+                json.loads(e)["type"] == "start_kyoku" for e in new_events
+            ):
+                decision["observation"] = b64
+                decision["observation_state"] = observation_state(obs)
+                decision["drawn_tile"] = obs.drawn_tile
+                sampled.add(sample_key)
+            decisions.append(decision)
             actions[pid] = chosen
         obs_dict = env.step(actions)
         step += 1
@@ -216,15 +270,24 @@ def analyze_events(mjai_log: list[str]) -> dict:
     # 吃碰大明杠后同 actor 立即弃牌（post_call_discard）
     post_call_discard = 0
     for prev, cur in zip(events, events[1:]):
-        if prev.get("type") in ("chi", "pon", "daiminkan") and cur.get("type") == "dahai":
+        if (
+            prev.get("type") in ("chi", "pon", "daiminkan")
+            and cur.get("type") == "dahai"
+        ):
             if prev.get("actor") is not None and prev.get("actor") == cur.get("actor"):
                 post_call_discard += 1
 
     return {
         "event_counts": stats,
-        "multi_ron_windows": sum(1 for w in dahai_windows if sum(1 for e in w if e.get("type") == "hora") >= 2),
+        "multi_ron_windows": sum(
+            1
+            for w in dahai_windows
+            if sum(1 for e in w if e.get("type") == "hora") >= 2
+        ),
         "tiles_with_both_tsumogiri_and_tedashi": sorted(
-            p for p, flags in tsumogiri_tiles.items() if flags == {"tsumogiri", "tedashi"}
+            p
+            for p, flags in tsumogiri_tiles.items()
+            if flags == {"tsumogiri", "tedashi"}
         ),
         "post_call_discard_count": post_call_discard,
     }
@@ -287,7 +350,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--seeds", default="1-40", help="种子范围，如 1-40 或 3,7,11")
     parser.add_argument("--out", default="tests/fixtures/engine")
-    parser.add_argument("--keep-going", action="store_true", help="单局失败不中断（默认失败即终止）")
+    parser.add_argument(
+        "--keep-going", action="store_true", help="单局失败不中断（默认失败即终止）"
+    )
     args = parser.parse_args()
 
     if "-" in args.seeds:
@@ -303,7 +368,7 @@ def main() -> int:
     index = {
         "engine": {
             "package": "riichienv",
-            "version": riichienv.__version__ if hasattr(riichienv, "__version__") else "0.4.11",
+            "version": version("riichienv"),
             "game_mode": "4p-red-half",
             "rule": "default_tenhou",
             "python": platform.python_version(),
@@ -328,13 +393,19 @@ def main() -> int:
         payload["categories"] = cats
         payload["engine"] = index["engine"]
         # 紧凑 JSON + gzip：黄金夹具入库，避免仓库膨胀（方案 §7 日志治理原则）
-        import gzip
-
-        with gzip.open(path, "wt", encoding="utf-8") as fh:
-            fh.write(json.dumps(payload, ensure_ascii=False, separators=(",", ":")))
-        roundtrip_ok = all(d["serialize_roundtrip_legal_count_ok"] for d in record["decisions"])
+        raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode(
+            "utf-8"
+        )
+        path.write_bytes(gzip.compress(raw, mtime=0))
+        roundtrip_ok = all(d["serialize_roundtrip_ok"] for d in record["decisions"])
         index["games"].append(
-            {"seed": seed, "file": path.name, "categories": cats, "decisions": len(record["decisions"]), "serialize_roundtrip_ok": roundtrip_ok}
+            {
+                "seed": seed,
+                "file": path.name,
+                "categories": cats,
+                "decisions": len(record["decisions"]),
+                "serialize_roundtrip_ok": roundtrip_ok,
+            }
         )
 
     covered: dict[str, list[int]] = {}
@@ -351,7 +422,10 @@ def main() -> int:
     )
 
     print(json.dumps(index["coverage"], ensure_ascii=False, indent=1))
-    print(f"games={len(index['games'])} index -> {out_dir / 'index.json'}", file=sys.stderr)
+    print(
+        f"games={len(index['games'])} index -> {out_dir / 'index.json'}",
+        file=sys.stderr,
+    )
     return 0
 
 

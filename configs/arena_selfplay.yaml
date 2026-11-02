@@ -1,19 +1,58 @@
-# 自对弈配置（方案 §7、§10；A3 实现）
+# Contract v1; A0 validates structure. A1 agents, A3 scheduling, A4 statistics.
+config_version: 1
 engine:
   game_mode: "4p-red-half"
-  rule: "default_tenhou"      # GameRule.default_tenhou()，锁定引擎规则（方案 §2）
-  seeds: []                   # A3 填入固定种子列表；席位轮换由 runner 生成
-backend:
-  mode: "http"                # 首版仅 http（方案 §1 延期项：库模式）
-  api_base: "http://127.0.0.1:8000"
-  timeout_seconds: 30.0
-  response:
-    pass_bias: null           # null -> 服务端配置；显式 0 必须保留（方案 §3）
-matcher:                      # A+3B / B+3B 席位编排（A3/A4 填入）
-  candidates: []
-  baseline: []
+  rule: "default_tenhou"
+  seeds: []  # Fill before running A3. The current arena CLI remains a placeholder.
+backends:
+  v1_2_0:
+    mode: "http"
+    api_base: "http://127.0.0.1:8000"
+    adapter_profile: "legacy_v1_2"
+    revision:
+      tag: "v1.2.0"
+      commit: "758981ab9fb457c882ab9c577c9377976f97f42b"
+      branch_hint: "main"  # User's master baseline; tag is the execution identity.
+    timeout_seconds: 30.0
+    response:
+      pass_bias: null
+    model_identity:
+      turn_sha256: "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7"
+      response_sha256: "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4"
+  v1_3_0:
+    mode: "http"
+    api_base: "http://127.0.0.1:8001"
+    adapter_profile: "full_state_v2"
+    revision:
+      tag: "v1.3.0"
+      commit: "1e5092f344fb69bcdf4697f683f2ecf15b9865d8"
+      branch_hint: "codex/full-state-features"
+    timeout_seconds: 30.0
+    response:
+      pass_bias: null
+    model_identity:
+      turn_sha256: "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90"
+      response_sha256: "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51"
+matchups:
+  - id: "candidate_vs_baseline"
+    seats: [v1_3_0, v1_2_0, v1_2_0, v1_2_0]
+    focal_seat: 0
+    rotation: "cyclic4"
+    paired_group: "upgrade"
+  - id: "baseline_control"
+    seats: [v1_2_0, v1_2_0, v1_2_0, v1_2_0]
+    focal_seat: 0
+    rotation: "cyclic4"  # Keep focal-seat identity even if all backend IDs match.
+    paired_group: "upgrade"
+  - id: "two_vs_two"
+    seats: [v1_3_0, v1_3_0, v1_2_0, v1_2_0]
+    focal_seat: null
+    rotation: "unique6"
+    paired_group: null
 artifacts:
   output_dir: "outputs/arena"
   full_snapshots_first_run: true
-run:
-  games: 0                    # A3 冒烟 ≥100 半庄（仅工程冒烟，不作强度证据）
+evaluation:
+  primary_paired_group: "upgrade"
+  cluster: "seed_with_all_rotations"
+  confidence_level: 0.95

@@ -10,7 +10,7 @@
 
 离线牌谱评估继续保留：它测量拟合能力和错例分布，对局评测测量特定规则与对手下的结果。四个相同模型自对弈用于正确性和稳定性检查，不能单独证明强度提升。
 
-首版实现 HTTP、本地 runner、状态/动作适配、日志及验收。库模式推理、批量 GPU 调度及复杂诊断延期，避免同时维护两套生产后端。
+首版实现 HTTP、本地 runner、状态/动作适配、日志及验收。库模式推理、批量 GPU 调度及复杂诊断延期。HTTP 可有多个独立服务实例，不限制为一个模型版本；v1.2.0 与 v1.3.0 的实例、profile、四席绑定及阶段划分见 [多后端配置契约](multi-backend-contract.md)。
 
 ## 2. 可行性依据与待关闭条件
 
@@ -46,7 +46,7 @@ graph LR
 
 兼容性分开记录：HTTP 结构、feature_schema 语义、模型权重与校准、引擎版本与规则。参数量变化不一定影响适配层；状态或特征语义改变必须重新对拍，不能承诺重启服务即可兼容。
 
-启动读取 /v1/models，检查任务、支持的 schema、维度、candidate_limit 和校准；hidden_size 不应固定为兼容性条件。默认 pass_bias=null 使用服务端配置，显式 0 必须保留。no_yaku_call_penalty 当前由服务端配置，不是现有请求参数。
+每个后端实例独立读取 /v1/models，按其 profile 检查任务、支持的 schema、维度、candidate_limit 和校准；hidden_size 不应固定为兼容性条件。legacy_v1_2 没有 feature_schema 字段，需按已登记版本及旧维度验证，不能误判为 full_state_v2。默认 pass_bias=null 使用该服务配置，显式 0 必须保留。no_yaku_call_penalty 当前由服务端配置，不是现有请求参数。
 
 现有预测 API 返回 selected_action、predictions 和模型信息，不返回编码特征；也没有独立状态 schema 版本号。只比较 OpenAPI 或顶层字段不足以检测嵌套 state 语义漂移。
 
@@ -62,7 +62,7 @@ graph LR
 
 ### 4.2 state 契约
 
-完整字段以锁定 tag 版本的 mjai/serving/validation.py::_validate_full_state 为准，语义与 sample_builder 的玩家快照对齐：
+以下为 full_state_v2 profile 的字段，以锁定 tag 版本的 mjai/serving/validation.py::_validate_full_state 为准，语义与 sample_builder 的玩家快照对齐。legacy_v1_2 使用独立投影，尤其不能复用 remaining_tiles/4 作为其旧版估计口径，详见多后端契约：
 
 | 字段 | 正确口径 |
 |---|---|
@@ -183,7 +183,7 @@ XML 转换器也是受测代码，验证顺序、红牌、掩码及结局，预�
 
 ## 10. 目录、依赖与阶段
 
-规划模块：tracker/state_tracker.py、mapping/action_mapping.py、decision.py（DecisionContext/CandidateBinding/PendingRiichiPlan）、backends/http_backend.py、agent.py、selfplay.py、evaluation.py、artifacts.py、online/client.py、online/session.py 和 cli.py。配置区分 selfplay/online/parity；tests/fixtures 保存黄金数据，outputs 不入 git。
+规划模块：tracker/state_tracker.py、mapping/action_mapping.py、decision.py（DecisionContext/CandidateBinding/PendingRiichiPlan）、backends/http_backend.py、adapters/legacy_v12.py、adapters/full_state_v2.py、agent.py、selfplay.py、evaluation.py、artifacts.py、online/client.py、online/session.py 和 cli.py。config.py 已实现多后端配置校验，实例注册/注入由 A1 完成。配置区分 selfplay/online/parity；tests/fixtures 保存黄金数据，outputs 不入 git。
 
 生产依赖精确锁定经验证的 RiichiEnv、httpx、websockets、PyYAML；验证 websockets 的 additional_headers 等 API 与锁定版本一致。train_mj 不进入生产依赖，不把 file:///F:/... 写进共享 pyproject。开发可编辑安装另行检查所处 tag 与 dirty 状态（pip install -e 本身不锁版本，以 tag 校验代替）。PyTorch 和设备环境由推理服务或 parity 环境提供。
 
@@ -192,10 +192,10 @@ XML 转换器也是受测代码，验证顺序、红牌、掩码及结局，预�
 | 阶段 | 交付与退出条件 |
 |---|---|
 | A0 契约探测 | 锁依赖；固化事件、完整 state、立直、序列化及规则夹具；关闭接口未知项 |
-| A1 最小闭环 | tracker + binding + HTTP + 单局；turn/response 跑通，无隐藏信息泄漏 |
+| A1 最小闭环 | tracker + binding + 注入式 HTTP + profile 投影 + 手工四席单局；两个版本按绑定调用，无隐藏信息泄漏 |
 | A2 正确性 | 无未解释状态/特征差异；所有动作及关键窗口覆盖 |
-| A3 工程稳定 | 固定种子至少 100 半庄，零非法动作/断言/fallback；同环境重跑一致 |
-| A4 强度评测 | 固定基线、配对轮换、统计区间，报告提升/回退/证据不足 |
+| A3 工程稳定 | 多后端注册表、cyclic4/unique6 席位日程与每实例清单；至少 100 半庄，零非法动作/断言/fallback，同环境重跑一致 |
+| A4 强度评测 | 消费 A3 日程，按焦点席位/种子配对计算统计区间，报告提升/回退/证据不足 |
 | B0 协议模拟 | 请求、ack、超时、迟到、断线；每请求最多一次回复 |
 | B1 平台验证 | 真实 validation_result；审查 defaulted/fallback 和延迟 |
 | B2 有界排位 | 预定批次与停止阈值，故障不继续开启新局 |

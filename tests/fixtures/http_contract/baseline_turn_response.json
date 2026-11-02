@@ -1,1 +1,74 @@
-{"task":"turn","selection_mode":"raw","selected_action":{"kind":"discard","tile":"9s"},"predictions":[{"rank":1,"index":0,"action":{"kind":"discard","tile":"9s"},"score":19.01386833190918,"prob":0.6225759983062744},{"rank":2,"index":1,"action":{"kind":"discard","tile":"9p"},"score":18.37548828125,"prob":0.3288118243217468},{"rank":3,"index":2,"action":{"kind":"discard","tile":"1m"},"score":16.463876724243164,"prob":0.04861218109726906}],"model":{"feature_schema":"full_state_v2","checkpoint":"F:/Code/AI/train_study/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/best_turn.pt","checkpoint_task":"multitask","task":"turn","device":"cuda","state_dim":11969,"action_dim":89,"candidate_limit":64,"hidden_size":512,"dropout":0.1,"default_pass_bias":null,"no_yaku_call_penalty":0.0}}
+{
+  "task": "turn",
+  "selection_mode": "raw",
+  "selected_action": {
+    "kind": "discard",
+    "tile": "2z"
+  },
+  "predictions": [
+    {
+      "rank": 1,
+      "index": 9,
+      "action": {
+        "kind": "discard",
+        "tile": "2z"
+      },
+      "score": 21.904504776000977,
+      "prob": 0.7507303953170776
+    },
+    {
+      "rank": 2,
+      "index": 6,
+      "action": {
+        "kind": "discard",
+        "tile": "1s"
+      },
+      "score": 20.622303009033203,
+      "prob": 0.20827198028564453
+    },
+    {
+      "rank": 3,
+      "index": 2,
+      "action": {
+        "kind": "discard",
+        "tile": "1p"
+      },
+      "score": 18.820789337158203,
+      "prob": 0.03437505662441254
+    },
+    {
+      "rank": 4,
+      "index": 5,
+      "action": {
+        "kind": "discard",
+        "tile": "9p"
+      },
+      "score": 16.898473739624023,
+      "prob": 0.005027966108173132
+    },
+    {
+      "rank": 5,
+      "index": 11,
+      "action": {
+        "kind": "discard",
+        "tile": "9s"
+      },
+      "score": 15.21000862121582,
+      "prob": 0.0009291830356232822
+    }
+  ],
+  "model": {
+    "feature_schema": "full_state_v2",
+    "checkpoint": "runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/best_turn.pt",
+    "checkpoint_task": "multitask",
+    "task": "turn",
+    "device": "cpu",
+    "state_dim": 11969,
+    "action_dim": 89,
+    "candidate_limit": 64,
+    "hidden_size": 512,
+    "dropout": 0.1,
+    "default_pass_bias": null,
+    "no_yaku_call_penalty": 0.0
+  }
+}
