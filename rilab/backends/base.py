@@ -1,1 +1,8 @@
-"""推理后端抽象（A1）：predict_turn / predict_response（方案 §3、§6）。"""
+from typing import Protocol
+
+
+class PredictBackend(Protocol):
+    backend_id: str
+    profile: str
+
+    def predict(self, task: str, state: dict, candidates: list[dict]) -> dict: ...

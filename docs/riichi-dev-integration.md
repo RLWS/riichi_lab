@@ -1,6 +1,6 @@
 # riichi.dev 接入方案（审查修订版）
 
-> 状态：设计阶段，适配层尚未实现；修订于 2026-11-02。
+> 状态：A1 适配层及双版本手工单局已实现；A2 完整验收、A3/A4 与在线部分待实施。修订于 2026-11-02。
 > 结论：本地对局评测具备工程可行性；线上接入有条件可行。先证明状态与动作适配正确，再投入大量对局和线上排位。
 > 原方案问题、审查证据及实测结果见 [可行性审查](feasibility-review.md)。
 
@@ -187,7 +187,7 @@ XML 转换器也是受测代码，验证顺序、红牌、掩码及结局，预�
 
 生产依赖精确锁定经验证的 RiichiEnv、httpx、websockets、PyYAML；验证 websockets 的 additional_headers 等 API 与锁定版本一致。train_mj 不进入生产依赖，不把 file:///F:/... 写进共享 pyproject。开发可编辑安装另行检查所处 tag 与 dirty 状态（pip install -e 本身不锁版本，以 tag 校验代替）。PyTorch 和设备环境由推理服务或 parity 环境提供。
 
-规划 CLI 为 rilab probe、parity-check、arena-selfplay、arena-online，目前尚未实现。
+CLI 中 probe 与 arena-selfplay 的 A1 手工单局已实现；parity-check、arena-online 及自动席位编排仍待对应里程碑实现，运行方式见 A1 记录。
 
 | 阶段 | 交付与退出条件 |
 |---|---|

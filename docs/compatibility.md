@@ -65,4 +65,4 @@ A0-4 实测基线（`tests/fixtures/http_contract/baseline_models.json`）：
 
 上文保留 v1.3.0 的已联调基线；它不是所有后端共享的全局契约。新增 v1.2.0 的代码身份、维度、旧版字段语义及部署校准见 [多后端配置契约](multi-backend-contract.md)，两个版本的权重哈希见 configs/arena_selfplay.yaml。
 
-本轮仅验证旧版源码与权重文件身份，未运行 v1.2.0 双服务对局。A1 按 profile 分别验证两个实例；A2 分别对拍；A3 保存每实例清单。默认 pass_bias=null 时，旧/新服务端默认值各自生效，不能共享一份全局校准。
+A0 只验证旧版源码与权重文件身份；后续 A1 已完成双服务单局及初步 profile smoke 对拍，见 [A1 记录](milestones/A1.md)。A2 仍需完整双路径对拍，A3 保存批量实例清单。默认 pass_bias=null 时，旧/新服务端默认值各自生效，不能共享一份全局校准。

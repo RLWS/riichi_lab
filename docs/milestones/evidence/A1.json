@@ -1,0 +1,81 @@
+{
+  "seed": 1,
+  "versions": {
+    "v1_2_0": {
+      "tag": "v1.2.0",
+      "commit": "758981ab9fb457c882ab9c577c9377976f97f42b",
+      "branch_hint": "main"
+    },
+    "v1_3_0": {
+      "tag": "v1.3.0",
+      "commit": "1e5092f344fb69bcdf4697f683f2ecf15b9865d8",
+      "branch_hint": "codex/full-state-features"
+    }
+  },
+  "summary": {
+    "valid": true,
+    "seed": 1,
+    "seats": [
+      "v1_3_0",
+      "v1_2_0",
+      "v1_2_0",
+      "v1_2_0"
+    ],
+    "steps": 629,
+    "decisions": 634,
+    "scores": [
+      25100,
+      69100,
+      -4800,
+      10600
+    ],
+    "ranks": [
+      2,
+      1,
+      4,
+      3
+    ],
+    "backend_requests": {
+      "v1_3_0": 153,
+      "v1_2_0": 467
+    },
+    "warmup_requests": {
+      "v1_3_0": 2,
+      "v1_2_0": 2
+    },
+    "elapsed_seconds": 8.406000000002678
+  },
+  "event_counts": {
+    "start_game": 1,
+    "start_kyoku": 10,
+    "tsumo": 479,
+    "dahai": 487,
+    "reach": 14,
+    "reach_accepted": 13,
+    "hora": 9,
+    "end_kyoku": 10,
+    "pon": 8,
+    "chi": 2,
+    "ryukyoku": 1,
+    "end_game": 1
+  },
+  "profile_smoke": [
+    {
+      "profile": "legacy_v1_2",
+      "games": 2,
+      "snapshot_comparisons": 13084,
+      "encoded_state_comparisons": 456,
+      "valid": true,
+      "scope": "A1 engine-event profile smoke; excludes XML, candidate parity and missed-win resolution"
+    },
+    {
+      "profile": "full_state_v2",
+      "games": 2,
+      "snapshot_comparisons": 13084,
+      "encoded_state_comparisons": 456,
+      "valid": true,
+      "scope": "A1 engine-event profile smoke; excludes XML, candidate parity and missed-win resolution"
+    }
+  ],
+  "scope": "A1 manual-seat dual HTTP integration; not A2/A3/A4 approval or strength evidence"
+}

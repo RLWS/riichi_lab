@@ -1,6 +1,6 @@
 """rilab CLI 入口（方案 §10）：probe / parity-check / arena-selfplay / arena-online。
 
-A0 只注册命令并实现 probe（契约探测）；其余命令随里程碑推进实现。
+A1 提供注入后端的手工四席单局；自动编排与其他命令随里程碑推进。
 """
 
 from __future__ import annotations
@@ -61,6 +61,25 @@ def _not_implemented(name: str) -> int:
     return 2
 
 
+def cmd_selfplay(args: argparse.Namespace) -> int:
+    from rilab.config import load_arena_config
+    from rilab.selfplay import run_single_game
+
+    if args.seed is None or not args.seats or not args.output_dir:
+        print(
+            "A1 requires --seed, --seats (four IDs), --output-dir (new directory); A3 scheduling is pending",
+            file=sys.stderr,
+        )
+        return 2
+    config = load_arena_config(args.config)
+    summary = run_single_game(
+        config, seed=args.seed, seats=args.seats.split(","), output_dir=args.output_dir
+    )
+    json.dump(summary, sys.stdout, indent=2)
+    sys.stdout.write("\n")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="rilab", description="RiichiLab adapter CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -76,9 +95,14 @@ def main(argv: list[str] | None = None) -> int:
     p_parity.add_argument("--config", default="configs/parity.yaml")
     p_parity.set_defaults(func=lambda a: _not_implemented("parity-check"))
 
-    p_selfplay = sub.add_parser("arena-selfplay", help="批量自对弈（A3）")
+    p_selfplay = sub.add_parser(
+        "arena-selfplay", help="A1 手工席位单局（A3 批量待实现）"
+    )
     p_selfplay.add_argument("--config", default="configs/arena_selfplay.yaml")
-    p_selfplay.set_defaults(func=lambda a: _not_implemented("arena-selfplay"))
+    p_selfplay.add_argument("--seed", type=int)
+    p_selfplay.add_argument("--seats", help="four comma-separated backend IDs")
+    p_selfplay.add_argument("--output-dir", help="new artifact directory")
+    p_selfplay.set_defaults(func=cmd_selfplay)
 
     p_online = sub.add_parser("arena-online", help="riichi.dev 在线对局（B1）")
     p_online.add_argument("--config", default="configs/arena_online.yaml")

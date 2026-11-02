@@ -1,6 +1,6 @@
 # 多版本后端与适配契约（配置版本 1）
 
-2026-11-02 补充。对应 [接入方案](riichi-dev-integration.md) §3、§7，配置示例为 [arena_selfplay.yaml](../configs/arena_selfplay.yaml)。本轮实现配置校验，不提前实现 A1 适配器、A3 调度或 A4 统计。
+2026-11-02 补充。对应 [接入方案](riichi-dev-integration.md) §3、§7，配置示例为 [arena_selfplay.yaml](../configs/arena_selfplay.yaml)。A0 交付配置校验，A1 已交付注入与两种投影，A3 调度和 A4 统计仍待实现；验收见 [A1 记录](milestones/A1.md)。
 
 ## 1. 两个版本不是同一输入契约
 
@@ -15,7 +15,10 @@
 | state 维度 turn/response | 8173 / 8216 | 11969 / 12012 |
 | action 维度 turn/response | 89 / 91 | 89 / 91 |
 | 模型元信息 feature_schema | 不返回该字段 | full_state_v2 |
-| remaining_draws_estimate | 训练采样为 max(0,18-自家摸牌次数)；服务校验会 int 规范化 | 从 remaining_tiles/4 派生 |
+| turn_number / remaining_draws_estimate | n=自家弃牌数+int(手牌数%3==2)，估计 max(0,18-n)；不是新版实际摸牌计数 | 自家实际摸牌次数；估计从 remaining_tiles/4 派生 |
+| scores 单位 | 百点（25000 点输入 250），保留旧训练尺度 | 实际点数（25000） |
+| riichi_sticks | 保留本局起始值：旧 GameState.apply_reach 不累加供托 | 接受立直即时累加 |
+| dora_base_indices | 旧状态编码器直接读取，投影器必须从公开指示牌生成 | 服务端从 dora_indicators 派生 |
 | discard_history | actor/tile，旧接口规范化会丢弃新标志 | actor/tile/tsumogiri/riichi_discard |
 | 全局上下文 | 旧布局，不得宣称 full_state_v2 | 完整 state 必需字段及公开事件/副露布局 |
 | 对应 tag 的 api_local 校准 | pass_bias=2.0，no_yaku_call_penalty=0.8 | pass_bias=1.5，no_yaku_call_penalty=0 |
@@ -64,7 +67,7 @@ graph LR
 
 A1 的构造接口应为 MjaiBotAgent(player_id, backend, adapter)，不读取全局默认 URL。BackendRegistry 按配置创建服务实例，AdapterRegistry 按 profile 创建/选择状态投影器，runner 根据四席映射构造四个 agent。
 
-四席必须各自持有 tracker、PendingRiichiPlan 和决策反馈；可以共享无状态 profile 代码与同实例 HTTP 连接池，不能共享可变局面。统一 tracker 不直接产出某个版本的特征：LegacyV12Adapter 和 FullStateV2Adapter 分别投影为对应 HTTP state，动作仍绑定本次引擎合法集合。旧版不能直接复用 full_state_v2 请求并依赖服务端忽略字段。
+四席必须各自持有 tracker、PendingRiichiPlan 和决策反馈；可以共享无状态 profile 代码与同实例 HTTP 连接池，不能共享可变局面。统一 tracker 不直接产出某个版本的特征：LegacyV12Adapter 和 FullStateV2Adapter 分别投影为对应 HTTP state，动作仍绑定本次引擎合法集合。旧版不能直接复用 full_state_v2 请求并依赖服务端忽略字段。旧版巡目、点数、供托与宝牌的历史训练口径已用 tag 源码及快照/编码 smoke 对拍确认；保留旧行为不表示改动引擎真实点数或规则。
 
 A1 先用手工四席绑定完成单局，不实现自动轮换；验收须证明两个 URL 按绑定收到各自座位的请求、profile 正确、状态不串席。A2 分别对两个固定版本的采样器/编码器对拍，不能以新版 parity 代替旧版验收。
 
@@ -78,4 +81,4 @@ A1 先用手工四席绑定完成单局，不实现自动轮换；验收须证�
 
 训练仓库代码仍只读使用。可为 v1.2.0 与 v1.3.0 分别准备独立 checkout 和服务环境，权重按各自部署清单放置，用两份 api_local 配置启动到端口 8000/8001。不要在一个 Python 进程反复修改 sys.path 来同时 import 两份 mjai；不要为切换版本修改当前训练 checkout。
 
-当前交付是修复后的 A0 证据、配置/校验与本契约。A1 完成注入和两种投影；A3 完成日程与多版本席位编排；A4 完成统计。A1/A3/A4 的占位模块与 CLI 不因此宣称已实现。v1.3.0 已做真实权重 HTTP 路由联调；v1.2.0 本轮核对源码及权重哈希，双服务对战留作 A1–A3 验收。
+当前 A1 已完成注入、两种投影、手工四席单局和两个独立真实权重 HTTP 服务联调。arena-selfplay 需要显式 --seed/--seats/--output-dir，不自动执行 matchups。A2 完整 XML/候选/振听 parity 尚待完成；之后 A3 执行自动日程和工程批量验收，A4 计算强度统计。
