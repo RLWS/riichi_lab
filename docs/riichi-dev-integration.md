@@ -1,335 +1,203 @@
-# riichi.dev 接入方案（RiichiLab 自对弈 + 在线对局）
+# riichi.dev 接入方案（审查修订版）
 
-> 状态：方案设计，未开始实现。
-> 创建时间：2026-11-02。
-> 本仓库（`riichi_lab`）是独立接入项目：把 [riichi.dev](https://riichi.dev)（RiichiLab 开放天梯，底层引擎 [smly/RiichiEnv](https://github.com/smly/RiichiEnv)）与推理项目 `train_mj`（`F:\Code\AI\train_study\train_mj`）对接起来。**不在 `train_mj` 内直接开发对局代码**，避免训练/推理仓库与对局适配层耦合。
+> 状态：设计阶段，适配层尚未实现；修订于 2026-11-02。
+> 结论：本地对局评测具备工程可行性；线上接入有条件可行。先证明状态与动作适配正确，再投入大量对局和线上排位。
+> 原方案问题、审查证据及实测结果见 [可行性审查](feasibility-review.md)。
 
-## 1. 目标与范围
+## 1. 目标、边界与优先级
 
-1. **自对弈回归**：`train_mj` 的模型参数量、特征布局、推理接口会持续迭代；每次迭代后用标准引擎（RiichiEnv）跑固定种子批量对局，检验实战强度，替代/补充基于 Tenhou 牌谱回放的 p800 评估。
-2. **在线机器人对局**：接入 riichi.dev 线上对局（`wss://game.riichi.dev/ws/validate`），与线上其他 bot 对战。
+本仓库是独立四麻适配项目，连接 RiichiEnv 与 train_mj，不修改训练仓库。第一目标是可信、可复现的新旧模型对局比较；第二目标是接入线上验证与排位。和牌、计分及动作合法性由引擎负责，特征计算由推理服务负责。
 
-不在本方案范围内：
+离线牌谱评估继续保留：它测量拟合能力和错例分布，对局评测测量特定规则与对手下的结果。四个相同模型自对弈用于正确性和稳定性检查，不能单独证明强度提升。
 
-- 三麻（`train_mj` 只支持四麻，只能匹配 4p 房）。
-- 和牌/役/计分判断（由 RiichiEnv 引擎负责，模型只做动作选择）。
-- 修改 `train_mj` 的训练/特征代码；`train_mj` 只作为被调用方（HTTP API 或版本化依赖）。
+首版实现 HTTP、本地 runner、状态/动作适配、日志及验收。库模式推理、批量 GPU 调度及复杂诊断延期，避免同时维护两套生产后端。
 
-## 2. 两侧现状对比
+## 2. 可行性依据与待关闭条件
 
-| 维度 | riichi.dev / RiichiEnv | train_mj |
+| 依赖 | 已核实 | 仍需验证 |
 |---|---|---|
-| 引擎 | Rust 核心 + PyO3，本地模拟与线上服务器同一引擎，行为完全一致 | 自带规则引擎（`mjai/rules/`），四麻；和牌/役/计分未实现 |
-| 机器人接口 | MJAI 协议；本地 `agent.act(obs) -> Action`；在线 WebSocket 交换 MJAI JSON | HTTP API：`POST /v1/predict/turn|response`，输入 `state dict + legal_actions`，服务端完成特征编码 |
-| 合法动作 | `obs.legal_actions()` 引擎保证合法；`obs.select_action_from_mjai()` 把 MJAI 回复转回合法 Action | 候选由调用方传入（阶段 3"服务端生成合法候选"未实现） |
-| 局面事件 | MJAI 事件流（`start_game/start_kyoku/tsumo/dahai/chi/pon/...`） | 训练侧事件由 Tenhou XML 解析；`state_json` 是特征视角快照，不等价于可回放 GameState |
-| 成熟度 | Mortal 兼容，已验证 100 万+ 半庄无错 | serving 阶段 1/2（推理内核 + HTTP API）已完成；阶段 3/4（外部局面接入、在线 session）未开始——由本仓库补齐 |
+| train_mj | /v1/models；turn/response 预测；完整状态校验；服务端编码 | 适配器状态配合真实权重的端到端正确性、延迟与吞吐 |
+| RiichiEnv 0.4.11 | 当前 Windows 可安装运行；两场半庄；序列化往返；立直两阶段与候选辅助函数 | 所有边界动作、跨局事件、完整回归和训练特征一致性 |
+| riichi.dev | 观察、合法动作、动态预算、验证及排位端点的公开协议 | 服务器与客户端序列化兼容、目标规则、真实网络表现 |
 
-**结论：两个目标均可行。** RiichiEnv 提供引擎、合法动作与事件流；train_mj 提供推理服务。缺口集中在本仓库要实现的双向适配层：MJAI 事件流 → train_mj state dict，以及动作的双向映射。
+版本锁定：train_mj 以 tag 固定版本（该仓库每次参数量调整都会打新 tag，tag 即版本边界），不用裸 commit；审查时基线为 commit `1e5092f344fb69bcdf4697f683f2ecf15b9865d8`（full_state_v2，截至审查尚未打 tag，A0 锁定前提是为其补打 tag）。上游源码 commit `0ee1236a283b15508f3ac28407027f340b81e1de`；实测发行包 riichienv==0.4.11。发行包与主分支不自动视为相同，验收以锁定包为准。
 
-## 3. 仓库边界与依赖策略
+同一引擎家族不保证客户端与服务器版本、规则、序列化一致。上游 README 和网站本地循环示例存在差异，以锁定包实测为准。[引擎说明](https://github.com/smly/RiichiEnv)、[平台本地测试说明](https://riichi.dev/docs/local-testing)。
+
+A0 阶段必须固定 Python/依赖锁，保存以下黄金夹具：每席事件增量、跨局与终局、立直前后、吃碰后弃牌、同种牌摸切/手切、杠/抢杠/宝牌；再用真实 API 完成 turn/response 最小请求。不用随机运行代替罕见边界覆盖。
+
+## 3. 架构与契约
 
 ```mermaid
 graph LR
-    subgraph this["riichi_lab（本仓库，新增）"]
-        direction TB
-        TRACKER["state_tracker<br/>MJAI 事件流 → state dict 快照"]
-        MAP["action_mapping<br/>合法动作 ↔ 候选格式双向映射"]
-        AGENT["MjaiBotAgent<br/>act(obs) → Action"]
-        SELFPLAY["selfplay runner"]
-        CLIENT["online client"]
-    end
-
-    subgraph trainmj["train_mj（外部，不修改）"]
-        API["serve-api<br/>/v1/predict/turn|response<br/>(服务端特征编码)"]
-    end
-
-    subgraph riichienv["RiichiEnv（外部）"]
-        ENV["本地引擎"]
-        WS["线上 wss://game.riichi.dev/ws/validate"]
-    end
-
-    AGENT -->|"state dict + legal_actions<br/>HTTP 请求"| API
-    API -->|"selected_action + top-k"| AGENT
-    AGENT --> TRACKER
-    AGENT --> MAP
-    ENV --> AGENT
-    WS --> CLIENT --> AGENT
-    SELFPLAY --> ENV
+    E[本地引擎] --> O[Observation]
+    W[在线 request_action] --> O
+    O --> T[每席 StateTracker]
+    O --> C[DecisionContext 与候选绑定]
+    T --> S[完整状态快照]
+    S --> H[HTTP 推理]
+    C --> H
+    H --> V[候选回查与合法性校验]
+    V --> A[本地 Action 或在线单条回复]
+    S --> P[开发环境的固定版本编码器对拍]
 ```
 
-**核心解耦原则**：`train_mj` 的 HTTP API 是唯一稳定契约（[full-state-api.md] 契约由对方仓库维护）。模型参数量、特征布局、checkpoint 更新只需对方重启 `serve-api`，本仓库不改代码；接口不兼容时由契约测试（§4.6）立即暴露。
+运行时仅依赖 HTTP；开发/CI 的 parity 环境允许读取固定 tag 版本的 train_mj 解析器、采样器和编码器，不需要新增生产库模式。
 
-与 `train_mj` 的两种集成模式：
+兼容性分开记录：HTTP 结构、feature_schema 语义、模型权重与校准、引擎版本与规则。参数量变化不一定影响适配层；状态或特征语义改变必须重新对拍，不能承诺重启服务即可兼容。
 
-| 模式 | 方式 | 适用 | 权衡 |
-|---|---|---|---|
-| **API 模式（默认）** | 调用 `train_mj` 已运行的 `serve-api` HTTP 服务；特征编码在对方服务端完成 | 在线对局、常规自对弈 | 解耦最彻底；单请求多一次 HTTP 往返（本地毫秒级，可接受） |
-| **库模式（可选）** | `train_mj` 以 `pip install -e` 版本化依赖引入，in-process 调 `MahjongPredictor` | 大批量自对弈提速、需要 top-k 深度诊断 | 引入包级依赖，须锁定对方仓库 commit |
+启动读取 /v1/models，检查任务、支持的 schema、维度、candidate_limit 和校准；hidden_size 不应固定为兼容性条件。默认 pass_bias=null 使用服务端配置，显式 0 必须保留。no_yaku_call_penalty 当前由服务端配置，不是现有请求参数。
 
-无论哪种模式，**本仓库不复制粘贴对方的规则/特征代码**；state_tracker 中确需复用对方规则语义（振听判定等）的部分，在库模式下直接 import `mjai.rules`，API 模式下按 §4.6 契约测试保证口径一致。
+现有预测 API 返回 selected_action、predictions 和模型信息，不返回编码特征；也没有独立状态 schema 版本号。只比较 OpenAPI 或顶层字段不足以检测嵌套 state 语义漂移。
 
-## 4. 功能模块设计
+## 4. 状态适配
 
-### 4.1 模块 A：`rilab/tracker/state_tracker.py` —— 局面翻译层（核心，最大工作量）
+### 4.1 单一事件来源、每席隔离
 
-**职责**：消费 MJAI 事件流，增量维护局面状态，在决策点导出与 `train_mj` 训练分布完全一致的 state dict 快照（schema 契约 = 对方仓库 `docs/full-state-api.md` / `model-inputs.md`）。
+每局每席独立 tracker，只消费 obs.new_events()，逐项 json.loads。在线散发 MJAI 用于传输日志，不能再次喂入同一 tracker；平台迁移指南采用这条输入路径。[官方迁移说明](https://riichi.dev/docs/mortal)。
 
-**为什么不能用 `obs.to_dict()` 直接喂**：full_state_v2 特征依赖大量 `train_mj` 自有语义——三类振听（自家舍牌/临时/立直后）判定、`remaining_draws_estimate` 计数口径（初始 70，普通摸牌与岭上摸牌各减一，宣杠不重复减）、弃牌 token 的摸切标志、公开事件序列（reach1/reach2/chi/pon/daiminkan/ankan/kakan/dora）、巡目与自家实际摸牌次数等。
+首个 Observation 可能包含此前公开历史，需要从 start_game/start_kyoku 初始化。不要按 JSON 内容哈希去重：相同内容可以是多次真实事件；不要在 new_events 上再增加第二套游标。重复在线 request_id 在 session 层拦截，不再次应用观察。对 new_events 的重复调用行为由发行包夹具固定，不推测调用会修改游标。
 
-**事件映射表**（MJAI → 内部局面状态）：
+只维护自家精确手牌、公开牌及对手隐藏牌数量；? 不转成牌种。runner 的全知手牌、牌山与未来事件不进入模型请求。
 
-| MJAI 事件 | 状态更新 | 注意点 |
-|---|---|---|
-| `start_game` | 初始化赛制、座位 | 记录自家绝对座位 |
-| `start_kyoku` | 局初始化：庄家、点数、本场、立直棒、宝牌指示牌、起手手牌 | `dora_marker → dora_indicators` |
-| `tsumo` | 手牌 +1、`turn_number`、`remaining_draws_estimate` 递减、自家实际摸牌次数 +1 | mjai 的 `pai` 含赤牌精确信息（如 `5mr`），转 `0m/0p/0s`；用于摸切判定 |
-| `dahai` | 弃牌 token（exact tile + 摸切 + 立直宣言牌标记）、`last_discard_*` | mjai 自带 `tsumogiri` 字段；特征口径"历史不移除被鸣走的弃牌" |
-| `reach` | `riichi_declared_by_player[actor]`、public event `reach1`；宣言弃牌后 `reach2` | turn 快照截取须在自家 `reach1` 之前（防标签泄漏） |
-| `chi` / `pon` / `daiminkan` | 副露槽更新、public event、来源座位 | `consumed` 保持赤牌精确表示 |
-| `ankan` / `kakan` | 副露槽更新（加杠保留原碰来源） | 暗杠 consumed 含四张 |
-| `dora` | `dora_indicators` 追加 | — |
-| `hora` / `ryukyoku` | 终局结算、振听状态清理 | 点数变动由下一局 `start_kyoku` 覆盖，无需内部复算 |
+### 4.2 state 契约
 
-**关键规则**：
+完整字段以锁定 tag 版本的 mjai/serving/validation.py::_validate_full_state 为准，语义与 sample_builder 的玩家快照对齐：
 
-- 快照字段与对方 `full-state-api.md` 冻结 schema 完全一致：`hand / all_discards / all_melds / dora_indicators / scores / riichi_declared_by_player / riichi_turn_by_player / discard_history / public_events / temporary_furiten / riichi_furiten / remaining_draws_estimate / turn_number / honba / riichi_sticks / round_wind / seat_wind / response_target ...`。
-- 座位旋转不在 tracker 做：对方编码器在服务端统一旋转为相对座位（0=自家…3=上家），风位不旋转。
-- 内部断言（手牌数量、副露消耗牌存在性）失败立即报错终止，不允许静默降级——对局数据一旦污染会误导回归结论。
+| 字段 | 正确口径 |
+|---|---|
+| feature_schema | 当前 full_state_v2；未知版本拒绝启动 |
+| actor/dealer/seat_wind | 绝对座位；seat_wind=(actor-dealer)%4 |
+| round_wind/round_number/match_rounds | 风和局号 0..3；MJAI kyoku 通常 1..4，转为 0 起算；赛制 4/8 或确实未知的 null |
+| hand | 精确牌→数量字典；5mr/5pr/5sr→0m/0p/0s，E/S/W/N/P/F/C→1z..7z |
+| remaining_tiles | 训练口径初始 70；每次普通/岭上摸牌减一，宣杠不重复扣 |
+| turn_number | 自家实际摸牌次数；吃碰后弃牌不增加 |
+| scores/honba/riichi_sticks | 实际整数点数；立直接受时即时更新，不能等下一局覆盖 |
+| all_discards/discard_history | 保留被鸣走弃牌；历史含 actor/tile/tsumogiri/riichi_discard |
+| all_melds/own_melds | 四家列表，own_melds=all_melds[actor]；保存 kind/source/called_tile/consumed_tiles |
+| riichi_declared/riichi_declared_by_player/riichi_turn_by_player | 自家与四家字段一致；区分 pending 与已接受 |
+| public_events/dora_indicators | reach1/reach2/chi/pon/daiminkan/ankan/kakan/dora；记录发生时 discard_count |
+| temporary_furiten/riichi_furiten | 自家标志，需要观察与已确认的决策结果支持 |
+| last_discard_actor/last_discard_tile | 可为 null；吃碰大明杠后按训练快照语义清理 |
+| response_target | response 必需，source 与精确 tile，区分弃牌及抢杠窗口 |
 
-### 4.2 模块 B：`rilab/mapping/action_mapping.py` —— 动作双向映射
+remaining_draws_estimate 是服务端派生量 remaining_tiles/4，不是从 70 开始递减的请求字段。座位旋转在服务端完成。
 
-**职责**：RiichiEnv 合法动作 ↔ `train_mj` 候选格式转换；模型输出 → MJAI 回复。
+### 4.3 事件与决策时点
 
-**合法动作来源策略**：**统一使用 RiichiEnv 的 `obs.legal_actions()`**，不用 `train_mj` 的 `rules/legal_actions.py` 重新生成——避免两套规则引擎细微分歧导致选出的动作在该引擎下不合法。最终经 `obs.select_action_from_mjai()` 兜底，保证回给引擎的动作一定合法。
+- start_kyoku 重置局内状态；任意玩家 tsumo 均减少 remaining_tiles，只有自家增加精确手牌和 turn_number。
+- reach 映射 reach1 并设置 pending；其后 dahai 标记宣言牌。reach_accepted 映射 reach2，设置训练口径的立直巡目、扣除 1000 点并增加供托。权威分数覆盖与增量更新不得双扣。宣言牌被荣和时不能提前计成立直接受。
+- chi/pon/daiminkan 只从自家精确手牌扣 consumed，对手仅更新公开副露；吃碰后弃牌仍属 turn。
+- ankan/kakan 保存宣杠前状态与提案。抢杠 response 使用窗口前快照；窗口解决后再提交副露升级。实际加杠牌和原碰叫牌分别保存，加杠沿用原碰来源。
+- dora 更新指标与公开事件，并对拍杠与宝牌顺序。hora/ryukyoku/end_kyoku/end_game 完整处理生命周期，多家荣和不得在第一条 hora 后丢失结果。
+- turn/response 由 DecisionContext 与动作阶段决定，不能只看最后事件是不是 tsumo。
 
-**候选映射（引擎 → 模型）**：
+引擎负责真实合法荣和；tracker 复现训练的振听输入。放弃合法荣和是自家决策事实，不是纯公开 MJAI 事实，需在动作确认或后续引擎事件确认后提交。超时、拒绝和服务器默认时不能记录未执行的模型意图。hora 不在候选里不能反推唯一振听原因。生产环境不再 import 第二套规则引擎推导合法动作。
 
-| RiichiEnv/MJAI 动作 | train_mj 候选 kind | 备注 |
-|---|---|---|
-| `dahai` | `discard {tile}` | 赤牌 `5mr → 0m` |
-| `reach` + `dahai` | `riichi_discard {tile}` | 合并为单候选 |
-| `hora`（自摸） | `tsumo` | turn 决策点 |
-| `ankan` | `ankan {tile}` | — |
-| `kakan` | `kakan {tile}` | — |
-| 九种九牌流局声明 | `kyuushu_kyuuhai` | — |
-| `chi` | `chi {tile, consumed_tiles, source}` | 只允许上家 |
-| `pon` | `pon {...}` | — |
-| `daiminkan` | `daiminkan {...}` | — |
-| `hora`（荣和） | `ron` | response 决策点 |
-| 抢杠和 | `chankan` | kakan 响应窗口 |
-| `none`/跳过 | `pass` | response 决策点 |
+训练侧已知边界：实际加杠牌与原碰叫牌红五属性不同时，抢杠目标特征有差异。始终用实际加杠牌构造合法候选与 response_target；单列差异，阻断未经解释的上线。需要上游修复/重建或经过验证的兼容决策，不能通过伪造牌来追求逐位相等。
 
-**回复映射（模型 → MJAI）**：`discard → {"type":"dahai","pai":...,"tsumogiri":...}`；`riichi_discard → reach 事件 + dahai`；`tsumo/ron → hora`；`kyuushu_kyuuhai` 按引擎支持的流局声明格式（实现时以 `select_action_from_mjai` 接受的格式为准）。
+## 5. 动作绑定与两阶段立直
 
-**推理口径**：response 决策沿用对方已校准 operating point（当前 `pass_bias=1.5 / no_yaku_call_penalty=0`），通过 API 请求参数传递，口径由对方仓库维护。
+每个预测候选关联 CandidateBinding：原始合法 Action、精确牌、consumed 组合及后续计划。普通动作直接返回绑定引擎对象。同牌普通物理副本可按训练语义合并并确定性选代表，记录摸切/手切策略；赤牌、不同吃法和 consumed 组合不能合并。
 
-### 4.3 模块 C：`rilab/agent.py` —— 推理适配 Agent
+模型 selected_action 必须能唯一回查本次候选；不能只按 kind 匹配，也不能把 response raw top-1 当 calibrated 结果。超过 candidate_limit 明确失败，不截断候选。
 
-**职责**：实现 RiichiEnv agent 接口（`act(obs) -> Action`），串联 tracker + mapping + 推理后端，同时服务自对弈与在线对局。
+select_action_from_mjai 可用于附加校验，但可能返回 None，也会宽松匹配缺字段输入；实测缺 pai 的 dahai 仍返回合法弃牌。因此“返回非空”不足以证明语义正确。[固定版本匹配源码](https://github.com/smly/RiichiEnv/blob/0ee1236a283b15508f3ac28407027f340b81e1de/riichienv-core/src/observation/mjai_select.rs)。
 
-```python
-class MjaiBotAgent:
-    def __init__(self, player_id: int, backend: PredictBackend, *, pass_bias: float | None = None): ...
+| 引擎动作/窗口 | 模型候选 |
+|---|---|
+| Discard | discard {tile} |
+| Riichi + 合法立直弃牌集合 | 每张牌一个 riichi_discard {tile}，绑定两阶段计划 |
+| Tsumo | tsumo |
+| Ankan/Kakan | ankan/kakan，tile 与精确组成用契约夹具固定 |
+| KyushuKyuhai | kyuushu_kyuuhai |
+| Chi/Pon/Daiminkan | chi/pon/daiminkan {tile, consumed_tiles, source} |
+| Ron，普通弃牌/抢杠窗口 | ron/chankan，由上下文区分 |
+| Pass | pass |
 
-    def act(self, obs) -> Action:
-        for event in obs.new_events():            # 1. 增量喂事件
-            self.tracker.apply(event)
-        state = self.tracker.snapshot()            # 2. 导出 state dict
-        candidates = self.mapper.to_candidates(obs.legal_actions())
-        if self.tracker.is_turn_decision():        # 3. turn / response 分流
-            result = self.backend.predict_turn(state, candidates)
-        else:
-            result = self.backend.predict_response(state, candidates, pass_bias=self.pass_bias)
-        mjai_reply = self.mapper.to_mjai(result.selected_action)
-        return obs.select_action_from_mjai(mjai_reply)  # 4. 引擎合法性兜底
-```
+立直协议状态机：
 
-`PredictBackend` 是推理后端抽象，两个实现：
+1. reach1 前评分。仅在引擎提供 Riichi 时，用 check_riichi_candidates(obs.hand) 等引擎能力获得可弃牌；发行包实测返回 136 牌 ID。必须与合法 Discard、红牌及副露约束交叉验证，不能把全部弃牌当成立直候选。
+2. 选中 riichi_discard X，缓存 PendingRiichiPlan（局标识、座位、精确弃牌、预期后续状态）。当前只执行 Riichi/发送 reach。
+3. 下次弃牌决策先确认计划与新合法集合，再执行 X，不在已宣言快照重新调用模型改变选择。
+4. 拒绝、默认、终局、状态不符则清除计划。评测失败退出；在线依据当前权威候选处理。
 
-- `HttpPredictBackend`：调用 `train_mj` 的 `serve-api`（默认）；
-- `InProcessPredictBackend`：库模式直调 `MahjongPredictor`（大批量自对弈提速用）。
+每个 request_id 只回复一条动作，禁止同次主动发送 reach+dahai。[官方协议](https://riichi.dev/docs/protocol)。在线序列化需补齐 actor/target/consumed 等必需字段；只有证明摸牌来源时才写 tsumogiri，不能确定时按协议允许省略。
 
-### 4.4 模块 D：`rilab/selfplay.py` —— 自对弈运行器
+## 6. HTTP 与故障处理
 
-**职责**：批量跑 `RiichiEnv(game_mode="4p-red-half", seed=...)` 固定种子对局，产出统计与日志。
+复用 httpx 连接，启动预热；在线用可取消的异步请求，WebSocket 接收循环不能被同步 HTTP 阻塞。总超时覆盖排队、编码、连接、推理和发送。
 
-```mermaid
-sequenceDiagram
-    participant R as selfplay runner
-    participant E as RiichiEnv(4p-red-half, seed)
-    participant A as MjaiBotAgent × 4
-    participant B as PredictBackend<br/>(HTTP / in-process)
+运行清单保存本仓库 commit 与 dirty 状态、训练仓库 tag（含其指向的 commit）与 dirty 状态、模型 SHA256、特征 schema、校准和依赖锁。API 的 checkpoint 路径不能代替权重哈希；由部署清单提供哈希。评测期间禁止热更，发现模型元信息变化使运行失效。
 
-    R->>E: env.reset()
-    loop 直到 env.done()
-        R->>A: act(obs_dict[pid]) × 4
-        A->>A: tracker.apply(new_events) + snapshot
-        A->>B: predict_turn / predict_response
-        B-->>A: selected_action + top-k
-        A-->>R: Action
-        R->>E: env.step(actions)
-    end
-    R->>R: scores()/ranks() 落盘<br/>mjai_log 落盘<br/>决策日志落盘
-```
+本地任何状态断言、非法动作或推理失败：保存错误局及已完成产物，运行标记无效并非零退出，不过滤失败局后给强度结论。
 
-功能要求：
+在线失败：预算内从当前合法集合选确定性备用动作，例如合法和牌、pass、合法摸切；吃碰后无摸牌时需合法弃牌备用。备用仅保证合法，不宣称防守安全。记录 fallback 与实际执行；无法证明合法回复时不猜动作，交由服务器默认并记录会话故障。
 
-- **对局编排**：N 局 × 固定种子列表；4 个座位轮换（消除座位偏差）。
-- **对照组**：支持 A/B 两个推理后端（新 checkpoint vs 上一版，各占 2 席位轮换）同场对战，直接看新版本相对增益，而不是只看绝对顺位。
-- **产物落盘**（`outputs/arena/<run_name>/`）：
-  - 每局 `mjai_log`（jsonl，可进 RiichiEnv `GameViewer` 回放）；
-  - 每个决策点的 `(state snapshot, legal actions, selected action, top-k score)`，供离线复盘错误决策；
-  - 汇总统计：平均顺位、和率、放铳率、立直率、副露率、振听率（和牌/计分统计从引擎侧提取，不依赖本项目任何计分能力）。
-- **回归判据**：固定种子集合下新旧后端的顺位分布对比；决策日志 diff 用于定位行为突变点。
-- **配置**：`configs/arena_selfplay.yaml`（推理后端地址/模式、seeds、局数、对照组席位分配、产物目录）。
+## 7. 可信评测
 
-### 4.5 模块 E：`rilab/online/` —— 在线对局客户端
+第一层相同模型与简单代理测试正确性；第二层固定基线比较候选模型：A+3B 与 B+3B，固定种子并轮换候选席位。2A+2B 作补充，采用六种席位组合；同桌两个 A 不作为队友。
 
-**职责**：连接 `wss://game.riichi.dev/ws/validate`，把线上 `request_action` 转成 Agent 调用并回包。
+相同 seed 有助复现，但行为分叉可能改变随机消耗，不保证后续完全同牌山；保存引擎、规则及可用的牌山标识，明确配对边界。
 
-```mermaid
-sequenceDiagram
-    participant S as game.riichi.dev
-    participant C as online client
-    participant A as MjaiBotAgent
-    participant B as PredictBackend
+主指标为平均顺位差（低为好）及末位率；辅以终局点数、和率、放铳率、立直率和副露率。明确每项分母与双响等计数口径，振听率只用于诊断。并列顺位按锁定引擎规则统计。
 
-    C->>S: WebSocket 连接 (Authorization: Bearer <token>)
-    loop 每个事件
-        S-->>C: 事件 JSON（信息类：start_kyoku/tsumo/dahai/...）
-        C->>A: tracker.apply(event)（无决策点则跳过）
-        S-->>C: request_action (base64 Observation, request_id, 时限)
-        C->>C: Observation.deserialize_from_base64()
-        C->>A: act(obs)
-        A->>B: predict
-        B-->>A: selected action
-        C-->>S: MJAI JSON 动作 + 原 request_id
-    end
-```
+按种子及其全部席位轮换作为统计簇，报告配对差与 95% cluster bootstrap 区间，同桌四席不能当四个独立样本。100 半庄只作为工程冒烟；强度实验预先规定最小有意义收益、样本量/预算和停止规则。未达到标准或区间跨零，结论为证据不足。校准种子与最终验收种子分离。
 
-功能要求：
+outputs/arena/<run_id>/ 保存：
 
-- **request_id 绑定**：回复必须回带原 `request_id`，乱序/迟到请求按协议丢弃。
-- **时限管理**：`grace_ms=3000 / bank_ms=15000 / deadline_ms=18000`；客户端设置比 `deadline_ms` 更早的内部软超时（预留 1s 网络与序列化余量），超时兜底回复当前最安全的合法动作（通常是 `pass` / 摸切）。
-- **密钥管理**：bot token 走环境变量（如 `RIICHI_DEV_BOT_TOKEN`），禁止写入配置文件与日志。
-- **可观测性**：对局事件流、每步决策与耗时落盘，便于赛后复盘与超时归因。
-- **配置**：`configs/arena_online.yaml`（endpoint、软超时、推理后端、pass_bias、日志目录）。
-- **前置流程**：先在 riichi.dev 注册 bot 并通过其 Bot Validation 校验，再进入正式排位。
+- manifest.json：本仓库 commit、训练仓库 tag、dirty、依赖/Python/引擎、完整规则、权重哈希、校准、种子、席位安排和统计协议。
+- games/*.mjai.jsonl：全局引擎回放；与每席模型输入日志隔离。
+- decisions/*.jsonl：决策编号、事件范围、快照、候选绑定、模型选择与实际动作、raw/calibrated、耗时、错误与 fallback。
+- summary.json：计划/完成/失败数量、指标分子分母、区间与运行有效性。
 
-### 4.6 模块 F：对拍验收（契约 + parity 测试，正确性闸门）
+首轮验收保留完整输入；大批量采用压缩分片、可回放事件和抽样完整快照，错误局完整保留。有界日志队列与容量限制；写盘故障使评测失败，在线慢磁盘不阻塞回复。
 
-**职责**：双重验收——(a) 与 `train_mj` 训练管线对拍，证明事件流路径构建的特征与训练分布一致；(b) 契约测试，证明对方 API schema 变更时本仓库立即感知。
+## 8. 在线 session
 
-```mermaid
-graph LR
-    XML["train_mj Tenhou XML 夹具<br/>(对方 tests 目录, 只读)"] -->|对方训练管线<br/>sample_builder| S1["state_json / 特征向量"]
-    XML -->|XML → MJAI 转换<br/>(本仓库 scripts/)| EV["mjai 事件流"]
-    EV -->|rilab tracker| S2["state dict"]
-    S2 -->|对方 serve-api| FEAT["服务端编码特征"]
-    S1 --> CMP{"逐位对比"}
-    FEAT --> CMP
-    CMP -->|一致| PASS["通过：可上线"]
-    CMP -->|不一致| FAIL["阻断：修复 tracker 或<br/>同步对方契约变更"]
-```
+验证 /ws/validate；排位 /ws/ranked；token 通过环境变量，HTTP 密钥独立配置并脱敏。平台验证通过只说明基本协议可用，不说明棋力或低延迟。[官方验证流程](https://riichi.dev/docs/validation)。
 
-- **夹具来源**：只读引用对方 `tests/` 的 Tenhou XML 夹具（路径可配置），转出 MJAI 事件流；另用 RiichiEnv 自对弈 `mjai_log` 作为增量夹具补充边角局面（杠后宝牌、抢杠、九种九牌等）。
-- **对比粒度**：state 快照字段 → 对方服务端编码后的输出（含 11969 / 12012 维特征口径的请求/响应一致性）；发现差异立即阻断。
-- **契约测试**：对 `/v1/predict/turn|response` 的请求/响应 schema 做版本快照断言；对方升级接口后跑 CI 即报错，倒逼本仓库适配——这正是"模型迭代不破坏接入"的保障。
-- **覆盖要求**：turn 与 response 两侧；每类动作候选至少出现一次。
+生命周期 Connecting→Playing→Finishing→Closed，断线进入 Disconnected。原局不支持重连恢复，只能记录未完成并在允许时开启新会话。验证模式在 end_game 后继续有界等待 validation_result 或明确结束信号。
 
-## 5. 本仓库目录结构规划
+接收任务持续读取消息，单一任务按序修改 tracker，推理使用不可变快照。重复 request_id 不重放观察；已结束/超时请求的迟到推理不能再次发送。以 action_ack 和后续权威事件确认 accepted/rejected/unparseable/stale/defaulted，禁止提前把模型意图当作执行结果。
 
-```text
-riichi_lab/
-  docs/
-    riichi-dev-integration.md   # 本方案
-  rilab/                        # Python 包
-    __init__.py
-    tracker/
-      __init__.py
-      state_tracker.py          # 模块 A
-    mapping/
-      __init__.py
-      action_mapping.py         # 模块 B
-    backends/
-      __init__.py
-      base.py                   # PredictBackend 抽象
-      http_backend.py           # API 模式：调 train_mj serve-api
-      inprocess_backend.py      # 库模式：直调 MahjongPredictor
-    agent.py                    # 模块 C
-    selfplay.py                 # 模块 D
-    online/
-      __init__.py
-      client.py                 # 模块 E：WebSocket 客户端与重连
-      session.py                # 模块 E：request_id 绑定、时限管理
-    cli.py                      # 入口
-  configs/
-    arena_selfplay.yaml
-    arena_online.yaml
-  scripts/
-    tenhou_xml_to_mjai.py       # 对拍用一次性转换脚本
-  tests/
-    fixtures/                   # 转换后的 mjai 事件流夹具
-    test_state_tracker.py       # 模块 F 对拍
-    test_action_mapping.py
-    test_backends_contract.py   # 模块 F 契约测试
-    test_agent_smoke.py
-  outputs/                      # 对局产物（不进 git）
-  pyproject.toml
-```
+逐请求读取 time.deadline_ms/grace_ms/bank_ms，不固定为 18 秒。以单调时钟记录接收时点，减去网络估计与发送余量；服务端从发送起计时，接收后才计时不能涵盖已经消耗的入站时间。正常推理目标在 grace 内，具体预算需端到端实测。
 
-依赖管理：
+本地 legal_actions 与线上 possible_actions 按精确牌、consumed 等语义交叉验证，不能 JSON 全等比较省略字段。冲突记录兼容性故障，不造动作。未知信息消息记录并忽略；影响状态而无法理解的内容停止模型决策，标记会话异常。
 
-```toml
-[project]
-dependencies = [
-    "riichienv>=0.1",
-    "websockets>=13",
-    "httpx>=0.27",
-]
+## 9. 正确性闸门
 
-[project.optional-dependencies]
-inprocess = [
-    # 库模式：以可编辑安装指向 train_mj，锁定 commit
-    "mjai @ file:///F:/Code/AI/train_study/train_mj",
-]
-```
+三条验收路径：
 
-CLI 入口：
+1. 状态/特征 parity：固定 Tenhou 夹具经训练 sample_builder 与 XML→MJAI→tracker 两条路径；按局/席位/事件/窗口匹配决策，先比快照，再经固定版本验证器与编码器比较 state 和 candidate 特征。编码器在开发进程执行，不要求 HTTP 返回不存在的向量。
+2. HTTP 契约：黄金请求经真实路由/服务验证元信息、嵌套必需字段、错误码、候选上限、校准 null/显式 0 和结果回查。临时小权重可用于 CI，真实权重单独联调。
+3. 引擎一致性：定向夹具和批量对局独立验证自家手牌、公开状态、分数与动作执行，不只比较训练规则与自身。
 
-```bash
-rilab arena-selfplay --config configs/arena_selfplay.yaml
-rilab arena-online  --config configs/arena_online.yaml
-rilab parity-check  --config configs/parity.yaml   # 对拍验收
-```
+XML 转换器也是受测代码，验证顺序、红牌、掩码及结局，预测不得读取未来。固定黄金 MJAI/快照存入本仓库；TRAIN_MJ_ROOT 配置外部路径，默认 CI 不依赖开发者磁盘。
 
-## 6. 落地阶段与验收标准
+整数/布尔/布局精确一致，浮点明确 dtype 与容差；确定编码可要求逐位一致。两套规则的候选不承诺完全相等，只对相同语义候选比较编码，并报告覆盖差异。实际推理始终采用引擎候选。已知训练缺陷单独失败，不用宽泛忽略列表掩盖。
 
-| 阶段 | 内容 | 验收标准 |
-|---|---|---|
-| A1 | 模块 B（动作映射）+ 单测 | 全部动作类型双向映射有用例覆盖；赤牌转换正确 |
-| A2 | 模块 A（state tracker）+ 模块 F（对拍） | 对方夹具上快照/编码逐位一致；边角局面（杠/抢杠/振听/九种九牌）覆盖 |
-| A3 | 模块 C（Agent）+ 模块 D（自对弈 runner） | 固定种子跑通 ≥100 半庄无非法动作、无 tracker 断言失败；产出统计与决策日志 |
-| A4 | 模型迭代回归流程 | 新旧 checkpoint 对照对战报告可复现（固定种子 + 席位轮换）；契约测试对对方接口变更敏感 |
-| B1 | 模块 E（在线客户端） | 通过 riichi.dev Bot Validation（`ws/validate`） |
-| B2 | 线上对局 | 正式排位稳定运行；无超时判负；决策日志完整落盘 |
+覆盖六类 turn、七类 response，红牌、物理副本、吃碰后弃牌、立直两阶段/宣言牌被荣和、放弃和牌与振听清除、杠/岭上/抢杠/宝牌、多家和牌、跨局终局，以及重复请求、迟到、默认动作、断线。
 
-A 系列先行（目标 1），稳定后推进 B 系列（目标 2）。
+默认 CI 跑黄金夹具、映射与模拟 session；固定训练依赖的 parity 是必需集成检查。真实权重、长批量和平台验证作发布前验收；skipped 不作 passed。
 
-## 7. 风险与对策
+## 10. 目录、依赖与阶段
 
-| 风险 | 影响 | 对策 |
-|---|---|---|
-| 特征口径不一致（振听判定、remaining_draws 计数、摸切标志等） | 高：线上强度 silently 下降，且难以归因 | 模块 F 对拍作为强制闸门；口径以对方 `model-inputs.md` 为唯一契约，不凭记忆重写规则 |
-| 对方特征版本漂移（v2 → v3，state schema 变更） | 高：适配层失效 | 契约测试 + 对拍测试双保险；升级流程 = 对方更新文档 → 本仓库跑 parity → 修复 tracker |
-| 两套规则引擎分歧（对方 rules vs RiichiEnv） | 中：生成不合法动作或候选集合不一致 | 统一采用引擎侧 `legal_actions()`；`select_action_from_mjai` 兜底 |
-| 线上超时 / 断线 | 中：判负、rating 损失 | 内部软超时 + 安全兜底动作；客户端自动重连 |
-| RiichiEnv 协议演进（在线协议/校验流程变化） | 低：客户端适配 | 协议细节收敛在 `rilab/online/`；参考实现（lisbun/lisjong、Mortal 接入方式） |
-| 对局数据污染（tracker 静默降级） | 高：回归结论误导 | 断言失败立即终止整批对局；决策日志可回放审计 |
+规划模块：tracker/state_tracker.py、mapping/action_mapping.py、decision.py（DecisionContext/CandidateBinding/PendingRiichiPlan）、backends/http_backend.py、agent.py、selfplay.py、evaluation.py、artifacts.py、online/client.py、online/session.py 和 cli.py。配置区分 selfplay/online/parity；tests/fixtures 保存黄金数据，outputs 不入 git。
 
-## 8. 与外部仓库的关系
+生产依赖精确锁定经验证的 RiichiEnv、httpx、websockets、PyYAML；验证 websockets 的 additional_headers 等 API 与锁定版本一致。train_mj 不进入生产依赖，不把 file:///F:/... 写进共享 pyproject。开发可编辑安装另行检查所处 tag 与 dirty 状态（pip install -e 本身不锁版本，以 tag 校验代替）。PyTorch 和设备环境由推理服务或 parity 环境提供。
 
-- `train_mj`（只读依赖）：提供 `serve-api` HTTP 服务（推理 + 特征编码）与 `full-state-api.md` / `model-inputs.md` 契约文档；本仓库不修改其代码。
-- `riichienv`（PyPI 依赖）：提供本地引擎、Observation、合法动作与 MJAI 协议；线上对局同一引擎。
-- 本方案落地后，`train_mj` 的 serving 阶段 3/4 缺口由本仓库在外部补齐，无需回写对方仓库文档；对方仓库只需保持 API 契约稳定。
+规划 CLI 为 rilab probe、parity-check、arena-selfplay、arena-online，目前尚未实现。
+
+| 阶段 | 交付与退出条件 |
+|---|---|
+| A0 契约探测 | 锁依赖；固化事件、完整 state、立直、序列化及规则夹具；关闭接口未知项 |
+| A1 最小闭环 | tracker + binding + HTTP + 单局；turn/response 跑通，无隐藏信息泄漏 |
+| A2 正确性 | 无未解释状态/特征差异；所有动作及关键窗口覆盖 |
+| A3 工程稳定 | 固定种子至少 100 半庄，零非法动作/断言/fallback；同环境重跑一致 |
+| A4 强度评测 | 固定基线、配对轮换、统计区间，报告提升/回退/证据不足 |
+| B0 协议模拟 | 请求、ack、超时、迟到、断线；每请求最多一次回复 |
+| B1 平台验证 | 真实 validation_result；审查 defaulted/fallback 和延迟 |
+| B2 有界排位 | 预定批次与停止阈值，故障不继续开启新局 |
+
+首先投入 A0–A2，降低错误适配使后续评测失真的风险；在线协议可提前模拟，正式上线仍依赖本地验收完成。
