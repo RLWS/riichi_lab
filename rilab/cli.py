@@ -80,6 +80,17 @@ def cmd_selfplay(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_parity(args: argparse.Namespace) -> int:
+    from rilab.parity_runner import run_parity
+
+    if not args.output_dir:
+        print("parity-check requires --output-dir (new directory)", file=sys.stderr)
+        return 2
+    report = run_parity(args.config, args.output_dir)
+    print(json.dumps({"valid": report["valid"], "output_dir": args.output_dir}))
+    return 0 if report["valid"] else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="rilab", description="RiichiLab adapter CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -93,7 +104,8 @@ def main(argv: list[str] | None = None) -> int:
 
     p_parity = sub.add_parser("parity-check", help="状态/特征对拍（A2）")
     p_parity.add_argument("--config", default="configs/parity.yaml")
-    p_parity.set_defaults(func=lambda a: _not_implemented("parity-check"))
+    p_parity.add_argument("--output-dir", help="new parity report directory")
+    p_parity.set_defaults(func=cmd_parity)
 
     p_selfplay = sub.add_parser(
         "arena-selfplay", help="A1 手工席位单局（A3 批量待实现）"

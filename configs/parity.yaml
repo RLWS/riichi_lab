@@ -3,8 +3,9 @@
 # 默认不依赖开发者磁盘（CI 由任务注入）。
 parity:
   train_mj_root: null         # 未设置时使用环境变量 TRAIN_MJ_ROOT
-  train_mj_tag: "v1.3.0"      # A0-6 已锁定（full_state_v2 serving 基线，见 docs/compatibility.md §6）
-  fixtures_dir: "tests/fixtures"
+  profiles: [legacy_v1_2, full_state_v2]  # 各 profile 的 tag+commit 固定在 rilab/config.py
+  python: null               # 默认当前 Python；须具备 train_mj 开发依赖（含 torch）
+  fixtures_dir: "tests/fixtures"  # 黄金回归；源 XML 位于 TRAIN_MJ_ROOT/tests/fixtures/tenhou
   compare:
     snapshots: exact          # 快照逐字段精确比较（方案 §9）
     features_int_bool_exact: true

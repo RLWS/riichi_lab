@@ -1,0 +1,158 @@
+diff --git a/docs/full-state-api.md b/docs/full-state-api.md
+index bac1a7310f7bb9204d4a4abc3acdd2381f155e5e..9accfddb35e16fc21449c0d185902323e1587c6c 100644
+--- a/docs/full-state-api.md
++++ b/docs/full-state-api.md
+@@ -28,7 +28,7 @@ Invoke-RestMethod http://127.0.0.1:8000/v1/models
+ - 杠事件应先于新宝牌事件。抢杠窗口的公开状态取宣杠前快照；加杠事件的来源和叫牌沿用原碰。
+ - 不提供对手隐藏手牌、摸牌牌面或未来事件。事件中提供的 actor/source/tile 即使为可选字段也会校验。
+ 
+-已知训练侧边界：采样器的抢杠目标仍取原碰叫牌；当实际加杠牌与原叫牌的红五属性不同时，精确目标特征存在差异。客户端必须保留实际加杠牌保证合法候选正确；训练采样修复与数据重建需另行处理。
++抢杠采样目标使用实际加杠牌（consumed_tiles 的最后一张），不使用原碰叫牌；抢杠窗口仍取副露升级前的状态。此前版本在两张牌红五属性不同时会产生错误的目标特征和候选标签。已有 bronze 事件可继续使用；受影响的 response silver 样本及其预编码特征需要重建，已有权重是否重训需单独评估。本修复不改变原碰来源/叫牌记录，也不自动重建数据或启动训练。
+ 
+ 完整向量布局见 [model-inputs.md](model-inputs.md)。
+ 
+diff --git a/mjai/data/builders/sample_builder.py b/mjai/data/builders/sample_builder.py
+index f965f0abe2c3a749d4b65d3ef8f3df744da30545..fd83f1ba050ebe507aa71556799d3952647f0cb6 100644
+--- a/mjai/data/builders/sample_builder.py
++++ b/mjai/data/builders/sample_builder.py
+@@ -234,6 +234,8 @@ class ResponseSampleBuilder:
+                 payload = event.payload
+                 if payload["kind"] == "kakan":
+                     resolution = _resolve_kakan_window(events, event_index)
++                    # Chankan targets the added tile, not the original pon call.
++                    target_tile = payload["consumed_tiles"][-1]
+                     for responder in range(4):
+                         if responder == event.actor:
+                             continue
+@@ -242,7 +244,7 @@ class ResponseSampleBuilder:
+                             hand=state.hands[responder],
+                             actor=responder,
+                             source=event.actor,
+-                            tile=payload["called_tile"],
++                            tile=target_tile,
+                             state=state,
+                             allow_chankan=True,
+                         )
+@@ -250,7 +252,7 @@ class ResponseSampleBuilder:
+                         label_action = _kakan_response_label_for_actor(
+                             responder=responder,
+                             actor=event.actor,
+-                            tile=payload["called_tile"],
++                            tile=target_tile,
+                             resolution=resolution,
+                         )
+                         sample = TurnSample(
+@@ -263,7 +265,9 @@ class ResponseSampleBuilder:
+                             step_index=event.step_index,
+                             actor=responder,
+                             decision_type="response",
+-                            state=_response_view_snapshot(state, responder, event.actor, payload["called_tile"]),
++                            state=_response_view_snapshot(
++                                state, responder, event.actor, target_tile
++                            ),
+                             legal_actions=legal_actions,
+                             label_action=label_action,
+                         )
+@@ -272,7 +276,7 @@ class ResponseSampleBuilder:
+                             state=state,
+                             responder=responder,
+                             source=event.actor,
+-                            tile=payload["called_tile"],
++                            tile=target_tile,
+                             label_action=label_action,
+                             legal_actions=legal_action_objects,
+                         )
+diff --git a/tests/test_chankan_target.py b/tests/test_chankan_target.py
+new file mode 100644
+index 0000000000000000000000000000000000000000..1a018d4233b79e62d4a25cd111f8e0032a795f82
+--- /dev/null
++++ b/tests/test_chankan_target.py
+@@ -0,0 +1,88 @@
++from __future__ import annotations
++
++import pytest
++
++from mjai.data.builders.sample_builder import ResponseSampleBuilder
++from mjai.data.schema.events import Event
++
++
++@pytest.mark.parametrize("called,added", [("5m", "0m"), ("0m", "5m"), ("4m", "4m")])
++@pytest.mark.parametrize("win", [True, False])
++def test_chankan_uses_added_tile_and_pre_upgrade_state(called, added, win):
++    rank = 5 if "0m" in (called, added) else 4
++    normal = f"{rank}m"
++    responder = [
++        "1p",
++        "2p",
++        "3p",
++        "1s",
++        "2s",
++        "3s",
++        "1z",
++        "1z",
++        "1z",
++        "2z",
++        "2z",
++        f"{rank - 1}m",
++        f"{rank + 1}m",
++    ]
++    payload = {
++        "seed": "0,0,0",
++        "ten": "250,250,250,250",
++        "oya": 0,
++        "round_wind": 0,
++        "round_number": 0,
++        "match_rounds": 8,
++        "dora_indicator": "9s",
++        "hai0": [normal, normal, "1m", "2m", "3m", "7p", "8p", "9p", "7s", "8s", "9s", "5z", "5z"],
++        "hai1": responder,
++        "hai2": [called],
++        "hai3": [],
++    }
++    # Minimal normalized setup: only hands consumed in the scenario need tiles.
++    specs = [
++        ("init", None, payload),
++        ("discard", 2, {"tile": called}),
++        (
++            "meld",
++            0,
++            {"kind": "pon", "source": 2, "called_tile": called, "consumed_tiles": [normal, normal]},
++        ),
++        ("discard", 0, {"tile": "1m"}),
++        ("draw", 1, {"tile": "9p"}),
++        ("discard", 1, {"tile": "9p"}),
++        ("draw", 0, {"tile": added}),
++        (
++            "meld",
++            0,
++            {
++                "kind": "kakan",
++                "source": 2,
++                "called_tile": called,
++                "consumed_tiles": [normal, normal, added],
++            },
++        ),
++    ]
++    if win:
++        specs.append(("agari", 1, {"who": "1", "fromWho": "0"}))
++    else:
++        specs.extend([("draw", 0, {"tile": "9m"}), ("discard", 0, {"tile": "9m"})])
++    events = [
++        Event("red_kan", 0, step, kind, actor, payload=data)
++        for step, (kind, actor, data) in enumerate(specs)
++    ]
++    samples = ResponseSampleBuilder().build_samples(events)
++    sample = next(s for s in samples if s.actor == 1 and s.step_index == 7)
++    assert sample.state["response_target"] == {"source": 0, "tile": added}
++    wins = [a for a in sample.legal_actions if a["kind"] in {"ron", "chankan"}]
++    assert wins and all(a["tile"] == added for a in wins)
++    assert sample.state["all_melds"][0][0]["kind"] == "pon"
++    assert sample.state["all_melds"][0][0]["called_tile"] == called
++    assert not any(e["kind"] == "kakan" for e in sample.state["public_events"])
++    if win:
++        assert sample.label_action["kind"] == "chankan"
++        assert sample.label_action["tile"] == added
++        assert sample.label_action in sample.legal_actions
++    else:
++        follow = next(s for s in samples if s.actor == 1 and s.step_index == 9)
++        assert follow.state["temporary_furiten"] is True

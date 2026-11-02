@@ -55,6 +55,8 @@ A0-4 实测基线（`tests/fixtures/http_contract/baseline_models.json`）：
 |---|---|---|---|
 | DEF-001 | 训练采样器的抢杠目标取原碰叫牌；实际加杠牌与原叫牌红五属性不同时，目标特征存在差异 | train_mj full-state-api.md"已知训练侧边界" | 适配层始终用实际加杠牌构造候选与 response_target；parity 中该差异单列失败、阻断未经解释的上线，不伪造牌追求逐位一致 |
 
+2026-11-02 后续：已在 codex/fix-chankan-red-target 分支提交 829c66e 修复采样器并通过测试，详见 A2 记录。当前 v1.2.0/v1.3.0 tag 和既有样本/权重未改变；默认冻结版本闸门仍应报告此缺陷，不能仅因修复分支通过就关闭原版本登记。
+
 ## 6. train_mj 版本锁定
 
 - train_mj 以 **tag** 固定版本（该仓库每次参数量调整打新 tag）。

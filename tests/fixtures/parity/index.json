@@ -1,0 +1,110 @@
+{
+  "profiles": {
+    "legacy_v1_2": {
+      "files": 21,
+      "counts": {
+        "snapshots": 14038,
+        "label_turn_discard": 3443,
+        "feature_pairs": 14038,
+        "label_response_pass": 10326,
+        "label_response_pon": 76,
+        "label_response_chi": 56,
+        "label_response_ron": 47,
+        "label_turn_tsumo": 23,
+        "label_turn_ankan": 6,
+        "label_turn_riichi_discard": 58,
+        "label_turn_kyuushu_kyuuhai": 1,
+        "label_response_daiminkan": 1,
+        "label_turn_kakan": 1
+      },
+      "xml_valid": true,
+      "boundary": {
+        "defect": "DEF-001",
+        "profile": "legacy_v1_2",
+        "actual_response_target": {
+          "source": 0,
+          "tile": "0m"
+        },
+        "training_response_target": {
+          "source": 0,
+          "tile": "5m"
+        },
+        "legal_candidate": {
+          "kind": "chankan",
+          "source": 0,
+          "tile": "0m"
+        },
+        "different_feature_indices": [
+          8182,
+          8183
+        ],
+        "valid": false
+      }
+    },
+    "full_state_v2": {
+      "files": 21,
+      "counts": {
+        "snapshots": 14038,
+        "label_turn_discard": 3443,
+        "feature_pairs": 14038,
+        "label_response_pass": 10326,
+        "label_response_pon": 76,
+        "label_response_chi": 56,
+        "label_response_ron": 47,
+        "label_turn_tsumo": 23,
+        "label_turn_ankan": 6,
+        "label_turn_riichi_discard": 58,
+        "label_turn_kyuushu_kyuuhai": 1,
+        "label_response_daiminkan": 1,
+        "label_turn_kakan": 1
+      },
+      "xml_valid": true,
+      "boundary": {
+        "defect": "DEF-001",
+        "profile": "full_state_v2",
+        "actual_response_target": {
+          "source": 0,
+          "tile": "0m"
+        },
+        "training_response_target": {
+          "source": 0,
+          "tile": "5m"
+        },
+        "legal_candidate": {
+          "kind": "chankan",
+          "source": 0,
+          "tile": "0m"
+        },
+        "different_feature_indices": [
+          11978,
+          11979
+        ],
+        "valid": false
+      }
+    }
+  },
+  "scope": "Frozen XML golden replay; full integration still checks training encoders and DEF-001",
+  "source_xml_sha256": {
+    "2023010100gm-00e1-0000-8a80056a.xml": "8ea3f3827193ca33611a178e70819b28f409eb500295d9932782d87c4c96ebb5",
+    "2023010100gm-00e1-0000-f2025139.xml": "eb34a02ec229ac2e240b93cdf083a5dd294db275b85dd67849151a9e66ae43ac",
+    "2023010104gm-00a9-0000-8c57332c.xml": "bf4d59293db17b7b295c3a38c52290b243a76b62af0ee3e58f28b62c000070e8",
+    "2023010107gm-00a9-0000-5abaf578.xml": "1a9c09ea58774bf87f1fca3face37bd88512d5c777e5c2065dc876179d229100",
+    "2023010108gm-00e1-0000-a046210c.xml": "a5e1239ca8837a796d0857553af761868185deeff644aba2185278fe0499c310",
+    "2023010114gm-00e1-0000-8f88a327.xml": "878557b32ced084a35ae0392cc03c01b1ed2bdde2faf2cbd1a7c8c4b9fe18b6b",
+    "2023010115gm-00a9-0000-fed87b46.xml": "47c0fbc4c02180bafbe1d4db3dd1283cb6bf0214160ab1cf3b08933e3a58afda",
+    "2023010115gm-00e1-0000-35a31b56.xml": "f69ae3a30f08658615bb36eef4e57010113c0ee8a0757559ddce61dacc103e27",
+    "2023010119gm-00e1-0000-d9d1bd98.xml": "94b1f0d5820f75c8dc5a2e8b4ab664c7293894d4bc9d13f68f85a3950e59a165",
+    "2023010120gm-00e1-0000-3f0fddc6.xml": "0c4b2773248ac7568df13ec7fc7fb1a1f4d4bb353ee16b9bd046193e5f68c6b8",
+    "2023010121gm-00e1-0000-c3ea9d39.xml": "51fb67f3d50e59697458cfe2abbec2cfa0a7ee367e810bf04f0370c2ab5fc176",
+    "2023010122gm-00a9-0000-1d82930d.xml": "377a073fb7787dd3091d3e16260a1bbadfd61b5358121319c070af8665510796",
+    "2023010122gm-00e1-0000-d7c096fb.xml": "fd5e55c0c5796f921edbdf59a08e2020372232dda6b6b25d9aa1a1ca8d487acc",
+    "2023010123gm-00e1-0000-dedc4fea.xml": "00d45a3e9ce1c99ecb83c94f3504e12947f40b3a0d479e168de245e1bd41a1c5",
+    "2023010200gm-00a9-0000-1c334444.xml": "27757cde4acb0c49f05c1dbf2cdff6d6a22cdc682e0e12184bc9999566a47367",
+    "2023010200gm-00a9-0000-7f178fb8.xml": "5252f991428a40c4b47a24bbf484923dcd9067a5f71d014cb8c628bc8f681d04",
+    "2023010200gm-00e1-0000-c4c9e62d.xml": "06d34c0c3f0e73a1980d41326b1f71dd45b4a607ba617aa798ec8255734d388c",
+    "2023010201gm-00e1-0000-1338bdab.xml": "cb22a7d80daf7cda4e2f5eca3b95569e1e9af225f2cb522cd967d5b17f39c979",
+    "2023010201gm-00e1-0000-3319fd3a.xml": "14afb60133c8d6f3f39bf4eff3269f22b87154def960064691eb6486271e89ac",
+    "2023010202gm-00a9-0000-e903ba36.xml": "15d972a76afa68879d0f48b472105269cf154666f4a62b93ca8e61a66187d093",
+    "2023011001gm-00a9-0000-ef310a72.xml": "bfcd39cd6aff29ba19f93fb894b3e47c9884ffd49b1ad45b07366301feda7562"
+  }
+}

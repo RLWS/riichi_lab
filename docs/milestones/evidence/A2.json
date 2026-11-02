@@ -1,0 +1,240 @@
+{
+  "frozen_versions_valid": false,
+  "frozen_profiles": [
+    {
+      "profile": "legacy_v1_2",
+      "files": 21,
+      "counts": {
+        "snapshots": 14038,
+        "label_turn_discard": 3443,
+        "feature_pairs": 14038,
+        "label_response_pass": 10326,
+        "label_response_pon": 76,
+        "label_response_chi": 56,
+        "label_response_ron": 47,
+        "label_turn_tsumo": 23,
+        "label_turn_ankan": 6,
+        "label_turn_riichi_discard": 58,
+        "label_turn_kyuushu_kyuuhai": 1,
+        "label_response_daiminkan": 1,
+        "label_turn_kakan": 1
+      },
+      "xml_valid": true,
+      "valid": false,
+      "encode_stride": 1,
+      "boundary": {
+        "defect": "DEF-001",
+        "profile": "legacy_v1_2",
+        "actual_response_target": {
+          "source": 0,
+          "tile": "0m"
+        },
+        "training_response_target": {
+          "source": 0,
+          "tile": "5m"
+        },
+        "legal_candidate": {
+          "kind": "chankan",
+          "source": 0,
+          "tile": "0m"
+        },
+        "different_feature_indices": [
+          8182,
+          8183
+        ],
+        "valid": false
+      },
+      "revision": {
+        "tag": "v1.2.0",
+        "commit": "758981ab9fb457c882ab9c577c9377976f97f42b"
+      },
+      "exit_code": 1,
+      "http_contract": {
+        "profile": "legacy_v1_2",
+        "valid": true,
+        "checks": [
+          {
+            "case": "turn_valid",
+            "status": 200
+          },
+          {
+            "case": "response_valid",
+            "status": 200
+          },
+          {
+            "case": "calibration_None",
+            "status": 200
+          },
+          {
+            "case": "calibration_0",
+            "status": 200
+          },
+          {
+            "case": "missing_state",
+            "status": 422
+          },
+          {
+            "case": "candidate_limit",
+            "status": 413
+          },
+          {
+            "case": "empty_candidates",
+            "status": 400
+          },
+          {
+            "case": "invalid_top_k",
+            "status": 400
+          },
+          {
+            "case": "wrong_task_action",
+            "status": 422
+          }
+        ],
+        "transport": "FastAPI TestClient",
+        "device": "cpu"
+      }
+    },
+    {
+      "profile": "full_state_v2",
+      "files": 21,
+      "counts": {
+        "snapshots": 14038,
+        "label_turn_discard": 3443,
+        "feature_pairs": 14038,
+        "label_response_pass": 10326,
+        "label_response_pon": 76,
+        "label_response_chi": 56,
+        "label_response_ron": 47,
+        "label_turn_tsumo": 23,
+        "label_turn_ankan": 6,
+        "label_turn_riichi_discard": 58,
+        "label_turn_kyuushu_kyuuhai": 1,
+        "label_response_daiminkan": 1,
+        "label_turn_kakan": 1
+      },
+      "xml_valid": true,
+      "valid": false,
+      "encode_stride": 1,
+      "boundary": {
+        "defect": "DEF-001",
+        "profile": "full_state_v2",
+        "actual_response_target": {
+          "source": 0,
+          "tile": "0m"
+        },
+        "training_response_target": {
+          "source": 0,
+          "tile": "5m"
+        },
+        "legal_candidate": {
+          "kind": "chankan",
+          "source": 0,
+          "tile": "0m"
+        },
+        "different_feature_indices": [
+          11978,
+          11979
+        ],
+        "valid": false
+      },
+      "revision": {
+        "tag": "v1.3.0",
+        "commit": "1e5092f344fb69bcdf4697f683f2ecf15b9865d8"
+      },
+      "exit_code": 1,
+      "http_contract": {
+        "profile": "full_state_v2",
+        "valid": true,
+        "checks": [
+          {
+            "case": "turn_valid",
+            "status": 200
+          },
+          {
+            "case": "response_valid",
+            "status": 200
+          },
+          {
+            "case": "calibration_None",
+            "status": 200
+          },
+          {
+            "case": "calibration_0",
+            "status": 200
+          },
+          {
+            "case": "missing_state",
+            "status": 422
+          },
+          {
+            "case": "candidate_limit",
+            "status": 413
+          },
+          {
+            "case": "empty_candidates",
+            "status": 400
+          },
+          {
+            "case": "invalid_top_k",
+            "status": 400
+          },
+          {
+            "case": "wrong_task_action",
+            "status": 422
+          }
+        ],
+        "transport": "FastAPI TestClient",
+        "device": "cpu"
+      }
+    }
+  ],
+  "upstream_fix": {
+    "branch": "codex/fix-chankan-red-target",
+    "commit": "829c66e2a2fd31261ee2f00cfc867a7e344556a8",
+    "targeted_tests_passed": 64,
+    "parity": {
+      "profile": "full_state_v2",
+      "files": 21,
+      "counts": {
+        "snapshots": 14038,
+        "label_turn_discard": 3443,
+        "feature_pairs": 14038,
+        "label_response_pass": 10326,
+        "label_response_pon": 76,
+        "label_response_chi": 56,
+        "label_response_ron": 47,
+        "label_turn_tsumo": 23,
+        "label_turn_ankan": 6,
+        "label_turn_riichi_discard": 58,
+        "label_turn_kyuushu_kyuuhai": 1,
+        "label_response_daiminkan": 1,
+        "label_turn_kakan": 1
+      },
+      "xml_valid": true,
+      "valid": true,
+      "encode_stride": 1,
+      "boundary": {
+        "defect": "DEF-001",
+        "profile": "full_state_v2",
+        "actual_response_target": {
+          "source": 0,
+          "tile": "0m"
+        },
+        "training_response_target": {
+          "source": 0,
+          "tile": "0m"
+        },
+        "legal_candidate": {
+          "kind": "chankan",
+          "source": 0,
+          "tile": "0m"
+        },
+        "different_feature_indices": [],
+        "valid": true
+      }
+    },
+    "training_started": false,
+    "datasets_rebuilt": false,
+    "existing_tags_changed": false
+  }
+}

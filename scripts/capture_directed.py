@@ -14,6 +14,25 @@ from scripts.capture_fixtures import action_to_json, observation_state
 
 
 def setup_events(kind: str) -> list[dict]:
+    if kind == "red_chankan":
+        events = setup_events("chankan")
+        for event in events:
+            if event["type"] == "start_kyoku":
+                event["tehais"][0] = [
+                    "5m" if t == "4m" else t for t in event["tehais"][0]
+                ]
+                event["tehais"][1] = [
+                    "4m" if t == "5m" else t for t in event["tehais"][1]
+                ]
+            else:
+                if event.get("pai") == "4m":
+                    event["pai"] = "5m"
+                if "consumed" in event:
+                    event["consumed"] = [
+                        "5m" if t == "4m" else t for t in event["consumed"]
+                    ]
+        events[-1]["pai"] = "5mr"
+        return events
     hands = [
         ["4m", "4m", "1m", "2m", "3m", "7p", "8p", "9p", "7s", "8s", "9s", "P", "P"],
         ["1p", "2p", "3p", "1s", "2s", "3s", "E", "E", "E", "S", "S", "5m", "6m"],
@@ -91,15 +110,19 @@ def capture_case(kind: str) -> dict:
     events = setup_events(kind)
     for event in events:
         env.apply_event(event)
-    action_type = ActionType.Kakan if kind == "chankan" else ActionType.Discard
+    action_type = (
+        ActionType.Kakan if kind in ("chankan", "red_chankan") else ActionType.Discard
+    )
     before = env.get_observation(0)
     action = next(
         a
         for a in before.legal_actions()
-        if a.action_type == action_type and json.loads(a.to_mjai()).get("pai") == "4m"
+        if a.action_type == action_type
+        and json.loads(a.to_mjai()).get("pai")
+        == ("5mr" if kind == "red_chankan" else "4m")
     )
     observations = env.step({0: action})
-    seats = [1] if kind == "chankan" else [1, 3]
+    seats = [1] if kind in ("chankan", "red_chankan") else [1, 3]
     responses = []
     wins = {}
     for seat in seats:
