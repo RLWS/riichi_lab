@@ -77,6 +77,7 @@ class Prepared:
     ron_available: bool
     forced_index: int | None
     fallback_index: int | None
+    events_json: str
 
 
 class OnlinePolicy:
@@ -100,7 +101,8 @@ class OnlinePolicy:
             self.tracker = StateTracker(obs.player_id, match_rounds=self.match_rounds)
         if obs.player_id != self.tracker.player_id:
             raise AdapterError("online observation seat changed")
-        self.tracker.consume(obs.new_events())
+        events = list(obs.new_events())
+        self.tracker.consume(events)
         self.tracker.check_observation(obs)
         legal = obs.legal_actions()
         context = self.tracker.context(legal)
@@ -164,6 +166,7 @@ class OnlinePolicy:
             any(a.action_type == ActionType.Ron for a in legal),
             forced,
             fallback,
+            json.dumps(events),
         )
 
     def confirm(self, prepared, index, status, actual=None):

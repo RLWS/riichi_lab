@@ -1,0 +1,29 @@
+{
+  "milestone": "B2",
+  "date": "2026-11-03",
+  "scope": "implementation and local simulation only",
+  "implementation_complete": true,
+  "real_ranked_acceptance_complete": false,
+  "real_ranked_games_started": 0,
+  "user_platform_token_used": false,
+  "checks": [
+    {"command": ".venv/Scripts/python.exe -m pytest tests/test_ranked.py -q", "passed": 28, "skipped": 0},
+    {"command": ".venv/Scripts/python.exe -m pytest -q", "passed": 178, "skipped": 0},
+    {"command": "ruff check .", "result": "passed"},
+    {"command": ".venv/Scripts/python.exe -m rilab.cli arena-online --mode ranked --dry-run", "connected": false}
+  ],
+  "capabilities": [
+    "predeclared finite game and time budgets",
+    "explicit cumulative fallback and default thresholds",
+    "server latency, bank, and deadline margin guards",
+    "mandatory stop after any fault regardless of fallback allowance",
+    "fresh per-game tracker and riichi plan",
+    "metadata lock before and after every game",
+    "complete event and decision persistence before next connection",
+    "cancellation and write-failure stop semantics",
+    "no reconnect, retry, resume, or automatic budget expansion"
+  ],
+  "sample_config": "configs/arena_ranked.yaml",
+  "sample_plan_is_real_execution_authorization": false,
+  "strength_claim": null
+}

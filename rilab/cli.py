@@ -125,7 +125,35 @@ def cmd_online(args: argparse.Namespace) -> int:
     import asyncio
     from rilab.online.client import run_validation
 
-    summary = asyncio.run(run_validation(args.config, args.output_dir))
+    config_path = args.config or (
+        "configs/arena_ranked.yaml"
+        if args.mode == "ranked"
+        else "configs/arena_online.yaml"
+    )
+
+    if args.mode == "ranked":
+        from rilab.online.ranked import load_ranked_config, run_ranked
+
+        if args.dry_run:
+            config = load_ranked_config(config_path)
+            print(
+                json.dumps(
+                    {"mode": "ranked", "connected": False, "ranked": config["ranked"]},
+                    ensure_ascii=False,
+                )
+            )
+            return 0
+        if not args.output_dir:
+            raise ValueError("ranked requires --output-dir (new directory)")
+        summary = asyncio.run(run_ranked(config_path, args.output_dir))
+        print(json.dumps(summary, ensure_ascii=False))
+        return 0 if summary["completed"] else 1
+    if args.dry_run or not args.output_dir:
+        raise ValueError(
+            "validate requires --output-dir and does not support --dry-run"
+        )
+
+    summary = asyncio.run(run_validation(config_path, args.output_dir))
     print(json.dumps(summary, ensure_ascii=False))
     return (
         0
@@ -178,10 +206,19 @@ def main(argv: list[str] | None = None) -> int:
     )
     p_evaluate.set_defaults(func=cmd_evaluate)
 
-    p_online = sub.add_parser("arena-online", help="riichi.dev 在线对局（B1）")
-    p_online.add_argument("--config", default="configs/arena_online.yaml")
+    p_online = sub.add_parser("arena-online", help="单次平台验证或 B2 有界排位")
+    p_online.add_argument("--mode", choices=("validate", "ranked"), default="validate")
     p_online.add_argument(
-        "--output-dir", required=True, help="new single-session artifact directory"
+        "--dry-run",
+        action="store_true",
+        help="ranked config check only; no network or credentials",
+    )
+    p_online.add_argument(
+        "--config",
+        help="defaults to arena_online.yaml for validate, arena_ranked.yaml for ranked",
+    )
+    p_online.add_argument(
+        "--output-dir", help="new session or ranked batch artifact directory"
     )
     p_online.set_defaults(func=cmd_online)
 

@@ -46,8 +46,7 @@ async def connect_session(endpoint, token, session, *, connector=websockets.conn
         return session.summary()
 
 
-async def run_validation(config_path, output_dir):
-    config = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
+def credentials(config):
     online, backend_config = config["online"], config["backend"]
     token_env = online.get("token_env", "RIICHI_DEV_BOT_TOKEN")
     if token_env == backend_config.get("api_key_env"):
@@ -58,19 +57,43 @@ async def run_validation(config_path, output_dir):
     secrets = [token]
     if backend_config.get("api_key_env"):
         secrets.append(os.environ[backend_config["api_key_env"]])
-    output = Path(output_dir)
-    output.mkdir(parents=True, exist_ok=False)
-    backend = AsyncHttpPredictBackend("online", backend_config)
-    session = OnlineSession(
+    return token, secrets
+
+
+def make_session(config, backend, *, validation=True, secrets=(), **limits):
+    online = config["online"]
+    return OnlineSession(
         OnlinePolicy(
             create_adapter(backend.profile), match_rounds=online.get("match_rounds", 4)
         ),
         backend,
+        validation=validation,
         send_reserve_seconds=online["send_reserve_seconds"],
         inbound_estimate_seconds=online["inbound_estimate_seconds"],
         finish_timeout_seconds=online["finish_timeout_seconds"],
         secrets=secrets,
+        **limits,
     )
+
+
+def persist_session(output, session):
+    (output / "session.jsonl").write_text(
+        "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in session.records),
+        encoding="utf-8",
+    )
+    (output / "summary.json").write_text(
+        json.dumps(session.summary(), ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+
+async def run_validation(config_path, output_dir):
+    config = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
+    online, backend_config = config["online"], config["backend"]
+    token, secrets = credentials(config)
+    output = Path(output_dir)
+    output.mkdir(parents=True, exist_ok=False)
+    backend = AsyncHttpPredictBackend("online", backend_config)
+    session = make_session(config, backend, secrets=secrets)
     try:
         await backend.warmup()
         summary = await connect_session(online["endpoint_validate"], token, session)
@@ -82,11 +105,5 @@ async def run_validation(config_path, output_dir):
         await backend.close()
         # B0 keeps a bounded in-memory trace and flushes after connection closure:
         # disk latency never holds up an action. Persistence errors fail the command.
-        (output / "session.jsonl").write_text(
-            "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in session.records),
-            encoding="utf-8",
-        )
-    (output / "summary.json").write_text(
-        json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8"
-    )
+        persist_session(output, session)
     return summary

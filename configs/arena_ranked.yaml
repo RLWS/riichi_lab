@@ -1,0 +1,34 @@
+# B2 工具实现的保守示例计划；--dry-run 不连接平台。
+# 执行命令显式选择 --mode ranked。本文件不代表已完成真实排位验收。
+online:
+  endpoint_ranked: wss://game.riichi.dev/ws/ranked
+  token_env: RIICHI_DEV_BOT_TOKEN
+  match_rounds: 8
+  send_reserve_seconds: 0.5
+  inbound_estimate_seconds: 0.5
+  finish_timeout_seconds: 5.0
+backend:
+  adapter_profile: full_state_v2
+  api_base: http://127.0.0.1:8000
+  api_key_env: TRAIN_MJ_API_KEY
+  timeout_seconds: 10.0
+  revision:
+    tag: v1.3.0
+    commit: 1e5092f344fb69bcdf4697f683f2ecf15b9865d8
+  # 部署者声明，必须与实际服务部署清单一致；API 本身不提供权重哈希。
+  model_identity:
+    turn_sha256: 30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90
+    response_sha256: e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51
+  response:
+    pass_bias: null
+ranked:
+  max_games: 1
+  max_total_seconds: 7200
+  session_timeout_seconds: 7200
+  matchmaking_timeout_seconds: 300
+  stop:
+    max_fallbacks: 0
+    max_defaulted: 0
+    max_server_elapsed_ms: 2500
+    min_bank_ms: 1000
+    min_deadline_margin_ms: 500

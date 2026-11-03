@@ -1,6 +1,6 @@
 # riichi.dev 接入方案（审查修订版）
 
-> 状态：A1/A3/A4 已验收；A4 正式强度结论为证据不足；A2 冻结 tag 保留 DEF-001 已知失败；B0 协议模拟与 B1 真实平台验证已验收，B2 待安排。B1 无 defaulted/fallback，但网络耗时存在长尾，见 [B1 记录](milestones/B1.md)。修订于 2026-11-03。
+> 状态：A1/A3/A4 已验收；A4 正式强度结论为证据不足；A2 冻结 tag 保留 DEF-001 已知失败；B0 协议模拟与 B1 真实平台验证已验收，B2 工具已实现，真实排位验收未执行，见 [B2 记录](milestones/B2.md)。B1 无 defaulted/fallback，但网络耗时存在长尾，见 [B1 记录](milestones/B1.md)。修订于 2026-11-03。
 > 结论：本地对局评测具备工程可行性；线上接入有条件可行。先证明状态与动作适配正确，再投入大量对局和线上排位。
 > 原方案问题、审查证据及实测结果见 [可行性审查](feasibility-review.md)。
 
@@ -191,7 +191,7 @@ XML 转换器也是受测代码，验证顺序、红牌、掩码及结局，预�
 
 生产依赖精确锁定经验证的 RiichiEnv、httpx、websockets、PyYAML；验证 websockets 的 additional_headers 等 API 与锁定版本一致。train_mj 不进入生产依赖，不把 file:///F:/... 写进共享 pyproject。开发可编辑安装另行检查所处 tag 与 dirty 状态（pip install -e 本身不锁版本，以 tag 校验代替）。PyTorch 和设备环境由推理服务或 parity 环境提供。
 
-CLI 中 probe、arena-selfplay 的手工单局/自动席位编排及 parity-check 已实现；arena-online 尚待实施，运行方式见 A1/A2/A3 记录。
+CLI 中 probe、arena-selfplay 的手工单局/自动席位编排、parity-check 及 arena-online 已实现；arena-online 默认单次验证，显式 --mode ranked 使用 B2 有界批次，运行方式见 A1/A2/A3/B1/B2 记录。
 
 | 阶段 | 交付与退出条件 |
 |---|---|

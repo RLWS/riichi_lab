@@ -30,7 +30,7 @@ def distribution(values):
     }
 
 
-def review_session(directory):
+def review_session(directory, *, require_validation=True):
     directory = Path(directory)
     summary = json.loads((directory / "summary.json").read_text(encoding="utf-8"))
     path = directory / "session.jsonl"
@@ -76,11 +76,16 @@ def review_session(directory):
         if rid in acks and "elapsed_ms" in acks[rid]
     ]
     result = summary.get("validation_result")
-    if (
-        not terminal
-        or terminal[-1] != result
-        or not any(m["type"] == "end_game" for m in terminal[:-1])
-    ):
+    terminal_ok = (
+        (
+            bool(terminal)
+            and terminal[-1] == result
+            and any(m["type"] == "end_game" for m in terminal[:-1])
+        )
+        if require_validation
+        else (bool(terminal) and terminal[-1]["type"] == "end_game" and result is None)
+    )
+    if not terminal_ok:
         errors.append("missing_or_conflicting_terminal_evidence")
     roundtrips = 0
     for rid, request in requests.items():
@@ -95,15 +100,17 @@ def review_session(directory):
         except Exception:
             errors.append(f"observation_decode_error:{rid}")
     accepted = bool(
-        result
-        and result.get("passed") is True
+        (not require_validation or (result and result.get("passed") is True))
         and summary["completed"]
+        and summary["state"] == "Closed"
         and not summary["faults"]
         and not errors
         and requests
     )
     return {
-        "b1_protocol_passed": accepted,
+        "b1_protocol_passed": accepted if require_validation else False,
+        "protocol_passed": accepted,
+        "mode": "validate" if require_validation else "ranked",
         "validation_result": result,
         "session_state": summary["state"],
         "faults": summary["faults"],
@@ -131,6 +138,19 @@ def review_session(directory):
             if rid in requests
         ),
         "bank_consumed_ms": sum(a.get("bank_consumed_ms", 0) for a in acks.values()),
+        "minimum_ack_bank_ms": min(
+            (a["bank_ms"] for a in acks.values() if "bank_ms" in a), default=None
+        ),
+        "minimum_deadline_margin_ms": min(
+            (
+                requests[rid]["time"]["deadline_ms"] - a["elapsed_ms"]
+                for rid, a in acks.items()
+                if rid in requests
+                and "deadline_ms" in requests[rid]["time"]
+                and "elapsed_ms" in a
+            ),
+            default=None,
+        ),
         "slowest_requests": [
             {
                 "request_id": rid,

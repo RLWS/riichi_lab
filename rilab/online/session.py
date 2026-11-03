@@ -67,6 +67,7 @@ class OnlineSession:
         log_limit=100000,
         log_byte_limit=64 * 1024 * 1024,
         secrets=(),
+        start_timeout_seconds=None,
     ):
         for value in (
             send_reserve_seconds,
@@ -98,6 +99,11 @@ class OnlineSession:
         self.completed = False
         self.end_seen = False
         self.finish_deadline = None
+        if start_timeout_seconds is not None and (
+            not math.isfinite(start_timeout_seconds) or start_timeout_seconds <= 0
+        ):
+            raise ValueError("start timeout must be positive")
+        self.start_timeout = start_timeout_seconds
 
     def redact(self, value):
         if isinstance(value, dict):
@@ -152,7 +158,7 @@ class OnlineSession:
         disconnect_reason = None
         try:
             async for raw in ws:
-                received = time.monotonic()
+                received = time.perf_counter()
                 if not isinstance(raw, str):
                     continue  # Protocol ignores binary frames.
                 try:
@@ -176,7 +182,7 @@ class OnlineSession:
             # Queue may be full. Owner also observes receiver completion.
             if not self.queue.full():
                 self.queue.put_nowait(
-                    ("disconnect", disconnect_reason, time.monotonic())
+                    ("disconnect", disconnect_reason, time.perf_counter())
                 )
 
     async def infer(self, request):
@@ -188,7 +194,7 @@ class OnlineSession:
             binding = resolve_selection(result["selected_action"], list(p.bindings))
             index = next(i for i, b in enumerate(p.bindings) if b is binding)
             await self.queue.put(
-                ("prediction", (request.request_id, index, result), time.monotonic())
+                ("prediction", (request.request_id, index, result), time.perf_counter())
             )
         except asyncio.CancelledError:
             return
@@ -197,18 +203,18 @@ class OnlineSession:
                 (
                     "prediction_error",
                     (request.request_id, type(exc).__name__),
-                    time.monotonic(),
+                    time.perf_counter(),
                 )
             )
 
     async def timer(self, request):
-        await asyncio.sleep(max(0, request.budget.target - time.monotonic()))
-        await self.queue.put(("timeout", request.request_id, time.monotonic()))
+        await asyncio.sleep(max(0, request.budget.target - time.perf_counter()))
+        await self.queue.put(("timeout", request.request_id, time.perf_counter()))
 
     async def reply(self, ws, request, index, *, fallback=False, reason=None):
         if request.ended or request.sent or self.state != SessionState.Playing:
             return
-        if index is None or time.monotonic() >= request.budget.deadline:
+        if index is None or time.perf_counter() >= request.budget.deadline:
             self.end_request(request)
             self.policy.clear()
             if index is None:
@@ -222,7 +228,7 @@ class OnlineSession:
         action = dict(request.prepared.wires[index], request_id=request.request_id)
         # Mark before awaiting I/O: a partial/failed send is never retried.
         request.sent, request.sent_index = True, index
-        remaining = request.budget.deadline - time.monotonic()
+        remaining = request.budget.deadline - time.perf_counter()
         async with asyncio.timeout(remaining):
             await ws.send(json.dumps(action))
         self.end_request(request)
@@ -232,7 +238,7 @@ class OnlineSession:
             action=action,
             fallback=fallback,
             reason=reason,
-            elapsed_seconds=time.monotonic() - request.received,
+            elapsed_seconds=time.perf_counter() - request.received,
         )
 
     async def request(self, ws, message, received):
@@ -262,13 +268,25 @@ class OnlineSession:
         self.record(
             "prepared",
             request_id=rid,
+            task=p.task,
+            hand_id=p.hand_id,
+            new_events=json.loads(p.events_json),
             state=json.loads(p.state_json),
             candidates=json.loads(p.candidates_json),
+            bindings=[
+                {
+                    "candidate": b.candidate,
+                    "engine_action": b.action.to_dict(),
+                    "riichi_tile": b.riichi_tile,
+                }
+                for b in p.bindings
+            ],
+            forced_riichi_discard=p.forced_index is not None,
             budget=message["time"],
         )
         if p.forced_index is not None:
             await self.reply(ws, request, p.forced_index)
-        elif time.monotonic() >= request.budget.target:
+        elif time.perf_counter() >= request.budget.target:
             await self.reply(
                 ws,
                 request,
@@ -332,7 +350,7 @@ class OnlineSession:
             self.policy.clear()
             for r in self.requests.values():
                 self.end_request(r)
-            self.finish_deadline = time.monotonic() + self.finish_timeout
+            self.finish_deadline = time.perf_counter() + self.finish_timeout
             if not self.validation:
                 self.completed = True
                 self.state = SessionState.Closed
@@ -372,20 +390,36 @@ class OnlineSession:
 
     async def run(self, ws):
         receiver = self.spawn(self.receive(ws))
+        start_deadline = (
+            None
+            if self.start_timeout is None
+            else time.perf_counter() + self.start_timeout
+        )
         try:
             while self.state not in (SessionState.Closed, SessionState.Disconnected):
                 timeout = (
                     None
                     if self.finish_deadline is None
-                    else max(0, self.finish_deadline - time.monotonic())
+                    else max(0, self.finish_deadline - time.perf_counter())
                 )
+                if self.state == SessionState.Connecting and start_deadline is not None:
+                    timeout = max(0, start_deadline - time.perf_counter())
                 try:
                     kind, payload, received = await asyncio.wait_for(
                         self.queue.get(), timeout
                     )
                 except TimeoutError:
-                    self.fault("validation_result_timeout")
-                    self.state = SessionState.Closed
+                    waiting_start = self.state == SessionState.Connecting
+                    self.fault(
+                        "matchmaking_timeout"
+                        if waiting_start
+                        else "validation_result_timeout"
+                    )
+                    self.state = (
+                        SessionState.Disconnected
+                        if waiting_start
+                        else SessionState.Closed
+                    )
                     break
                 if kind == "disconnect":
                     if self.end_seen and payload is None:
@@ -404,10 +438,14 @@ class OnlineSession:
                 elif kind in ("prediction", "prediction_error", "timeout"):
                     rid = payload if kind == "timeout" else payload[0]
                     r = self.requests[rid]
+                    if kind == "prediction_error":
+                        self.record(
+                            "inference_failure", request_id=rid, error_type=payload[1]
+                        )
                     if r.ended or r.sent or self.faults:
                         self.record("late_result_ignored", request_id=rid)
                         continue
-                    if kind == "prediction" and time.monotonic() < r.budget.target:
+                    if kind == "prediction" and time.perf_counter() < r.budget.target:
                         self.record("prediction", request_id=rid, result=payload[2])
                         await self.reply(ws, r, payload[1])
                     else:
