@@ -1,0 +1,37 @@
+# Template only. Not registered, not an authorization to launch games.
+status: draft
+purpose: formal_strength_experiment
+comparison:
+  candidate: v1_3_0
+  baseline: v1_2_0
+  estimand: complete_deployed_policies_including_calibration
+design:
+  primary: candidate_vs_baseline_and_baseline_control_cyclic4
+  supplementary: two_vs_two_unique6_separate_report
+  cluster: seed_with_all_rotations
+  excluded_engineering_or_calibration_seeds: [1, 2, 3, 4, 5, 6, 7, 8]
+  final_seeds: []
+  target_seed_clusters: null
+  half_game_budget: null  # Must equal 14 * target_seed_clusters for the example design.
+decision:
+  primary_metric: mean_rank_difference_candidate_minus_control
+  minimum_meaningful_rank_gain: null
+  last_place_rate_guardrail: null
+  confidence_level: 0.95
+  bootstrap_iterations: 10000
+  bootstrap_rng_seed: 20261103
+stopping:
+  rule: fixed_complete_seed_budget_no_optional_stopping
+  on_runtime_failure: invalidate_whole_run_and_stop_new_games
+  no_peeking_to_change_budget_or_models: true
+frozen_deployment:
+  # Complete tag/commit/profile/weight hashes and effective service calibration
+  # must be sealed with the final arena config before new outcomes are observed.
+  arena_config_sha256: null
+  deployment_manifest_sha256: null
+registration:
+  registered_before_run: false
+  registered_at: null
+  protocol_sha256: null
+  # A4 tool acceptance currently supports exploratory reports only. Formal
+  # protocol sealing/eligibility will be implemented with the separately agreed run.

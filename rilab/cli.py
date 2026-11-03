@@ -77,7 +77,10 @@ def cmd_selfplay(args: argparse.Namespace) -> int:
         summary = run_batch(config, args.output_dir)
     else:
         summary = run_single_game(
-            config, seed=args.seed, seats=args.seats.split(","), output_dir=args.output_dir
+            config,
+            seed=args.seed,
+            seats=args.seats.split(","),
+            output_dir=args.output_dir,
         )
     json.dump(summary, sys.stdout, indent=2)
     sys.stdout.write("\n")
@@ -93,6 +96,28 @@ def cmd_parity(args: argparse.Namespace) -> int:
     report = run_parity(args.config, args.output_dir)
     print(json.dumps({"valid": report["valid"], "output_dir": args.output_dir}))
     return 0 if report["valid"] else 1
+
+
+def cmd_evaluate(args: argparse.Namespace) -> int:
+    from rilab.evaluation import evaluate_run
+
+    report = evaluate_run(
+        args.run_dir,
+        args.output_dir,
+        iterations=args.iterations,
+        rng_seed=args.bootstrap_seed,
+    )
+    print(
+        json.dumps(
+            {
+                "valid": report["valid"],
+                "analysis_kind": report["analysis_kind"],
+                "strength_verdict": report["strength_verdict"],
+                "output_dir": args.output_dir,
+            }
+        )
+    )
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -119,6 +144,15 @@ def main(argv: list[str] | None = None) -> int:
     p_selfplay.add_argument("--seats", help="four comma-separated backend IDs")
     p_selfplay.add_argument("--output-dir", help="new artifact directory")
     p_selfplay.set_defaults(func=cmd_selfplay)
+
+    p_evaluate = sub.add_parser(
+        "arena-evaluate", help="A4 配对种子簇统计（探索性报告）"
+    )
+    p_evaluate.add_argument("--run-dir", required=True)
+    p_evaluate.add_argument("--output-dir", required=True, help="new report directory")
+    p_evaluate.add_argument("--iterations", type=int, default=10000)
+    p_evaluate.add_argument("--bootstrap-seed", type=int, default=20261103)
+    p_evaluate.set_defaults(func=cmd_evaluate)
 
     p_online = sub.add_parser("arena-online", help="riichi.dev 在线对局（B1）")
     p_online.add_argument("--config", default="configs/arena_online.yaml")

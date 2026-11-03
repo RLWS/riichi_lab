@@ -1,0 +1,1924 @@
+{
+  "stage": "A4_statistical_tools_only",
+  "valid": true,
+  "formal_strength_experiment_started": false,
+  "tests_passed": 84,
+  "bootstrap_and_source_replay_checks": {
+    "primary": true,
+    "supplementary": true,
+    "per_seed_primary_counts": true,
+    "focal_observations": true,
+    "implementation": true,
+    "counting_conventions": true
+  },
+  "exploratory_report": {
+    "stage": "A4",
+    "valid": true,
+    "analysis_kind": "exploratory",
+    "strength_verdict": "insufficient_evidence",
+    "ineligibility_reasons": [
+      "A3 engineering seeds were already observed; not a preregistered independent strength experiment"
+    ],
+    "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "seed_clusters": 8,
+    "source_games": 112,
+    "primary_focal_games": 64,
+    "comparison": {
+      "candidate": "v1_3_0",
+      "control": "v1_2_0",
+      "paired_group": "upgrade",
+      "estimand": "complete deployed policies, including different calibration settings"
+    },
+    "bootstrap": {
+      "method": "paired seed-cluster percentile; ratio-of-sums recomputed per draw",
+      "iterations": 10000,
+      "rng_seed": 20261103,
+      "confidence_level": 0.95,
+      "interval_scope": "marginal descriptive intervals, not simultaneous promotion tests",
+      "independent_units": "seeds; all four rotations in both arms resampled together"
+    },
+    "counting_conventions": {
+      "hands": "actor-hand exposures; all start_kyoku including abortive draws",
+      "wins": "each winner once per hand; multiple ron credits each winner",
+      "deal_ins": "payer once per hand regardless of the number of ron winners; tsumo is not a deal-in",
+      "riichi_rate": "accepted riichi hands / actor-hand exposures; declaration rate reported separately",
+      "call_rate": "hands with chi/pon/daiminkan / actor-hand exposures; repeated calls count once, ankan alone does not count",
+      "points_and_ranks": "integer final points and authoritative engine ranks; no re-ranking of ties",
+      "rates": "ratio of pooled numerators and denominators, recomputed jointly per seed-cluster bootstrap draw",
+      "replays": "analyze separately for reproducibility; never pool repeated runs as independent samples"
+    },
+    "implementation": {
+      "python": "3.11.5",
+      "evaluation_py_sha256": "e41a24e1136654df09915184e1cbdd264faa73453f4e1ecd1a8fd8c71974c62d"
+    },
+    "primary": {
+      "mean_rank": {
+        "candidate": {
+          "numerator": 78,
+          "denominator": 32,
+          "value": 2.4375
+        },
+        "control": {
+          "numerator": 80,
+          "denominator": 32,
+          "value": 2.5
+        },
+        "difference": -0.0625,
+        "ci95": [
+          -0.1875,
+          0.09375
+        ],
+        "direction": "lower_is_better"
+      },
+      "last_place_rate": {
+        "candidate": {
+          "numerator": 6,
+          "denominator": 32,
+          "value": 0.1875
+        },
+        "control": {
+          "numerator": 8,
+          "denominator": 32,
+          "value": 0.25
+        },
+        "difference": -0.0625,
+        "ci95": [
+          -0.1875,
+          0.0625
+        ],
+        "direction": "lower_is_better"
+      },
+      "mean_final_points": {
+        "candidate": {
+          "numerator": 778100,
+          "denominator": 32,
+          "value": 24315.625
+        },
+        "control": {
+          "numerator": 800000,
+          "denominator": 32,
+          "value": 25000.0
+        },
+        "difference": -684.375,
+        "ci95": [
+          -2481.25,
+          1115.625
+        ],
+        "direction": "higher_is_better"
+      },
+      "win_rate": {
+        "candidate": {
+          "numerator": 53,
+          "denominator": 275,
+          "value": 0.19272727272727272
+        },
+        "control": {
+          "numerator": 66,
+          "denominator": 320,
+          "value": 0.20625
+        },
+        "difference": -0.01352272727272727,
+        "ci95": [
+          -0.025925566970343095,
+          -0.002362707535121328
+        ],
+        "direction": "higher_is_better"
+      },
+      "deal_in_rate": {
+        "candidate": {
+          "numerator": 43,
+          "denominator": 275,
+          "value": 0.15636363636363637
+        },
+        "control": {
+          "numerator": 45,
+          "denominator": 320,
+          "value": 0.140625
+        },
+        "difference": 0.01573863636363637,
+        "ci95": [
+          -0.020180562931492285,
+          0.05584858498559567
+        ],
+        "direction": "lower_is_better"
+      },
+      "riichi_rate": {
+        "candidate": {
+          "numerator": 71,
+          "denominator": 275,
+          "value": 0.2581818181818182
+        },
+        "control": {
+          "numerator": 87,
+          "denominator": 320,
+          "value": 0.271875
+        },
+        "difference": -0.013693181818181799,
+        "ci95": [
+          -0.07445779405489969,
+          0.03219592735277932
+        ],
+        "direction": "descriptive_only"
+      },
+      "riichi_declaration_rate": {
+        "candidate": {
+          "numerator": 77,
+          "denominator": 275,
+          "value": 0.28
+        },
+        "control": {
+          "numerator": 93,
+          "denominator": 320,
+          "value": 0.290625
+        },
+        "difference": -0.010624999999999996,
+        "ci95": [
+          -0.07120384052489946,
+          0.034769855595667865
+        ],
+        "direction": "descriptive_only"
+      },
+      "call_rate": {
+        "candidate": {
+          "numerator": 73,
+          "denominator": 275,
+          "value": 0.26545454545454544
+        },
+        "control": {
+          "numerator": 69,
+          "denominator": 320,
+          "value": 0.215625
+        },
+        "difference": 0.04982954545454543,
+        "ci95": [
+          0.0212643618740671,
+          0.07987213611244978
+        ],
+        "direction": "descriptive_only"
+      }
+    },
+    "supplementary": {
+      "two_vs_two": {
+        "design": "two_vs_two_same_table_seed_cluster; no team outcomes",
+        "seed_clusters": 8,
+        "metrics": {
+          "mean_rank": {
+            "candidate": {
+              "numerator": 249,
+              "denominator": 96,
+              "value": 2.59375
+            },
+            "control": {
+              "numerator": 231,
+              "denominator": 96,
+              "value": 2.40625
+            },
+            "difference": 0.1875,
+            "ci95": [
+              0.0,
+              0.4375
+            ],
+            "direction": "lower_is_better"
+          },
+          "last_place_rate": {
+            "candidate": {
+              "numerator": 24,
+              "denominator": 96,
+              "value": 0.25
+            },
+            "control": {
+              "numerator": 24,
+              "denominator": 96,
+              "value": 0.25
+            },
+            "difference": 0.0,
+            "ci95": [
+              -0.10416666666666666,
+              0.125
+            ],
+            "direction": "lower_is_better"
+          },
+          "mean_final_points": {
+            "candidate": {
+              "numerator": 2245100,
+              "denominator": 96,
+              "value": 23386.458333333332
+            },
+            "control": {
+              "numerator": 2554900,
+              "denominator": 96,
+              "value": 26613.541666666668
+            },
+            "difference": -3227.0833333333358,
+            "ci95": [
+              -6466.666666666664,
+              -85.41666666666424
+            ],
+            "direction": "higher_is_better"
+          },
+          "win_rate": {
+            "candidate": {
+              "numerator": 178,
+              "denominator": 896,
+              "value": 0.19866071428571427
+            },
+            "control": {
+              "numerator": 209,
+              "denominator": 896,
+              "value": 0.23325892857142858
+            },
+            "difference": -0.0345982142857143,
+            "ci95": [
+              -0.061364143668831174,
+              -0.005813953488372103
+            ],
+            "direction": "higher_is_better"
+          },
+          "deal_in_rate": {
+            "candidate": {
+              "numerator": 136,
+              "denominator": 896,
+              "value": 0.15178571428571427
+            },
+            "control": {
+              "numerator": 141,
+              "denominator": 896,
+              "value": 0.15736607142857142
+            },
+            "difference": -0.005580357142857151,
+            "ci95": [
+              -0.016629711751662973,
+              0.004474272930648782
+            ],
+            "direction": "lower_is_better"
+          },
+          "riichi_rate": {
+            "candidate": {
+              "numerator": 244,
+              "denominator": 896,
+              "value": 0.27232142857142855
+            },
+            "control": {
+              "numerator": 259,
+              "denominator": 896,
+              "value": 0.2890625
+            },
+            "difference": -0.016741071428571452,
+            "ci95": [
+              -0.03666792656587474,
+              0.005683450888192293
+            ],
+            "direction": "descriptive_only"
+          },
+          "riichi_declaration_rate": {
+            "candidate": {
+              "numerator": 264,
+              "denominator": 896,
+              "value": 0.29464285714285715
+            },
+            "control": {
+              "numerator": 276,
+              "denominator": 896,
+              "value": 0.3080357142857143
+            },
+            "difference": -0.01339285714285715,
+            "ci95": [
+              -0.03177966101694912,
+              0.010538641686182681
+            ],
+            "direction": "descriptive_only"
+          },
+          "call_rate": {
+            "candidate": {
+              "numerator": 213,
+              "denominator": 896,
+              "value": 0.23772321428571427
+            },
+            "control": {
+              "numerator": 211,
+              "denominator": 896,
+              "value": 0.23549107142857142
+            },
+            "difference": 0.002232142857142849,
+            "ci95": [
+              -0.024154589371980673,
+              0.028153153153153143
+            ],
+            "direction": "descriptive_only"
+          }
+        }
+      }
+    },
+    "per_seed_primary_counts": [
+      {
+        "seed": 1,
+        "candidate": {
+          "called_hands": 10,
+          "deal_ins": 3,
+          "games": 4,
+          "hands": 29,
+          "last_places": 1,
+          "point_sum": 86000,
+          "rank_sum": 11,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 5
+        },
+        "control": {
+          "called_hands": 10,
+          "deal_ins": 7,
+          "games": 4,
+          "hands": 44,
+          "last_places": 1,
+          "point_sum": 100000,
+          "rank_sum": 10,
+          "riichi_accepted": 14,
+          "riichi_declared": 14,
+          "wins": 9
+        }
+      },
+      {
+        "seed": 2,
+        "candidate": {
+          "called_hands": 11,
+          "deal_ins": 9,
+          "games": 4,
+          "hands": 38,
+          "last_places": 1,
+          "point_sum": 102600,
+          "rank_sum": 10,
+          "riichi_accepted": 8,
+          "riichi_declared": 9,
+          "wins": 8
+        },
+        "control": {
+          "called_hands": 9,
+          "deal_ins": 6,
+          "games": 4,
+          "hands": 40,
+          "last_places": 1,
+          "point_sum": 100000,
+          "rank_sum": 10,
+          "riichi_accepted": 10,
+          "riichi_declared": 10,
+          "wins": 9
+        }
+      },
+      {
+        "seed": 3,
+        "candidate": {
+          "called_hands": 8,
+          "deal_ins": 8,
+          "games": 4,
+          "hands": 32,
+          "last_places": 1,
+          "point_sum": 90700,
+          "rank_sum": 9,
+          "riichi_accepted": 10,
+          "riichi_declared": 10,
+          "wins": 7
+        },
+        "control": {
+          "called_hands": 13,
+          "deal_ins": 7,
+          "games": 4,
+          "hands": 52,
+          "last_places": 1,
+          "point_sum": 100000,
+          "rank_sum": 10,
+          "riichi_accepted": 13,
+          "riichi_declared": 14,
+          "wins": 11
+        }
+      },
+      {
+        "seed": 4,
+        "candidate": {
+          "called_hands": 8,
+          "deal_ins": 5,
+          "games": 4,
+          "hands": 33,
+          "last_places": 0,
+          "point_sum": 112500,
+          "rank_sum": 9,
+          "riichi_accepted": 8,
+          "riichi_declared": 8,
+          "wins": 6
+        },
+        "control": {
+          "called_hands": 12,
+          "deal_ins": 7,
+          "games": 4,
+          "hands": 48,
+          "last_places": 1,
+          "point_sum": 100000,
+          "rank_sum": 10,
+          "riichi_accepted": 12,
+          "riichi_declared": 13,
+          "wins": 10
+        }
+      },
+      {
+        "seed": 5,
+        "candidate": {
+          "called_hands": 8,
+          "deal_ins": 4,
+          "games": 4,
+          "hands": 35,
+          "last_places": 1,
+          "point_sum": 99600,
+          "rank_sum": 9,
+          "riichi_accepted": 12,
+          "riichi_declared": 13,
+          "wins": 8
+        },
+        "control": {
+          "called_hands": 5,
+          "deal_ins": 5,
+          "games": 4,
+          "hands": 36,
+          "last_places": 1,
+          "point_sum": 100000,
+          "rank_sum": 10,
+          "riichi_accepted": 11,
+          "riichi_declared": 12,
+          "wins": 8
+        }
+      },
+      {
+        "seed": 6,
+        "candidate": {
+          "called_hands": 7,
+          "deal_ins": 5,
+          "games": 4,
+          "hands": 34,
+          "last_places": 2,
+          "point_sum": 110200,
+          "rank_sum": 11,
+          "riichi_accepted": 11,
+          "riichi_declared": 11,
+          "wins": 5
+        },
+        "control": {
+          "called_hands": 5,
+          "deal_ins": 5,
+          "games": 4,
+          "hands": 32,
+          "last_places": 1,
+          "point_sum": 100000,
+          "rank_sum": 10,
+          "riichi_accepted": 10,
+          "riichi_declared": 11,
+          "wins": 6
+        }
+      },
+      {
+        "seed": 7,
+        "candidate": {
+          "called_hands": 11,
+          "deal_ins": 5,
+          "games": 4,
+          "hands": 38,
+          "last_places": 0,
+          "point_sum": 80400,
+          "rank_sum": 10,
+          "riichi_accepted": 9,
+          "riichi_declared": 11,
+          "wins": 7
+        },
+        "control": {
+          "called_hands": 6,
+          "deal_ins": 5,
+          "games": 4,
+          "hands": 32,
+          "last_places": 1,
+          "point_sum": 100000,
+          "rank_sum": 10,
+          "riichi_accepted": 9,
+          "riichi_declared": 10,
+          "wins": 6
+        }
+      },
+      {
+        "seed": 8,
+        "candidate": {
+          "called_hands": 10,
+          "deal_ins": 4,
+          "games": 4,
+          "hands": 36,
+          "last_places": 0,
+          "point_sum": 96100,
+          "rank_sum": 9,
+          "riichi_accepted": 10,
+          "riichi_declared": 12,
+          "wins": 7
+        },
+        "control": {
+          "called_hands": 9,
+          "deal_ins": 3,
+          "games": 4,
+          "hands": 36,
+          "last_places": 1,
+          "point_sum": 100000,
+          "rank_sum": 10,
+          "riichi_accepted": 8,
+          "riichi_declared": 9,
+          "wins": 7
+        }
+      }
+    ],
+    "focal_observations": [
+      {
+        "game_id": "g00000",
+        "seed": 1,
+        "rotation": 0,
+        "label": "candidate",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 4,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 10,
+          "last_places": 0,
+          "point_sum": 25100,
+          "rank_sum": 2,
+          "riichi_accepted": 0,
+          "riichi_declared": 0,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00001",
+        "seed": 1,
+        "rotation": 1,
+        "label": "candidate",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 4,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 10,
+          "last_places": 0,
+          "point_sum": 40100,
+          "rank_sum": 2,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00002",
+        "seed": 1,
+        "rotation": 2,
+        "label": "candidate",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 3,
+          "games": 1,
+          "hands": 6,
+          "last_places": 1,
+          "point_sum": -1200,
+          "rank_sum": 4,
+          "riichi_accepted": 1,
+          "riichi_declared": 1,
+          "wins": 0
+        }
+      },
+      {
+        "game_id": "g00003",
+        "seed": 1,
+        "rotation": 3,
+        "label": "candidate",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 3,
+          "last_places": 0,
+          "point_sum": 22000,
+          "rank_sum": 3,
+          "riichi_accepted": 0,
+          "riichi_declared": 0,
+          "wins": 0
+        }
+      },
+      {
+        "game_id": "g00004",
+        "seed": 1,
+        "rotation": 0,
+        "label": "control",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 11,
+          "last_places": 0,
+          "point_sum": 30600,
+          "rank_sum": 2,
+          "riichi_accepted": 4,
+          "riichi_declared": 4,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00005",
+        "seed": 1,
+        "rotation": 1,
+        "label": "control",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 5,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 11,
+          "last_places": 0,
+          "point_sum": 34600,
+          "rank_sum": 1,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00006",
+        "seed": 1,
+        "rotation": 2,
+        "label": "control",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 11,
+          "last_places": 1,
+          "point_sum": 4200,
+          "rank_sum": 4,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 0
+        }
+      },
+      {
+        "game_id": "g00007",
+        "seed": 1,
+        "rotation": 3,
+        "label": "control",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 3,
+          "games": 1,
+          "hands": 11,
+          "last_places": 0,
+          "point_sum": 30600,
+          "rank_sum": 3,
+          "riichi_accepted": 4,
+          "riichi_declared": 4,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00014",
+        "seed": 2,
+        "rotation": 0,
+        "label": "candidate",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 35000,
+          "rank_sum": 1,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00015",
+        "seed": 2,
+        "rotation": 1,
+        "label": "candidate",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 24900,
+          "rank_sum": 3,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00016",
+        "seed": 2,
+        "rotation": 2,
+        "label": "candidate",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 10,
+          "last_places": 0,
+          "point_sum": 37100,
+          "rank_sum": 2,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00017",
+        "seed": 2,
+        "rotation": 3,
+        "label": "candidate",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 4,
+          "games": 1,
+          "hands": 10,
+          "last_places": 1,
+          "point_sum": 5600,
+          "rank_sum": 4,
+          "riichi_accepted": 1,
+          "riichi_declared": 2,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00018",
+        "seed": 2,
+        "rotation": 0,
+        "label": "control",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 10,
+          "last_places": 0,
+          "point_sum": 34800,
+          "rank_sum": 2,
+          "riichi_accepted": 1,
+          "riichi_declared": 1,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00019",
+        "seed": 2,
+        "rotation": 1,
+        "label": "control",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 10,
+          "last_places": 0,
+          "point_sum": 26900,
+          "rank_sum": 3,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00020",
+        "seed": 2,
+        "rotation": 2,
+        "label": "control",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 10,
+          "last_places": 0,
+          "point_sum": 39400,
+          "rank_sum": 1,
+          "riichi_accepted": 5,
+          "riichi_declared": 5,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00021",
+        "seed": 2,
+        "rotation": 3,
+        "label": "control",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 4,
+          "games": 1,
+          "hands": 10,
+          "last_places": 1,
+          "point_sum": -1100,
+          "rank_sum": 4,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00028",
+        "seed": 3,
+        "rotation": 0,
+        "label": "candidate",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 8,
+          "last_places": 0,
+          "point_sum": 44800,
+          "rank_sum": 1,
+          "riichi_accepted": 4,
+          "riichi_declared": 4,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00029",
+        "seed": 3,
+        "rotation": 1,
+        "label": "candidate",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 12,
+          "last_places": 0,
+          "point_sum": 25900,
+          "rank_sum": 2,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00030",
+        "seed": 3,
+        "rotation": 2,
+        "label": "candidate",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 3,
+          "last_places": 1,
+          "point_sum": -2000,
+          "rank_sum": 4,
+          "riichi_accepted": 1,
+          "riichi_declared": 1,
+          "wins": 0
+        }
+      },
+      {
+        "game_id": "g00031",
+        "seed": 3,
+        "rotation": 3,
+        "label": "candidate",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 4,
+          "deal_ins": 3,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 22000,
+          "rank_sum": 2,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00032",
+        "seed": 3,
+        "rotation": 0,
+        "label": "control",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 13,
+          "last_places": 0,
+          "point_sum": 59800,
+          "rank_sum": 1,
+          "riichi_accepted": 6,
+          "riichi_declared": 6,
+          "wins": 5
+        }
+      },
+      {
+        "game_id": "g00033",
+        "seed": 3,
+        "rotation": 1,
+        "label": "control",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 4,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 13,
+          "last_places": 1,
+          "point_sum": 8500,
+          "rank_sum": 4,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00034",
+        "seed": 3,
+        "rotation": 2,
+        "label": "control",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 4,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 13,
+          "last_places": 0,
+          "point_sum": 15800,
+          "rank_sum": 3,
+          "riichi_accepted": 2,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00035",
+        "seed": 3,
+        "rotation": 3,
+        "label": "control",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 4,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 13,
+          "last_places": 0,
+          "point_sum": 15900,
+          "rank_sum": 2,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00042",
+        "seed": 4,
+        "rotation": 0,
+        "label": "candidate",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 7,
+          "last_places": 0,
+          "point_sum": 40600,
+          "rank_sum": 1,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00043",
+        "seed": 4,
+        "rotation": 1,
+        "label": "candidate",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 11,
+          "last_places": 0,
+          "point_sum": 18900,
+          "rank_sum": 3,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00044",
+        "seed": 4,
+        "rotation": 2,
+        "label": "candidate",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 3,
+          "last_places": 0,
+          "point_sum": 34300,
+          "rank_sum": 2,
+          "riichi_accepted": 0,
+          "riichi_declared": 0,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00045",
+        "seed": 4,
+        "rotation": 3,
+        "label": "candidate",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 12,
+          "last_places": 0,
+          "point_sum": 18700,
+          "rank_sum": 3,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00046",
+        "seed": 4,
+        "rotation": 0,
+        "label": "control",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 12,
+          "last_places": 0,
+          "point_sum": 47600,
+          "rank_sum": 1,
+          "riichi_accepted": 5,
+          "riichi_declared": 5,
+          "wins": 4
+        }
+      },
+      {
+        "game_id": "g00047",
+        "seed": 4,
+        "rotation": 1,
+        "label": "control",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 4,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 12,
+          "last_places": 1,
+          "point_sum": 10400,
+          "rank_sum": 4,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00048",
+        "seed": 4,
+        "rotation": 2,
+        "label": "control",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 4,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 12,
+          "last_places": 0,
+          "point_sum": 25100,
+          "rank_sum": 2,
+          "riichi_accepted": 2,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00049",
+        "seed": 4,
+        "rotation": 3,
+        "label": "control",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 12,
+          "last_places": 0,
+          "point_sum": 16900,
+          "rank_sum": 3,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00056",
+        "seed": 5,
+        "rotation": 0,
+        "label": "candidate",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 11,
+          "last_places": 0,
+          "point_sum": 29000,
+          "rank_sum": 2,
+          "riichi_accepted": 4,
+          "riichi_declared": 4,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00057",
+        "seed": 5,
+        "rotation": 1,
+        "label": "candidate",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 9,
+          "last_places": 1,
+          "point_sum": -300,
+          "rank_sum": 4,
+          "riichi_accepted": 3,
+          "riichi_declared": 4,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00058",
+        "seed": 5,
+        "rotation": 2,
+        "label": "candidate",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 5,
+          "last_places": 0,
+          "point_sum": 32200,
+          "rank_sum": 2,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00059",
+        "seed": 5,
+        "rotation": 3,
+        "label": "candidate",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 10,
+          "last_places": 0,
+          "point_sum": 38700,
+          "rank_sum": 1,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00060",
+        "seed": 5,
+        "rotation": 0,
+        "label": "control",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 22900,
+          "rank_sum": 3,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00061",
+        "seed": 5,
+        "rotation": 1,
+        "label": "control",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 3,
+          "games": 1,
+          "hands": 9,
+          "last_places": 1,
+          "point_sum": 9300,
+          "rank_sum": 4,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00062",
+        "seed": 5,
+        "rotation": 2,
+        "label": "control",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 38400,
+          "rank_sum": 1,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00063",
+        "seed": 5,
+        "rotation": 3,
+        "label": "control",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 29400,
+          "rank_sum": 2,
+          "riichi_accepted": 3,
+          "riichi_declared": 4,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00070",
+        "seed": 6,
+        "rotation": 0,
+        "label": "candidate",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 9,
+          "last_places": 1,
+          "point_sum": 15400,
+          "rank_sum": 4,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 0
+        }
+      },
+      {
+        "game_id": "g00071",
+        "seed": 6,
+        "rotation": 1,
+        "label": "candidate",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 3,
+          "games": 1,
+          "hands": 8,
+          "last_places": 1,
+          "point_sum": 20700,
+          "rank_sum": 4,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00072",
+        "seed": 6,
+        "rotation": 2,
+        "label": "candidate",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 8,
+          "last_places": 0,
+          "point_sum": 29900,
+          "rank_sum": 2,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00073",
+        "seed": 6,
+        "rotation": 3,
+        "label": "candidate",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 44200,
+          "rank_sum": 1,
+          "riichi_accepted": 4,
+          "riichi_declared": 4,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00074",
+        "seed": 6,
+        "rotation": 0,
+        "label": "control",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 8,
+          "last_places": 1,
+          "point_sum": 13900,
+          "rank_sum": 4,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00075",
+        "seed": 6,
+        "rotation": 1,
+        "label": "control",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 8,
+          "last_places": 0,
+          "point_sum": 25900,
+          "rank_sum": 3,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00076",
+        "seed": 6,
+        "rotation": 2,
+        "label": "control",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 8,
+          "last_places": 0,
+          "point_sum": 31000,
+          "rank_sum": 1,
+          "riichi_accepted": 1,
+          "riichi_declared": 1,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00077",
+        "seed": 6,
+        "rotation": 3,
+        "label": "control",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 8,
+          "last_places": 0,
+          "point_sum": 29200,
+          "rank_sum": 2,
+          "riichi_accepted": 3,
+          "riichi_declared": 4,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00084",
+        "seed": 7,
+        "rotation": 0,
+        "label": "candidate",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 4,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 10,
+          "last_places": 0,
+          "point_sum": 17300,
+          "rank_sum": 3,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00085",
+        "seed": 7,
+        "rotation": 1,
+        "label": "candidate",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 10,
+          "last_places": 0,
+          "point_sum": 31100,
+          "rank_sum": 1,
+          "riichi_accepted": 1,
+          "riichi_declared": 1,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00086",
+        "seed": 7,
+        "rotation": 2,
+        "label": "candidate",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 16300,
+          "rank_sum": 3,
+          "riichi_accepted": 4,
+          "riichi_declared": 6,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00087",
+        "seed": 7,
+        "rotation": 3,
+        "label": "candidate",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 15700,
+          "rank_sum": 3,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00088",
+        "seed": 7,
+        "rotation": 0,
+        "label": "control",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 3,
+          "games": 1,
+          "hands": 8,
+          "last_places": 1,
+          "point_sum": 17000,
+          "rank_sum": 4,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00089",
+        "seed": 7,
+        "rotation": 1,
+        "label": "control",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 8,
+          "last_places": 0,
+          "point_sum": 34100,
+          "rank_sum": 1,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00090",
+        "seed": 7,
+        "rotation": 2,
+        "label": "control",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 8,
+          "last_places": 0,
+          "point_sum": 28600,
+          "rank_sum": 2,
+          "riichi_accepted": 4,
+          "riichi_declared": 5,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00091",
+        "seed": 7,
+        "rotation": 3,
+        "label": "control",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 1,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 8,
+          "last_places": 0,
+          "point_sum": 20300,
+          "rank_sum": 3,
+          "riichi_accepted": 1,
+          "riichi_declared": 1,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00098",
+        "seed": 8,
+        "rotation": 0,
+        "label": "candidate",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 29400,
+          "rank_sum": 2,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00099",
+        "seed": 8,
+        "rotation": 1,
+        "label": "candidate",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 20900,
+          "rank_sum": 2,
+          "riichi_accepted": 3,
+          "riichi_declared": 5,
+          "wins": 3
+        }
+      },
+      {
+        "game_id": "g00100",
+        "seed": 8,
+        "rotation": 2,
+        "label": "candidate",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 26400,
+          "rank_sum": 2,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00101",
+        "seed": 8,
+        "rotation": 3,
+        "label": "candidate",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 19400,
+          "rank_sum": 3,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00102",
+        "seed": 8,
+        "rotation": 0,
+        "label": "control",
+        "focal_seat": 0,
+        "counts": {
+          "called_hands": 3,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 33300,
+          "rank_sum": 1,
+          "riichi_accepted": 1,
+          "riichi_declared": 1,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00103",
+        "seed": 8,
+        "rotation": 1,
+        "label": "control",
+        "focal_seat": 1,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 1,
+          "games": 1,
+          "hands": 9,
+          "last_places": 1,
+          "point_sum": 21800,
+          "rank_sum": 4,
+          "riichi_accepted": 2,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      },
+      {
+        "game_id": "g00104",
+        "seed": 8,
+        "rotation": 2,
+        "label": "control",
+        "focal_seat": 2,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 0,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 22900,
+          "rank_sum": 2,
+          "riichi_accepted": 2,
+          "riichi_declared": 2,
+          "wins": 1
+        }
+      },
+      {
+        "game_id": "g00105",
+        "seed": 8,
+        "rotation": 3,
+        "label": "control",
+        "focal_seat": 3,
+        "counts": {
+          "called_hands": 2,
+          "deal_ins": 2,
+          "games": 1,
+          "hands": 9,
+          "last_places": 0,
+          "point_sum": 22000,
+          "rank_sum": 3,
+          "riichi_accepted": 3,
+          "riichi_declared": 3,
+          "wins": 2
+        }
+      }
+    ],
+    "backends": {
+      "v1_2_0": {
+        "adapter_profile": "legacy_v1_2",
+        "api_base": "http://127.0.0.1:52083",
+        "deployment": {
+          "archive_sha256": "58429d18613280fe1aee2318bd811f6a1a0296c4c85fe758a37da89d7a92d7aa",
+          "source": "git archive of verified immutable tag",
+          "source_dirty": false,
+          "verified_weight_sha256": {
+            "response_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "turn_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7"
+          }
+        },
+        "mode": "http",
+        "model_identity": {
+          "response_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+          "turn_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7"
+        },
+        "response": {
+          "pass_bias": null
+        },
+        "revision": {
+          "branch_hint": "main",
+          "commit": "758981ab9fb457c882ab9c577c9377976f97f42b",
+          "tag": "v1.2.0"
+        },
+        "timeout_seconds": 30.0
+      },
+      "v1_3_0": {
+        "adapter_profile": "full_state_v2",
+        "api_base": "http://127.0.0.1:52096",
+        "deployment": {
+          "archive_sha256": "196cbba0507db9b97878dc5846cb73cc4f464ce28a58108116140db09204b405",
+          "source": "git archive of verified immutable tag",
+          "source_dirty": false,
+          "verified_weight_sha256": {
+            "response_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51",
+            "turn_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90"
+          }
+        },
+        "mode": "http",
+        "model_identity": {
+          "response_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51",
+          "turn_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90"
+        },
+        "response": {
+          "pass_bias": null
+        },
+        "revision": {
+          "branch_hint": "codex/full-state-features",
+          "commit": "1e5092f344fb69bcdf4697f683f2ecf15b9865d8",
+          "tag": "v1.3.0"
+        },
+        "timeout_seconds": 30.0
+      }
+    },
+    "model_metadata": {
+      "v1_2_0": {
+        "turn": {
+          "checkpoint": "F:/Code/AI/train_study/train_mj/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_turn.pt",
+          "checkpoint_task": "multitask",
+          "task": "turn",
+          "device": "cpu",
+          "state_dim": 8173,
+          "action_dim": 89,
+          "candidate_limit": 64,
+          "hidden_size": 512,
+          "dropout": 0.1,
+          "default_pass_bias": null,
+          "no_yaku_call_penalty": 0.0
+        },
+        "response": {
+          "checkpoint": "F:/Code/AI/train_study/train_mj/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_response.pt",
+          "checkpoint_task": "multitask",
+          "task": "response",
+          "device": "cpu",
+          "state_dim": 8216,
+          "action_dim": 91,
+          "candidate_limit": 16,
+          "hidden_size": 512,
+          "dropout": 0.1,
+          "default_pass_bias": 2.0,
+          "no_yaku_call_penalty": 0.8
+        }
+      },
+      "v1_3_0": {
+        "turn": {
+          "feature_schema": "full_state_v2",
+          "checkpoint": "F:/Code/AI/train_study/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/best_turn.pt",
+          "checkpoint_task": "multitask",
+          "task": "turn",
+          "device": "cpu",
+          "state_dim": 11969,
+          "action_dim": 89,
+          "candidate_limit": 64,
+          "hidden_size": 512,
+          "dropout": 0.1,
+          "default_pass_bias": null,
+          "no_yaku_call_penalty": 0.0
+        },
+        "response": {
+          "feature_schema": "full_state_v2",
+          "checkpoint": "F:/Code/AI/train_study/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/best_response.pt",
+          "checkpoint_task": "multitask",
+          "task": "response",
+          "device": "cpu",
+          "state_dim": 12012,
+          "action_dim": 91,
+          "candidate_limit": 16,
+          "hidden_size": 512,
+          "dropout": 0.1,
+          "default_pass_bias": 1.5,
+          "no_yaku_call_penalty": 0.0
+        }
+      }
+    },
+    "known_exceptions": [
+      "DEF-001: frozen training samplers use incorrect red chankan target; no A3 waiver of other failures"
+    ],
+    "source": {
+      "path": "F:\\Code\\AI\\train_study\\riichi_lab\\outputs\\a3_acceptance_20261103\\batch",
+      "replay_digest": "57b059cd991cad50b5e5e607354b47339e53805fe5853d2717c4881ccf8ce663",
+      "manifest_sha256": "8fb28a00bda7d4352e46b515356187dbe4e9a5e8d50655f47ee60f889fc77c3a",
+      "summary_sha256": "e9c1599d050ff661ead5faf3a994fc278ab51ce050ca3b5f947cb15729b70ed7"
+    }
+  },
+  "replay_report_sha256": "39abafca37a5c12a85ba20c5198bfdecbcffa370dcbd7da2250d52ddee8f681c"
+}
