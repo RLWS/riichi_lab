@@ -164,7 +164,9 @@ def classify_rank(ci95, minimum_gain, *, eligible):
     return "insufficient_evidence"
 
 
-def evaluate_run(run_dir, output_dir, *, iterations=10000, rng_seed=20261103):
+def evaluate_run(
+    run_dir, output_dir, *, iterations=10000, rng_seed=20261103, formal=False
+):
     """Validate a complete A3 run and produce a non-promotional exploratory report."""
     if type(iterations) is not int or iterations < 100 or type(rng_seed) is not int:
         raise ValueError("invalid bootstrap settings")
@@ -172,6 +174,16 @@ def evaluate_run(run_dir, output_dir, *, iterations=10000, rng_seed=20261103):
     manifest = json.loads((run / "manifest.json").read_text(encoding="utf-8"))
     summary = json.loads((run / "summary.json").read_text(encoding="utf-8"))
     config = manifest["config"]
+    eligibility = replay = None
+    if formal:
+        from rilab.formal import validate_completed_registration
+
+        eligibility = validate_completed_registration(run, manifest)
+        decision = eligibility["registration"]["plan"]["decision"]
+        iterations, rng_seed = (
+            decision["bootstrap_iterations"],
+            decision["bootstrap_rng_seed"],
+        )
     expected = expand_schedule(config)
     if manifest["schedule"] != expected:
         raise ValueError("manifest schedule differs from configured complete schedule")
@@ -189,6 +201,10 @@ def evaluate_run(run_dir, output_dir, *, iterations=10000, rng_seed=20261103):
         != hashlib.sha256(encode(games).encode()).hexdigest()
     ):
         raise ValueError("source summary digest mismatch")
+    if formal:
+        from rilab.formal import replay_recorded_games
+
+        replay = replay_recorded_games(run, manifest, games)
     group = config["evaluation"]["primary_paired_group"]
     members = [m for m in config["matchups"] if m.get("paired_group") == group]
     controls = [m for m in members if len(set(m["seats"])) == 1]
@@ -341,13 +357,52 @@ def evaluate_run(run_dir, output_dir, *, iterations=10000, rng_seed=20261103):
             ).hexdigest(),
         },
     }
+    if formal:
+        rank_verdict = classify_rank(
+            primary["mean_rank"]["ci95"],
+            decision["minimum_meaningful_rank_gain"],
+            eligible=True,
+        )
+        guard_passed = (
+            primary["last_place_rate"]["ci95"][1]
+            <= decision["last_place_rate_guardrail"]
+        )
+        verdict = (
+            rank_verdict
+            if rank_verdict != "improvement" or guard_passed
+            else "insufficient_evidence"
+        )
+        report.update(
+            analysis_kind="formal_preregistered",
+            strength_verdict=verdict,
+            ineligibility_reasons=[],
+            preregistration=eligibility,
+            offline_replay=replay,
+            decision={
+                "registered_thresholds": decision,
+                "rank_verdict": rank_verdict,
+                "last_place_guardrail_passed": guard_passed,
+                "rule": "improvement requires meaningful rank gain AND last-place guardrail; regression requires meaningful rank loss; otherwise insufficient evidence",
+            },
+        )
+        report["bootstrap"]["interval_scope"] = (
+            "preregistered rank criterion and last-place guardrail; auxiliary intervals descriptive"
+        )
+        report["implementation"]["formal_py_sha256"] = hashlib.sha256(
+            (Path(__file__).parent / "formal.py").read_bytes()
+        ).hexdigest()
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=False)
     write_json(out / "report.json", report)
     rank = primary["mean_rank"]
+    headline = (
+        f"# A4 正式强度统计报告\n\n结论：{ {'improvement': '有意义提升', 'regression': '有意义回退', 'insufficient_evidence': '证据不足'}[report['strength_verdict']] }。按开局前登记的固定规则判定。\n\n"
+        if formal
+        else "# A4 探索性统计报告\n\n结论：证据不足。现有 A3 数据仅用于验收统计工具，不作正式强度结论。\n\n"
+    )
     text = (
-        "# A4 探索性统计报告\n\n结论：证据不足。现有 A3 数据仅用于验收统计工具，不作正式强度结论。\n\n"
-        f"种子簇：{len(clusters)}；主实验焦点半庄：{len(observations)}；补充 2v2 单独报告。\n\n"
+        headline
+        + f"种子簇：{len(clusters)}；主实验焦点半庄：{len(observations)}；补充 2v2 单独报告。\n\n"
         f"平均顺位差（候选−基线，低为好）：{rank['difference']:.6f}，95% 区间 {rank['ci95']}。\n\n"
         "两版本校准不同，比较的是完整部署策略。DEF-001 保留为已知例外。完整分子、分母与辅助指标见 report.json。\n"
     )

@@ -1,6 +1,6 @@
 # 多版本后端与适配契约（配置版本 1）
 
-2026-11-03 更新。对应 [接入方案](riichi-dev-integration.md) §3、§7，配置示例为 [arena_selfplay.yaml](../configs/arena_selfplay.yaml)。A0 交付配置校验，A1 已交付注入与两种投影，A3 已实现自动日程和批量运行，A4 统计工具已验收、正式强度实验另行安排；验收见 [A1 记录](milestones/A1.md)、[A3 记录](milestones/A3.md)与 [A4 记录](milestones/A4.md)。
+2026-11-03 更新。对应 [接入方案](riichi-dev-integration.md) §3、§7，配置示例为 [arena_selfplay.yaml](../configs/arena_selfplay.yaml)。A0 交付配置校验，A1 交付注入与两种投影，A3 交付自动日程和批量运行，A4 正式强度验收已完成、结论为证据不足；验收见 [A1 记录](milestones/A1.md)、[A3 记录](milestones/A3.md)与 [A4 正式记录](milestones/A4-formal.md)。
 
 ## 1. 两个版本不是同一输入契约
 

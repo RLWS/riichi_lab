@@ -106,6 +106,7 @@ def cmd_evaluate(args: argparse.Namespace) -> int:
         args.output_dir,
         iterations=args.iterations,
         rng_seed=args.bootstrap_seed,
+        formal=args.formal,
     )
     print(
         json.dumps(
@@ -146,12 +147,17 @@ def main(argv: list[str] | None = None) -> int:
     p_selfplay.set_defaults(func=cmd_selfplay)
 
     p_evaluate = sub.add_parser(
-        "arena-evaluate", help="A4 配对种子簇统计（探索性报告）"
+        "arena-evaluate", help="A4 配对种子簇统计与预注册正式验收"
     )
     p_evaluate.add_argument("--run-dir", required=True)
     p_evaluate.add_argument("--output-dir", required=True, help="new report directory")
     p_evaluate.add_argument("--iterations", type=int, default=10000)
     p_evaluate.add_argument("--bootstrap-seed", type=int, default=20261103)
+    p_evaluate.add_argument(
+        "--formal",
+        action="store_true",
+        help="verify preregistration, offline replay and apply sealed decision rules",
+    )
     p_evaluate.set_defaults(func=cmd_evaluate)
 
     p_online = sub.add_parser("arena-online", help="riichi.dev 在线对局（B1）")
