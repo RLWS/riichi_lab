@@ -25,6 +25,9 @@ def main():
     parser.add_argument("--train-mj-root", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--seed", default=1, type=int)
+    parser.add_argument(
+        "--batch", action="store_true", help="A3: full configured schedule, run twice"
+    )
     args = parser.parse_args()
     repo = Path(__file__).resolve().parents[1]
     train = args.train_mj_root.resolve()
@@ -63,6 +66,12 @@ def main():
                     != backend["model_identity"][f"{task}_sha256"]
                 ):
                     raise RuntimeError(f"weight hash mismatch: {name}/{task}")
+            backend["deployment"] = {
+                "source": "git archive of verified immutable tag",
+                "source_dirty": False,
+                "archive_sha256": hashlib.sha256(archive.read_bytes()).hexdigest(),
+                "verified_weight_sha256": backend["model_identity"].copy(),
+            }
             while True:
                 with socket.socket() as s:
                     s.bind(("127.0.0.1", 0))
@@ -118,6 +127,43 @@ def main():
             "--output-dir",
             str(out / "game"),
         ]
+        if args.batch:
+            command = command[: command.index("--seed")]
+            summaries = []
+            for label in ("batch", "replay"):
+                subprocess.run(
+                    command + ["--output-dir", str(out / label)],
+                    cwd=repo,
+                    check=True,
+                    timeout=7200,
+                )
+                summaries.append(
+                    json.loads(
+                        (out / label / "summary.json").read_text(encoding="utf-8")
+                    )
+                )
+            same = summaries[0]["games"] == summaries[1]["games"]
+            evidence = {
+                "valid": all(s["valid"] for s in summaries) and same,
+                "replay_identical": same,
+                "games_per_run": len(summaries[0]["games"]),
+                "digests": [s["replay_digest"] for s in summaries],
+                "deployment": {
+                    name: {
+                        "revision": b["revision"],
+                        "verified_weight_sha256": b["model_identity"],
+                        "source": "git archive of verified immutable tag",
+                        "source_dirty": False,
+                    }
+                    for name, b in config["backends"].items()
+                },
+            }
+            (out / "verification.json").write_text(
+                json.dumps(evidence, indent=2), encoding="utf-8"
+            )
+            if not evidence["valid"]:
+                raise RuntimeError("A3 replay mismatch or invalid batch")
+            return
         subprocess.run(command, cwd=repo, check=True, timeout=300)
         evidence = {
             "seed": args.seed,

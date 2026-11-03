@@ -1,6 +1,6 @@
 # 多版本后端与适配契约（配置版本 1）
 
-2026-11-02 补充。对应 [接入方案](riichi-dev-integration.md) §3、§7，配置示例为 [arena_selfplay.yaml](../configs/arena_selfplay.yaml)。A0 交付配置校验，A1 已交付注入与两种投影，A3 调度和 A4 统计仍待实现；验收见 [A1 记录](milestones/A1.md)。
+2026-11-03 更新。对应 [接入方案](riichi-dev-integration.md) §3、§7，配置示例为 [arena_selfplay.yaml](../configs/arena_selfplay.yaml)。A0 交付配置校验，A1 已交付注入与两种投影，A3 已实现自动日程和批量运行，A4 统计待实现；验收见 [A1 记录](milestones/A1.md)与 [A3 记录](milestones/A3.md)。
 
 ## 1. 两个版本不是同一输入契约
 
@@ -35,7 +35,8 @@ main 当前 HEAD 不是 v1.2.0 的 commit，不能把 main/master 字符串当�
 - pass_bias=null 表示使用该实例服务端默认值；显式 0 表示覆盖，不能按真假值替换。最终使用的 pass_bias、no_yaku_call_penalty 按实例落 manifest，不能用一份全局校准覆盖两个版本。
 - profile 决定状态投影及兼容性规则，backend_id 只用于引用。同 profile 可有多个权重实例；不同 profile 必须分别通过 parity。
 - model_identity 为部署预期哈希；现有 /v1/models 不提供远端文件哈希，A1 不能声称 HTTP 能独立证明它。需部署清单验证，A3 封存到运行清单。
-- A0 的 load_arena_config 校验已登记 profile/版本、后端引用、端点、哈希形式、校准和席位形状。seeds 为空可作当前设计模板；A3 启动必须拒绝空 seeds、缺失统计协议或不完整配对组。
+- load_arena_config 校验已登记 profile/版本、后端引用、端点、哈希形式、校准和席位形状。A3 启动额外拒绝空/重复种子、缺失统计协议或不完整配对组。示例配置用种子 1–8，共 112 半庄。
+- 隔离验收脚本在每个 backend 的 deployment 中记录经验证的 tag 源码归档哈希、source_dirty=false 和实际四份权重哈希；这些是部署侧证据，不是 HTTP 元信息自行提供的证明。manifest 同时记录本次运行的适配代码文件哈希，以补充 dirty checkout 的可追溯性。
 
 profiles 在 rilab/config.py 登记。legacy_v1_2 缺少 feature_schema 并不代表任意旧服务都兼容：A1 必须核对指定版本身份、8173/8216 和 89/91、任务及 candidate_limit；full_state_v2 还要验证显式 schema。不能按维度自动选择一个未知 profile。
 
@@ -81,4 +82,4 @@ A1 先用手工四席绑定完成单局，不实现自动轮换；验收须证�
 
 训练仓库代码仍只读使用。可为 v1.2.0 与 v1.3.0 分别准备独立 checkout 和服务环境，权重按各自部署清单放置，用两份 api_local 配置启动到端口 8000/8001。不要在一个 Python 进程反复修改 sys.path 来同时 import 两份 mjai；不要为切换版本修改当前训练 checkout。
 
-当前 A1 已完成注入、两种投影、手工四席单局和两个独立真实权重 HTTP 服务联调。arena-selfplay 需要显式 --seed/--seats/--output-dir，不自动执行 matchups。A2 完整 XML/候选/振听 parity 尚待完成；之后 A3 执行自动日程和工程批量验收，A4 计算强度统计。
+当前 A1 已完成注入、两种投影、手工四席单局和两个独立真实权重 HTTP 服务联调。arena-selfplay 只传 --config/--output-dir 时执行 A3 自动日程；同时传 --seed/--seats 则运行手工单局。A2 普通 XML 对拍通过，冻结 tag 保留 DEF-001 的特定场景失败；按用户确认，该已知例外不阻塞 A3 工程验收和 A4 工具开发。A4 后续消费 A3 日程计算强度统计。

@@ -1,0 +1,4653 @@
+{
+  "stage": "A3",
+  "valid": true,
+  "purpose": "engineering_acceptance_only; no strength conclusion",
+  "checks": {
+    "both_runs_valid": true,
+    "at_least_100_half_games": true,
+    "identical_schedule": true,
+    "identical_results_and_all_decision_event_digests": true,
+    "persisted_summaries_match": true,
+    "identical_runtime_sources": true,
+    "runtime_sources_match_workspace": true,
+    "deployment_verified": true,
+    "zero_fallbacks": true
+  },
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "games_per_run": 112,
+  "total_games_including_replay": 224,
+  "decisions_per_run": [
+    65878,
+    65878
+  ],
+  "backend_requests_first_run_excluding_warmup": {
+    "v1_2_0": 46589,
+    "v1_3_0": 18030
+  },
+  "events_first_run": {
+    "start_game": 112,
+    "start_kyoku": 1043,
+    "tsumo": 50165,
+    "dahai": 51141,
+    "reach": 1259,
+    "reach_accepted": 1172,
+    "hora": 878,
+    "end_kyoku": 1043,
+    "pon": 903,
+    "chi": 375,
+    "ryukyoku": 167,
+    "end_game": 112,
+    "kakan": 17,
+    "dora": 52,
+    "ankan": 34,
+    "daiminkan": 1
+  },
+  "elapsed_seconds_per_run": [
+    655.875,
+    621.0160000000001
+  ],
+  "replay_digests": [
+    "57b059cd991cad50b5e5e607354b47339e53805fe5853d2717c4881ccf8ce663",
+    "57b059cd991cad50b5e5e607354b47339e53805fe5853d2717c4881ccf8ce663"
+  ],
+  "production_environment": {
+    "python": "3.11.5",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "dependencies": {
+      "riichienv": "0.4.11",
+      "httpx": "0.28.1",
+      "PyYAML": "6.0.3",
+      "websockets": "17.4"
+    },
+    "rule": {
+      "allows_ron_on_ankan_for_kokushi_musou": false,
+      "dealer_first_discard_is_tedashi": false,
+      "is_daisuushii_double": false,
+      "is_junsei_chuurenpoutou_double": false,
+      "is_kokushi_musou_13machi_double": false,
+      "is_suuankou_tanki_double": false,
+      "kuikae_forbidden": true,
+      "sanchaho_is_draw": true,
+      "yakuman_pao_is_liability_only": false
+    }
+  },
+  "serving_environment": {
+    "python": "3.11.5",
+    "packages": {
+      "torch": "2.5.1+cu121",
+      "fastapi": "0.135.1",
+      "uvicorn": "0.42.0",
+      "httpx": "0.28.1",
+      "pydantic": "2.12.5"
+    },
+    "device": "cpu",
+    "torch_num_threads": 1,
+    "runtime_scripts_sha256": {
+      "scripts/run_a1_integration.py": "406776a95ed038fbcc3f7a96361933c76391b233ca222935bbe6e89af99c5e2f",
+      "scripts/serve_integration_backend.py": "5e6c382cf8cff3a1d2d7c365b766396a2dd3555f7d731ce6d0d4158eaa8b1459"
+    }
+  },
+  "backends": {
+    "v1_2_0": {
+      "adapter_profile": "legacy_v1_2",
+      "api_base": "http://127.0.0.1:52083",
+      "deployment": {
+        "archive_sha256": "58429d18613280fe1aee2318bd811f6a1a0296c4c85fe758a37da89d7a92d7aa",
+        "source": "git archive of verified immutable tag",
+        "source_dirty": false,
+        "verified_weight_sha256": {
+          "response_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+          "turn_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7"
+        }
+      },
+      "mode": "http",
+      "model_identity": {
+        "response_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+        "turn_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7"
+      },
+      "response": {
+        "pass_bias": null
+      },
+      "revision": {
+        "branch_hint": "main",
+        "commit": "758981ab9fb457c882ab9c577c9377976f97f42b",
+        "tag": "v1.2.0"
+      },
+      "timeout_seconds": 30.0
+    },
+    "v1_3_0": {
+      "adapter_profile": "full_state_v2",
+      "api_base": "http://127.0.0.1:52096",
+      "deployment": {
+        "archive_sha256": "196cbba0507db9b97878dc5846cb73cc4f464ce28a58108116140db09204b405",
+        "source": "git archive of verified immutable tag",
+        "source_dirty": false,
+        "verified_weight_sha256": {
+          "response_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51",
+          "turn_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90"
+        }
+      },
+      "mode": "http",
+      "model_identity": {
+        "response_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51",
+        "turn_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90"
+      },
+      "response": {
+        "pass_bias": null
+      },
+      "revision": {
+        "branch_hint": "codex/full-state-features",
+        "commit": "1e5092f344fb69bcdf4697f683f2ecf15b9865d8",
+        "tag": "v1.3.0"
+      },
+      "timeout_seconds": 30.0
+    }
+  },
+  "model_metadata": {
+    "v1_2_0": {
+      "turn": {
+        "checkpoint": "F:/Code/AI/train_study/train_mj/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_turn.pt",
+        "checkpoint_task": "multitask",
+        "task": "turn",
+        "device": "cpu",
+        "state_dim": 8173,
+        "action_dim": 89,
+        "candidate_limit": 64,
+        "hidden_size": 512,
+        "dropout": 0.1,
+        "default_pass_bias": null,
+        "no_yaku_call_penalty": 0.0
+      },
+      "response": {
+        "checkpoint": "F:/Code/AI/train_study/train_mj/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_response.pt",
+        "checkpoint_task": "multitask",
+        "task": "response",
+        "device": "cpu",
+        "state_dim": 8216,
+        "action_dim": 91,
+        "candidate_limit": 16,
+        "hidden_size": 512,
+        "dropout": 0.1,
+        "default_pass_bias": 2.0,
+        "no_yaku_call_penalty": 0.8
+      }
+    },
+    "v1_3_0": {
+      "turn": {
+        "feature_schema": "full_state_v2",
+        "checkpoint": "F:/Code/AI/train_study/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/best_turn.pt",
+        "checkpoint_task": "multitask",
+        "task": "turn",
+        "device": "cpu",
+        "state_dim": 11969,
+        "action_dim": 89,
+        "candidate_limit": 64,
+        "hidden_size": 512,
+        "dropout": 0.1,
+        "default_pass_bias": null,
+        "no_yaku_call_penalty": 0.0
+      },
+      "response": {
+        "feature_schema": "full_state_v2",
+        "checkpoint": "F:/Code/AI/train_study/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/best_response.pt",
+        "checkpoint_task": "multitask",
+        "task": "response",
+        "device": "cpu",
+        "state_dim": 12012,
+        "action_dim": 91,
+        "candidate_limit": 16,
+        "hidden_size": 512,
+        "dropout": 0.1,
+        "default_pass_bias": 1.5,
+        "no_yaku_call_penalty": 0.0
+      }
+    }
+  },
+  "known_exceptions": [
+    "DEF-001: frozen training samplers use incorrect red chankan target; no A3 waiver of other failures"
+  ],
+  "tested_source": {
+    "base_commit": "6f6429202470bb6efde122c4c5bccf1e686a6b5b",
+    "dirty": true,
+    "runtime_source_sha256": {
+      "rilab/__init__.py": "8519d05c8f059dbd8052e890af1adaa0b38bfa51212bc14b9584140140b958df",
+      "rilab/adapters/__init__.py": "64cff7a73558a293a215aa48cb4811731b66939760d8349fba7d936900fd6a25",
+      "rilab/adapters/full_state_v2.py": "6d004e1ae798a764c1eb3a0460f1771ff5af5395a5c00078977c590ea04a49e2",
+      "rilab/adapters/legacy_v12.py": "cfdb9e045491697853609afba3c2aa623fd5b91163958ca08cf5337022cdc4d2",
+      "rilab/agent.py": "e2a3f0691c3810252c9a28b4e9ea1dbb6fa3958b26c6ca51b26efd90ce6be068",
+      "rilab/artifacts.py": "3a789361712a360b85458c95a96fe4bb8bda4a9967169ac231dc30ef97dde34b",
+      "rilab/backends/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rilab/backends/base.py": "765e42639178b2d10117e0fd15493a664dfee82f815953ae4dfd2ebce5bdf6a7",
+      "rilab/backends/http_backend.py": "f4d7960f316fcf3c6b757be52dfd2bab02aa421a4db5e1c3358adf4076c1b307",
+      "rilab/batch.py": "c213ace3b1ef9e58cb2d161bb7b51e47db6432d244bdbd13749c2183abf75ace",
+      "rilab/cli.py": "fb5518bf03a19b39cef4e8de90edec6097a6a2e1036456eb921e6cba1aad0a7e",
+      "rilab/config.py": "e569785bd3d658e57ae5c97066fd2156de2d2b148a9e6f8a88abc1397067bf82",
+      "rilab/decision.py": "ed4ede85bb638abd5b76197a62703105f6551a8972df00a77e2a6739f58e8bfb",
+      "rilab/evaluation.py": "079b9a28913ae05a98f7da082798903cc47dda0ff4d280e6a33ca7f8fbc819c2",
+      "rilab/mapping/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rilab/mapping/action_mapping.py": "da07ae8425c44766b740faf5c3f0c308b3bbaf57a6e6182999fe691c878af09c",
+      "rilab/online/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rilab/online/client.py": "529e9d8d15157db17ee0475a1f0977c6846ae46b2495e3d9e98dcacdb441b854",
+      "rilab/online/session.py": "0b3d6d8faa50ed7465c623fda1b2dce19f2caf692a4b47a0f4684371cfe6179d",
+      "rilab/parity.py": "d5ce5f2fb68958598b569d85aabcadb8f108f50fc7472a101653ffe54afd7e2a",
+      "rilab/parity_runner.py": "c59bd2d49bbcf3c661482c04a329880afcd638b7fcbdfe75aad81fff0906b310",
+      "rilab/scheduling.py": "54b797c1a69d44493f61f69b4bce145a648d45e38dbc9538b542e4d98bfdc848",
+      "rilab/selfplay.py": "7c48dfa40e2c3c2678e300fd073bf4e250d96fb11adc38c63ddc271700c5b483",
+      "rilab/tiles.py": "c58c36942ee4839c72a1ed5b45c6eb609477c820abff01b67f9ce9dd8749ef74",
+      "rilab/tracker/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "rilab/tracker/state_tracker.py": "81657170d5d65ad8d63ce4edef2c7c1afe60a785905a9983626a0c897a8c3290"
+    }
+  },
+  "local_artifacts": "F:\\Code\\AI\\train_study\\riichi_lab\\outputs\\a3_acceptance_20261103",
+  "first_run_results": [
+    {
+      "game_id": "g00000",
+      "seed": 1,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        1,
+        0
+      ],
+      "valid": true,
+      "steps": 629,
+      "decisions": 634,
+      "fallbacks": 0,
+      "scores": [
+        25100,
+        69100,
+        -4800,
+        10600
+      ],
+      "ranks": [
+        2,
+        1,
+        4,
+        3
+      ],
+      "decision_digest": "a3677b60695d4f213ed414f64d335807ef60898dc516291bdbb90a601dc33db5",
+      "backend_requests": {
+        "v1_2_0": 467,
+        "v1_3_0": 153
+      },
+      "event_digest": "fe7bd9072065711fb1fa47dd2c3724ffb5d80e372c42873dfe16d68eca1626bb"
+    },
+    {
+      "game_id": "g00001",
+      "seed": 1,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        1,
+        1
+      ],
+      "valid": true,
+      "steps": 666,
+      "decisions": 674,
+      "fallbacks": 0,
+      "scores": [
+        -6100,
+        40100,
+        17400,
+        48600
+      ],
+      "ranks": [
+        4,
+        2,
+        3,
+        1
+      ],
+      "decision_digest": "11eade584e03c90aa13c5e5a182f09073fbcc41ca83bcf06a2ab6878c37cef31",
+      "backend_requests": {
+        "v1_2_0": 495,
+        "v1_3_0": 167
+      },
+      "event_digest": "6b599fd3c8fa543282b34672f9faa96e00e8a363463c76d2a111380df46afaf5"
+    },
+    {
+      "game_id": "g00002",
+      "seed": 1,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        1,
+        2
+      ],
+      "valid": true,
+      "steps": 342,
+      "decisions": 345,
+      "fallbacks": 0,
+      "scores": [
+        21600,
+        50000,
+        -1200,
+        29600
+      ],
+      "ranks": [
+        3,
+        1,
+        4,
+        2
+      ],
+      "decision_digest": "a2c3054b301f969a6ed066ca78c02c0d5aa7b36864293ffe1c86df718d33ff0a",
+      "backend_requests": {
+        "v1_2_0": 259,
+        "v1_3_0": 80
+      },
+      "event_digest": "898b31180ebe1c81296e1512579926c7888f559f6cc7a90e93489f69c4adf512"
+    },
+    {
+      "game_id": "g00003",
+      "seed": 1,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        1,
+        3
+      ],
+      "valid": true,
+      "steps": 174,
+      "decisions": 175,
+      "fallbacks": 0,
+      "scores": [
+        31300,
+        51000,
+        -4300,
+        22000
+      ],
+      "ranks": [
+        2,
+        1,
+        4,
+        3
+      ],
+      "decision_digest": "b53ba51c7d40648a0ccfb8bb8383839efa556df357572320cd8a4f20791ed7d7",
+      "backend_requests": {
+        "v1_2_0": 129,
+        "v1_3_0": 41
+      },
+      "event_digest": "21df21a7d8f5e158f744fbbf445a18c335df84248f7426b3862214eedaaff8bc"
+    },
+    {
+      "game_id": "g00004",
+      "seed": 1,
+      "matchup_id": "baseline_control",
+      "rotation": 0,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        1,
+        0
+      ],
+      "valid": true,
+      "steps": 707,
+      "decisions": 713,
+      "fallbacks": 0,
+      "scores": [
+        30600,
+        34600,
+        4200,
+        30600
+      ],
+      "ranks": [
+        2,
+        1,
+        4,
+        3
+      ],
+      "decision_digest": "0783e3355bedadc37034a798e816d092ffc85f24347c8714f95b99af54b355ee",
+      "backend_requests": {
+        "v1_2_0": 699,
+        "v1_3_0": 0
+      },
+      "event_digest": "d2df6aab70303377e42905cf4a7714520cc4c621eb682e64c96b4bc0ba76fe5a"
+    },
+    {
+      "game_id": "g00005",
+      "seed": 1,
+      "matchup_id": "baseline_control",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        1,
+        1
+      ],
+      "valid": true,
+      "steps": 707,
+      "decisions": 713,
+      "fallbacks": 0,
+      "scores": [
+        30600,
+        34600,
+        4200,
+        30600
+      ],
+      "ranks": [
+        2,
+        1,
+        4,
+        3
+      ],
+      "decision_digest": "0783e3355bedadc37034a798e816d092ffc85f24347c8714f95b99af54b355ee",
+      "backend_requests": {
+        "v1_2_0": 699,
+        "v1_3_0": 0
+      },
+      "event_digest": "d2df6aab70303377e42905cf4a7714520cc4c621eb682e64c96b4bc0ba76fe5a"
+    },
+    {
+      "game_id": "g00006",
+      "seed": 1,
+      "matchup_id": "baseline_control",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        1,
+        2
+      ],
+      "valid": true,
+      "steps": 707,
+      "decisions": 713,
+      "fallbacks": 0,
+      "scores": [
+        30600,
+        34600,
+        4200,
+        30600
+      ],
+      "ranks": [
+        2,
+        1,
+        4,
+        3
+      ],
+      "decision_digest": "0783e3355bedadc37034a798e816d092ffc85f24347c8714f95b99af54b355ee",
+      "backend_requests": {
+        "v1_2_0": 699,
+        "v1_3_0": 0
+      },
+      "event_digest": "d2df6aab70303377e42905cf4a7714520cc4c621eb682e64c96b4bc0ba76fe5a"
+    },
+    {
+      "game_id": "g00007",
+      "seed": 1,
+      "matchup_id": "baseline_control",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        1,
+        3
+      ],
+      "valid": true,
+      "steps": 707,
+      "decisions": 713,
+      "fallbacks": 0,
+      "scores": [
+        30600,
+        34600,
+        4200,
+        30600
+      ],
+      "ranks": [
+        2,
+        1,
+        4,
+        3
+      ],
+      "decision_digest": "0783e3355bedadc37034a798e816d092ffc85f24347c8714f95b99af54b355ee",
+      "backend_requests": {
+        "v1_2_0": 699,
+        "v1_3_0": 0
+      },
+      "event_digest": "d2df6aab70303377e42905cf4a7714520cc4c621eb682e64c96b4bc0ba76fe5a"
+    },
+    {
+      "game_id": "g00008",
+      "seed": 1,
+      "matchup_id": "two_vs_two",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 630,
+      "decisions": 637,
+      "fallbacks": 0,
+      "scores": [
+        26900,
+        13100,
+        46900,
+        13100
+      ],
+      "ranks": [
+        2,
+        3,
+        1,
+        4
+      ],
+      "decision_digest": "a1cbf7ed4445d7ffd2ba703a721c3b314a5a6d0e5f359233836cfde32dc1a7a5",
+      "backend_requests": {
+        "v1_2_0": 310,
+        "v1_3_0": 313
+      },
+      "event_digest": "c84b1d399931a42d163d2d7dc2f5a6725385c9aa3485a0a5aa83e9a77a3c0d9f"
+    },
+    {
+      "game_id": "g00009",
+      "seed": 1,
+      "matchup_id": "two_vs_two",
+      "rotation": 1,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 682,
+      "decisions": 687,
+      "fallbacks": 0,
+      "scores": [
+        12900,
+        40900,
+        21100,
+        25100
+      ],
+      "ranks": [
+        4,
+        1,
+        3,
+        2
+      ],
+      "decision_digest": "283da42d15453fac6546f14bd7bb5d288392f8390b074bb230ebfdb36c34bb03",
+      "backend_requests": {
+        "v1_2_0": 337,
+        "v1_3_0": 338
+      },
+      "event_digest": "29b1db96d054b1238714a691038c12205559cd92a312c9fe7e3253e92697dee3"
+    },
+    {
+      "game_id": "g00010",
+      "seed": 1,
+      "matchup_id": "two_vs_two",
+      "rotation": 2,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 696,
+      "decisions": 701,
+      "fallbacks": 0,
+      "scores": [
+        32200,
+        42400,
+        13000,
+        12400
+      ],
+      "ranks": [
+        2,
+        1,
+        3,
+        4
+      ],
+      "decision_digest": "4ab97a52ccafda7118783d65edd183587da5f23e05d6f9658daef7ece797465d",
+      "backend_requests": {
+        "v1_2_0": 341,
+        "v1_3_0": 344
+      },
+      "event_digest": "ec50821a7ec05e76e456a482ecd3d597e0651ec7a5506941d44f15ac32d24ddb"
+    },
+    {
+      "game_id": "g00011",
+      "seed": 1,
+      "matchup_id": "two_vs_two",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 673,
+      "decisions": 679,
+      "fallbacks": 0,
+      "scores": [
+        26000,
+        14700,
+        39300,
+        20000
+      ],
+      "ranks": [
+        2,
+        4,
+        1,
+        3
+      ],
+      "decision_digest": "f7ff89c598ee51d4ceb54d958505df2d7f004e8b254e3d4af743510790ccd3e2",
+      "backend_requests": {
+        "v1_2_0": 330,
+        "v1_3_0": 335
+      },
+      "event_digest": "a4d5da03959713334e6bd4cc1178f2b65f2ffb21eac7ed04f37485e7b0971276"
+    },
+    {
+      "game_id": "g00012",
+      "seed": 1,
+      "matchup_id": "two_vs_two",
+      "rotation": 4,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 450,
+      "decisions": 457,
+      "fallbacks": 0,
+      "scores": [
+        16700,
+        31100,
+        54600,
+        -2400
+      ],
+      "ranks": [
+        3,
+        2,
+        1,
+        4
+      ],
+      "decision_digest": "1f0f9e5fc67765d79a5eeb828e7c51833416ff8fa4b36d5ed8f7592d5437dffd",
+      "backend_requests": {
+        "v1_2_0": 229,
+        "v1_3_0": 218
+      },
+      "event_digest": "9351414252b1124e3bf4cef8234c177dd7876d8d498d3803979f238e186ffab3"
+    },
+    {
+      "game_id": "g00013",
+      "seed": 1,
+      "matchup_id": "two_vs_two",
+      "rotation": 5,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 379,
+      "decisions": 384,
+      "fallbacks": 0,
+      "scores": [
+        34200,
+        39900,
+        31300,
+        -5400
+      ],
+      "ranks": [
+        2,
+        1,
+        3,
+        4
+      ],
+      "decision_digest": "6b64a201a951086cb3b8e5fcf522fd7f14153ddd0204018d805303d4798497b8",
+      "backend_requests": {
+        "v1_2_0": 181,
+        "v1_3_0": 194
+      },
+      "event_digest": "b23ebbbc450b7f0f8bdf76179f8399546bedd281c53caf207be710149a2be897"
+    },
+    {
+      "game_id": "g00014",
+      "seed": 2,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        2,
+        0
+      ],
+      "valid": true,
+      "steps": 541,
+      "decisions": 544,
+      "fallbacks": 0,
+      "scores": [
+        35000,
+        17400,
+        32500,
+        15100
+      ],
+      "ranks": [
+        1,
+        3,
+        2,
+        4
+      ],
+      "decision_digest": "2cbcc4a3562116b5061c6e64ce868226b54402135eb14538b92657dc8571d26b",
+      "backend_requests": {
+        "v1_2_0": 395,
+        "v1_3_0": 137
+      },
+      "event_digest": "bc331b73259be9f003f68ec8a00aa6d0ddfa8e5a82448a3221a6141a4021c24f"
+    },
+    {
+      "game_id": "g00015",
+      "seed": 2,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        2,
+        1
+      ],
+      "valid": true,
+      "steps": 622,
+      "decisions": 630,
+      "fallbacks": 0,
+      "scores": [
+        34400,
+        24900,
+        26000,
+        14700
+      ],
+      "ranks": [
+        1,
+        3,
+        2,
+        4
+      ],
+      "decision_digest": "b848f370c86556ba79ae543e0eb3e5e66b56f1cb2b9993f02974341ae3f3734e",
+      "backend_requests": {
+        "v1_2_0": 463,
+        "v1_3_0": 155
+      },
+      "event_digest": "049d2db7e64731ec2dae83f3748070febc0451d714d29280e4f01f0e62354bed"
+    },
+    {
+      "game_id": "g00016",
+      "seed": 2,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        2,
+        2
+      ],
+      "valid": true,
+      "steps": 726,
+      "decisions": 736,
+      "fallbacks": 0,
+      "scores": [
+        24400,
+        -4500,
+        37100,
+        43000
+      ],
+      "ranks": [
+        3,
+        4,
+        2,
+        1
+      ],
+      "decision_digest": "b455d2240c4a9eb4e9180f881fde5d5133b49baacf7659e7b5ab71d82627ac93",
+      "backend_requests": {
+        "v1_2_0": 542,
+        "v1_3_0": 181
+      },
+      "event_digest": "940e0970902c9896806ab9eda3d9d67c13915d72051e14c42e4bc0b2850e18ab"
+    },
+    {
+      "game_id": "g00017",
+      "seed": 2,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        2,
+        3
+      ],
+      "valid": true,
+      "steps": 597,
+      "decisions": 602,
+      "fallbacks": 0,
+      "scores": [
+        35600,
+        26100,
+        32700,
+        5600
+      ],
+      "ranks": [
+        1,
+        3,
+        2,
+        4
+      ],
+      "decision_digest": "5d5431820aee094f75f18f1ca6363c4a5563a61d53600b58fbe5c621ac891437",
+      "backend_requests": {
+        "v1_2_0": 440,
+        "v1_3_0": 151
+      },
+      "event_digest": "83527fba467b328efdcd6eca5ce360613ad23a2fd5de7d38d4903aaa5b451665"
+    },
+    {
+      "game_id": "g00018",
+      "seed": 2,
+      "matchup_id": "baseline_control",
+      "rotation": 0,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        2,
+        0
+      ],
+      "valid": true,
+      "steps": 623,
+      "decisions": 631,
+      "fallbacks": 0,
+      "scores": [
+        34800,
+        26900,
+        39400,
+        -1100
+      ],
+      "ranks": [
+        2,
+        3,
+        1,
+        4
+      ],
+      "decision_digest": "2c63671561f615182087b9d0ed2c585ca68fb6fb4d67a530d577c5edef74684e",
+      "backend_requests": {
+        "v1_2_0": 621,
+        "v1_3_0": 0
+      },
+      "event_digest": "4f5ffa5b91f7a34cac64e46178ade374016ab966331f35b288d806d521e88ff9"
+    },
+    {
+      "game_id": "g00019",
+      "seed": 2,
+      "matchup_id": "baseline_control",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        2,
+        1
+      ],
+      "valid": true,
+      "steps": 623,
+      "decisions": 631,
+      "fallbacks": 0,
+      "scores": [
+        34800,
+        26900,
+        39400,
+        -1100
+      ],
+      "ranks": [
+        2,
+        3,
+        1,
+        4
+      ],
+      "decision_digest": "2c63671561f615182087b9d0ed2c585ca68fb6fb4d67a530d577c5edef74684e",
+      "backend_requests": {
+        "v1_2_0": 621,
+        "v1_3_0": 0
+      },
+      "event_digest": "4f5ffa5b91f7a34cac64e46178ade374016ab966331f35b288d806d521e88ff9"
+    },
+    {
+      "game_id": "g00020",
+      "seed": 2,
+      "matchup_id": "baseline_control",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        2,
+        2
+      ],
+      "valid": true,
+      "steps": 623,
+      "decisions": 631,
+      "fallbacks": 0,
+      "scores": [
+        34800,
+        26900,
+        39400,
+        -1100
+      ],
+      "ranks": [
+        2,
+        3,
+        1,
+        4
+      ],
+      "decision_digest": "2c63671561f615182087b9d0ed2c585ca68fb6fb4d67a530d577c5edef74684e",
+      "backend_requests": {
+        "v1_2_0": 621,
+        "v1_3_0": 0
+      },
+      "event_digest": "4f5ffa5b91f7a34cac64e46178ade374016ab966331f35b288d806d521e88ff9"
+    },
+    {
+      "game_id": "g00021",
+      "seed": 2,
+      "matchup_id": "baseline_control",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        2,
+        3
+      ],
+      "valid": true,
+      "steps": 623,
+      "decisions": 631,
+      "fallbacks": 0,
+      "scores": [
+        34800,
+        26900,
+        39400,
+        -1100
+      ],
+      "ranks": [
+        2,
+        3,
+        1,
+        4
+      ],
+      "decision_digest": "2c63671561f615182087b9d0ed2c585ca68fb6fb4d67a530d577c5edef74684e",
+      "backend_requests": {
+        "v1_2_0": 621,
+        "v1_3_0": 0
+      },
+      "event_digest": "4f5ffa5b91f7a34cac64e46178ade374016ab966331f35b288d806d521e88ff9"
+    },
+    {
+      "game_id": "g00022",
+      "seed": 2,
+      "matchup_id": "two_vs_two",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 626,
+      "decisions": 634,
+      "fallbacks": 0,
+      "scores": [
+        30000,
+        12200,
+        53800,
+        4000
+      ],
+      "ranks": [
+        2,
+        3,
+        1,
+        4
+      ],
+      "decision_digest": "bd0bef5c591b9fe0d837a3d67e39733b3dc9fa1d2d187ee2f654a4ed7eae0a79",
+      "backend_requests": {
+        "v1_2_0": 309,
+        "v1_3_0": 312
+      },
+      "event_digest": "317201987eff75f6f2c8852b9c281c6377b6a2f9b5d5110a79e48269f0cd2dbf"
+    },
+    {
+      "game_id": "g00023",
+      "seed": 2,
+      "matchup_id": "two_vs_two",
+      "rotation": 1,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 646,
+      "decisions": 652,
+      "fallbacks": 0,
+      "scores": [
+        50100,
+        16200,
+        10300,
+        23400
+      ],
+      "ranks": [
+        1,
+        3,
+        4,
+        2
+      ],
+      "decision_digest": "73b96f28cc5a1cdceab50886c7fe75937c102cd7697a918d0d2aa55b5c7c295e",
+      "backend_requests": {
+        "v1_2_0": 325,
+        "v1_3_0": 315
+      },
+      "event_digest": "5a2b28f6cbc607e3e1f0695f7fa9428cb8c7c8bb8f0bab366f007e9c3bc84ae4"
+    },
+    {
+      "game_id": "g00024",
+      "seed": 2,
+      "matchup_id": "two_vs_two",
+      "rotation": 2,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 619,
+      "decisions": 624,
+      "fallbacks": 0,
+      "scores": [
+        8700,
+        60400,
+        -2900,
+        33800
+      ],
+      "ranks": [
+        3,
+        1,
+        4,
+        2
+      ],
+      "decision_digest": "d46d93dabdfa2482e63d3c59bca2292b18dea08b7e6f1d7293c8dae748640929",
+      "backend_requests": {
+        "v1_2_0": 310,
+        "v1_3_0": 302
+      },
+      "event_digest": "a61a4bf476abff93f1b42db29b1227d7c906e09a94ba0d1528e058ddbb715268"
+    },
+    {
+      "game_id": "g00025",
+      "seed": 2,
+      "matchup_id": "two_vs_two",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 680,
+      "decisions": 688,
+      "fallbacks": 0,
+      "scores": [
+        18800,
+        25500,
+        30800,
+        24900
+      ],
+      "ranks": [
+        4,
+        2,
+        1,
+        3
+      ],
+      "decision_digest": "ee78264c273a7dfa70b915b4dda634755e7ab5bebc3365c71d2a1b2b708195df",
+      "backend_requests": {
+        "v1_2_0": 345,
+        "v1_3_0": 329
+      },
+      "event_digest": "f6eabda293e0432716b8fff11c6dc6f684fe0a443e9c41e3641962ec485c725d"
+    },
+    {
+      "game_id": "g00026",
+      "seed": 2,
+      "matchup_id": "two_vs_two",
+      "rotation": 4,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 585,
+      "decisions": 590,
+      "fallbacks": 0,
+      "scores": [
+        32900,
+        15700,
+        35900,
+        15500
+      ],
+      "ranks": [
+        2,
+        3,
+        1,
+        4
+      ],
+      "decision_digest": "b4db79d6f85ccd1ad008d9ca92f6aed173ac35d6d50a0287f48a47ef811c20f0",
+      "backend_requests": {
+        "v1_2_0": 287,
+        "v1_3_0": 291
+      },
+      "event_digest": "b3e0628f75044dc313a0e1f08474dbc48593e319f3c6eeaf85d25d20a900e2d5"
+    },
+    {
+      "game_id": "g00027",
+      "seed": 2,
+      "matchup_id": "two_vs_two",
+      "rotation": 5,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 648,
+      "decisions": 652,
+      "fallbacks": 0,
+      "scores": [
+        19400,
+        33500,
+        21400,
+        25700
+      ],
+      "ranks": [
+        4,
+        1,
+        3,
+        2
+      ],
+      "decision_digest": "15495e3cb52db57c25e368e17a3ab63982770e8724441b280c5647989da094a3",
+      "backend_requests": {
+        "v1_2_0": 324,
+        "v1_3_0": 315
+      },
+      "event_digest": "424af04135347494198eb8ac4a467ac511096850f334d371edbb5dead9533b2b"
+    },
+    {
+      "game_id": "g00028",
+      "seed": 3,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        3,
+        0
+      ],
+      "valid": true,
+      "steps": 517,
+      "decisions": 523,
+      "fallbacks": 0,
+      "scores": [
+        44800,
+        -6400,
+        29600,
+        32000
+      ],
+      "ranks": [
+        1,
+        4,
+        3,
+        2
+      ],
+      "decision_digest": "73270e62d17f221b574a288ef611538259e0534f9f43cf46356258f61b32723d",
+      "backend_requests": {
+        "v1_2_0": 385,
+        "v1_3_0": 131
+      },
+      "event_digest": "4ff77391be7b30c2df6f2019d86e25d1b4efd76d501c998d42f3737d37e1c8c0"
+    },
+    {
+      "game_id": "g00029",
+      "seed": 3,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        3,
+        1
+      ],
+      "valid": true,
+      "steps": 749,
+      "decisions": 758,
+      "fallbacks": 0,
+      "scores": [
+        13400,
+        25900,
+        41900,
+        18800
+      ],
+      "ranks": [
+        4,
+        2,
+        1,
+        3
+      ],
+      "decision_digest": "7b98c83321b3ee383587a525cdb035662589fbc436778e8c0c92e5dfedd785a1",
+      "backend_requests": {
+        "v1_2_0": 554,
+        "v1_3_0": 188
+      },
+      "event_digest": "509d35f0939562f8607ba9f14ed757c046c7a2efba5dd0162273e65c8f89ad4c"
+    },
+    {
+      "game_id": "g00030",
+      "seed": 3,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        3,
+        2
+      ],
+      "valid": true,
+      "steps": 176,
+      "decisions": 180,
+      "fallbacks": 0,
+      "scores": [
+        19000,
+        64000,
+        -2000,
+        19000
+      ],
+      "ranks": [
+        2,
+        1,
+        4,
+        3
+      ],
+      "decision_digest": "b33ee1d09f083ec6daa342931043090067b78670d859cedc80f53483442590ff",
+      "backend_requests": {
+        "v1_2_0": 129,
+        "v1_3_0": 47
+      },
+      "event_digest": "1417a9bf14252360af5b6c9187c83fb671dacc4faf01c1f61f43ca8af7c7995c"
+    },
+    {
+      "game_id": "g00031",
+      "seed": 3,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        3,
+        3
+      ],
+      "valid": true,
+      "steps": 558,
+      "decisions": 566,
+      "fallbacks": 0,
+      "scores": [
+        10900,
+        45600,
+        21500,
+        22000
+      ],
+      "ranks": [
+        4,
+        1,
+        3,
+        2
+      ],
+      "decision_digest": "712e0fc7e86d4fe3d2d9082db2c9f5428f8923984ee8be997b43d31648fe9b75",
+      "backend_requests": {
+        "v1_2_0": 411,
+        "v1_3_0": 142
+      },
+      "event_digest": "d0200f2678a803186cd68ca7dd8e80fc471dd1509891a6922398f31b3ff630eb"
+    },
+    {
+      "game_id": "g00032",
+      "seed": 3,
+      "matchup_id": "baseline_control",
+      "rotation": 0,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        3,
+        0
+      ],
+      "valid": true,
+      "steps": 825,
+      "decisions": 835,
+      "fallbacks": 0,
+      "scores": [
+        59800,
+        8500,
+        15800,
+        15900
+      ],
+      "ranks": [
+        1,
+        4,
+        3,
+        2
+      ],
+      "decision_digest": "9ce11488e3b460ec553541d34594fe34d02de84e5e55ef3eae761e272945bb2f",
+      "backend_requests": {
+        "v1_2_0": 821,
+        "v1_3_0": 0
+      },
+      "event_digest": "df9d2807692ed552d7f0110383d3bf8b76d701a0372787ca81037aff10300cc8"
+    },
+    {
+      "game_id": "g00033",
+      "seed": 3,
+      "matchup_id": "baseline_control",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        3,
+        1
+      ],
+      "valid": true,
+      "steps": 825,
+      "decisions": 835,
+      "fallbacks": 0,
+      "scores": [
+        59800,
+        8500,
+        15800,
+        15900
+      ],
+      "ranks": [
+        1,
+        4,
+        3,
+        2
+      ],
+      "decision_digest": "9ce11488e3b460ec553541d34594fe34d02de84e5e55ef3eae761e272945bb2f",
+      "backend_requests": {
+        "v1_2_0": 821,
+        "v1_3_0": 0
+      },
+      "event_digest": "df9d2807692ed552d7f0110383d3bf8b76d701a0372787ca81037aff10300cc8"
+    },
+    {
+      "game_id": "g00034",
+      "seed": 3,
+      "matchup_id": "baseline_control",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        3,
+        2
+      ],
+      "valid": true,
+      "steps": 825,
+      "decisions": 835,
+      "fallbacks": 0,
+      "scores": [
+        59800,
+        8500,
+        15800,
+        15900
+      ],
+      "ranks": [
+        1,
+        4,
+        3,
+        2
+      ],
+      "decision_digest": "9ce11488e3b460ec553541d34594fe34d02de84e5e55ef3eae761e272945bb2f",
+      "backend_requests": {
+        "v1_2_0": 821,
+        "v1_3_0": 0
+      },
+      "event_digest": "df9d2807692ed552d7f0110383d3bf8b76d701a0372787ca81037aff10300cc8"
+    },
+    {
+      "game_id": "g00035",
+      "seed": 3,
+      "matchup_id": "baseline_control",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        3,
+        3
+      ],
+      "valid": true,
+      "steps": 825,
+      "decisions": 835,
+      "fallbacks": 0,
+      "scores": [
+        59800,
+        8500,
+        15800,
+        15900
+      ],
+      "ranks": [
+        1,
+        4,
+        3,
+        2
+      ],
+      "decision_digest": "9ce11488e3b460ec553541d34594fe34d02de84e5e55ef3eae761e272945bb2f",
+      "backend_requests": {
+        "v1_2_0": 821,
+        "v1_3_0": 0
+      },
+      "event_digest": "df9d2807692ed552d7f0110383d3bf8b76d701a0372787ca81037aff10300cc8"
+    },
+    {
+      "game_id": "g00036",
+      "seed": 3,
+      "matchup_id": "two_vs_two",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 507,
+      "decisions": 514,
+      "fallbacks": 0,
+      "scores": [
+        52700,
+        -1900,
+        23700,
+        25500
+      ],
+      "ranks": [
+        1,
+        4,
+        3,
+        2
+      ],
+      "decision_digest": "fc9383541f72cb961e46b6ebb9aa421dd94e23bb216063e2e962b2f2ffb5fbca",
+      "backend_requests": {
+        "v1_2_0": 246,
+        "v1_3_0": 260
+      },
+      "event_digest": "1c16560c04fed22000628eca1ed5ae8609e59344fdef6d4f283ea8cf0f3ef923"
+    },
+    {
+      "game_id": "g00037",
+      "seed": 3,
+      "matchup_id": "two_vs_two",
+      "rotation": 1,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 572,
+      "decisions": 578,
+      "fallbacks": 0,
+      "scores": [
+        31900,
+        37900,
+        23900,
+        6300
+      ],
+      "ranks": [
+        2,
+        1,
+        3,
+        4
+      ],
+      "decision_digest": "dcb5c60888e9d87388c179d520db727abfe888dc92c9076fa447d0fe88eda8aa",
+      "backend_requests": {
+        "v1_2_0": 288,
+        "v1_3_0": 276
+      },
+      "event_digest": "e1dc63ab67b00302b39d8b815ad9221f3ab6d3ae6823208ff5af3e713ee73997"
+    },
+    {
+      "game_id": "g00038",
+      "seed": 3,
+      "matchup_id": "two_vs_two",
+      "rotation": 2,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 714,
+      "decisions": 723,
+      "fallbacks": 0,
+      "scores": [
+        16100,
+        49200,
+        19700,
+        15000
+      ],
+      "ranks": [
+        3,
+        1,
+        2,
+        4
+      ],
+      "decision_digest": "1dac9406f23c5f6cf3e18f8a6bfe0b11e2ddb6eedc9391e8672bfb05362b00a0",
+      "backend_requests": {
+        "v1_2_0": 354,
+        "v1_3_0": 352
+      },
+      "event_digest": "a4fc583326c15edbfa4e37ef5fee092215b3c131f272bbf17cae989b5cd437a0"
+    },
+    {
+      "game_id": "g00039",
+      "seed": 3,
+      "matchup_id": "two_vs_two",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 638,
+      "decisions": 647,
+      "fallbacks": 0,
+      "scores": [
+        9900,
+        46800,
+        15600,
+        27700
+      ],
+      "ranks": [
+        4,
+        1,
+        3,
+        2
+      ],
+      "decision_digest": "936fa4f4c3754b44d5c00c557530a0a47d10920298ec29a6e35202858524b2de",
+      "backend_requests": {
+        "v1_2_0": 316,
+        "v1_3_0": 312
+      },
+      "event_digest": "c66acbe3e4d710b6dcc1e75d6a412a81be75239492cf82b4fbd2a14cae3f023f"
+    },
+    {
+      "game_id": "g00040",
+      "seed": 3,
+      "matchup_id": "two_vs_two",
+      "rotation": 4,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 618,
+      "decisions": 629,
+      "fallbacks": 0,
+      "scores": [
+        19600,
+        18300,
+        26100,
+        36000
+      ],
+      "ranks": [
+        3,
+        4,
+        2,
+        1
+      ],
+      "decision_digest": "41acdfa5f0d51692aa7523d6c9ab37063a8aa7256205ca73113834ddf7be2c26",
+      "backend_requests": {
+        "v1_2_0": 307,
+        "v1_3_0": 311
+      },
+      "event_digest": "3d331c690c049a27759211bd8992e3b0ee97a4bbb769a901648b6c387f1c1629"
+    },
+    {
+      "game_id": "g00041",
+      "seed": 3,
+      "matchup_id": "two_vs_two",
+      "rotation": 5,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 537,
+      "decisions": 543,
+      "fallbacks": 0,
+      "scores": [
+        16900,
+        44100,
+        15700,
+        23300
+      ],
+      "ranks": [
+        3,
+        1,
+        4,
+        2
+      ],
+      "decision_digest": "4dd213b5a5387da9e88b5cdcec836a5a856ad9727144fdee17a97a3ccc652730",
+      "backend_requests": {
+        "v1_2_0": 258,
+        "v1_3_0": 272
+      },
+      "event_digest": "fe243c26d47bcc9757cf2061b04bd5899d194075c3879b74e1e8c3bf88fa2e1a"
+    },
+    {
+      "game_id": "g00042",
+      "seed": 4,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        4,
+        0
+      ],
+      "valid": true,
+      "steps": 470,
+      "decisions": 475,
+      "fallbacks": 0,
+      "scores": [
+        40600,
+        -4500,
+        30900,
+        33000
+      ],
+      "ranks": [
+        1,
+        4,
+        3,
+        2
+      ],
+      "decision_digest": "b1e4f8a2534f8020c68f740a6ca520194deb27deb3d3cac881834668bc5b1947",
+      "backend_requests": {
+        "v1_2_0": 350,
+        "v1_3_0": 119
+      },
+      "event_digest": "9c81a2729f2fd3d20a30ef4fd59790cb88d0a4f3c8206b6cc4c517b5cf6d37d7"
+    },
+    {
+      "game_id": "g00043",
+      "seed": 4,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        4,
+        1
+      ],
+      "valid": true,
+      "steps": 691,
+      "decisions": 699,
+      "fallbacks": 0,
+      "scores": [
+        9900,
+        18900,
+        45300,
+        25900
+      ],
+      "ranks": [
+        4,
+        3,
+        1,
+        2
+      ],
+      "decision_digest": "7470cbd47937231588eb858006f7b72ea935a8c88aa6b33792f62b78e5f60af4",
+      "backend_requests": {
+        "v1_2_0": 514,
+        "v1_3_0": 172
+      },
+      "event_digest": "85bedf254156283d40b8497de6c0120b8f1fc4581ae0f3523d821fe9ba8ee153"
+    },
+    {
+      "game_id": "g00044",
+      "seed": 4,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        4,
+        2
+      ],
+      "valid": true,
+      "steps": 197,
+      "decisions": 201,
+      "fallbacks": 0,
+      "scores": [
+        45000,
+        -5300,
+        34300,
+        26000
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "fbe12daeae17f386d4792f54386b5387d2b3dbfdcd5ae80cd6c195e13266f368",
+      "backend_requests": {
+        "v1_2_0": 148,
+        "v1_3_0": 50
+      },
+      "event_digest": "d6479c6de7db727cdf252d124ea258a9b77d61b587fda0f9406a2581e49553db"
+    },
+    {
+      "game_id": "g00045",
+      "seed": 4,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        4,
+        3
+      ],
+      "valid": true,
+      "steps": 831,
+      "decisions": 844,
+      "fallbacks": 0,
+      "scores": [
+        47500,
+        14500,
+        19300,
+        18700
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "df6b6756dfdf53e8ecb6bb3ab52a7257449232e0de5d64163b53ed6b49b71d1f",
+      "backend_requests": {
+        "v1_2_0": 628,
+        "v1_3_0": 202
+      },
+      "event_digest": "7f1cbba360b842b39dee162d2767b9661ee87a2d447041d0ee22a56e82ce9897"
+    },
+    {
+      "game_id": "g00046",
+      "seed": 4,
+      "matchup_id": "baseline_control",
+      "rotation": 0,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        4,
+        0
+      ],
+      "valid": true,
+      "steps": 770,
+      "decisions": 777,
+      "fallbacks": 0,
+      "scores": [
+        47600,
+        10400,
+        25100,
+        16900
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "409dd4662071105c5aa850e1e5175d73b0f453eb88d1f49f395d3f62148c8247",
+      "backend_requests": {
+        "v1_2_0": 764,
+        "v1_3_0": 0
+      },
+      "event_digest": "6b5e673d0592e3a0a469874daf3da2083df2beb58c2202b01279030bee5f621c"
+    },
+    {
+      "game_id": "g00047",
+      "seed": 4,
+      "matchup_id": "baseline_control",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        4,
+        1
+      ],
+      "valid": true,
+      "steps": 770,
+      "decisions": 777,
+      "fallbacks": 0,
+      "scores": [
+        47600,
+        10400,
+        25100,
+        16900
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "409dd4662071105c5aa850e1e5175d73b0f453eb88d1f49f395d3f62148c8247",
+      "backend_requests": {
+        "v1_2_0": 764,
+        "v1_3_0": 0
+      },
+      "event_digest": "6b5e673d0592e3a0a469874daf3da2083df2beb58c2202b01279030bee5f621c"
+    },
+    {
+      "game_id": "g00048",
+      "seed": 4,
+      "matchup_id": "baseline_control",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        4,
+        2
+      ],
+      "valid": true,
+      "steps": 770,
+      "decisions": 777,
+      "fallbacks": 0,
+      "scores": [
+        47600,
+        10400,
+        25100,
+        16900
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "409dd4662071105c5aa850e1e5175d73b0f453eb88d1f49f395d3f62148c8247",
+      "backend_requests": {
+        "v1_2_0": 764,
+        "v1_3_0": 0
+      },
+      "event_digest": "6b5e673d0592e3a0a469874daf3da2083df2beb58c2202b01279030bee5f621c"
+    },
+    {
+      "game_id": "g00049",
+      "seed": 4,
+      "matchup_id": "baseline_control",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        4,
+        3
+      ],
+      "valid": true,
+      "steps": 770,
+      "decisions": 777,
+      "fallbacks": 0,
+      "scores": [
+        47600,
+        10400,
+        25100,
+        16900
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "409dd4662071105c5aa850e1e5175d73b0f453eb88d1f49f395d3f62148c8247",
+      "backend_requests": {
+        "v1_2_0": 764,
+        "v1_3_0": 0
+      },
+      "event_digest": "6b5e673d0592e3a0a469874daf3da2083df2beb58c2202b01279030bee5f621c"
+    },
+    {
+      "game_id": "g00050",
+      "seed": 4,
+      "matchup_id": "two_vs_two",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 725,
+      "decisions": 734,
+      "fallbacks": 0,
+      "scores": [
+        45400,
+        14600,
+        28300,
+        11700
+      ],
+      "ranks": [
+        1,
+        3,
+        2,
+        4
+      ],
+      "decision_digest": "86402d572ad1ff1509a4aa5c0c2419f9908a9afb0f64904d9d05bc02ec7bd08d",
+      "backend_requests": {
+        "v1_2_0": 351,
+        "v1_3_0": 370
+      },
+      "event_digest": "b5f91924c0b1761240b018e120a02baa652a396c0d898fc574952135d0cc2ad1"
+    },
+    {
+      "game_id": "g00051",
+      "seed": 4,
+      "matchup_id": "two_vs_two",
+      "rotation": 1,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 208,
+      "decisions": 211,
+      "fallbacks": 0,
+      "scores": [
+        45000,
+        -4600,
+        34600,
+        25000
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "583d34570c36078fd72f30d9c243e0610619618c49dc21c7ea065766fea81520",
+      "backend_requests": {
+        "v1_2_0": 101,
+        "v1_3_0": 106
+      },
+      "event_digest": "d9756ecc4feba027240d1fd0785de338512d4b1d033395e313f782b3929cdf33"
+    },
+    {
+      "game_id": "g00052",
+      "seed": 4,
+      "matchup_id": "two_vs_two",
+      "rotation": 2,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 668,
+      "decisions": 677,
+      "fallbacks": 0,
+      "scores": [
+        34800,
+        24100,
+        33500,
+        7600
+      ],
+      "ranks": [
+        1,
+        3,
+        2,
+        4
+      ],
+      "decision_digest": "e3a613d4a5f26c04bcaeff3b6a8f92b709422332c0370b95a774510f6752cda7",
+      "backend_requests": {
+        "v1_2_0": 348,
+        "v1_3_0": 318
+      },
+      "event_digest": "2eeecc97cab772022acacef5802859d5232fa4485355605abb92933bc30500da"
+    },
+    {
+      "game_id": "g00053",
+      "seed": 4,
+      "matchup_id": "two_vs_two",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 635,
+      "decisions": 642,
+      "fallbacks": 0,
+      "scores": [
+        14600,
+        24200,
+        25400,
+        35800
+      ],
+      "ranks": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "decision_digest": "02bb79d6eaac2629eb7c1bdf7088523d378f70a901bbe469411e1199c3163679",
+      "backend_requests": {
+        "v1_2_0": 307,
+        "v1_3_0": 322
+      },
+      "event_digest": "4d8e81fedcc6339a8215ef87b4a5ff9812045d98dc8ed500e93dc0a4eec946e6"
+    },
+    {
+      "game_id": "g00054",
+      "seed": 4,
+      "matchup_id": "two_vs_two",
+      "rotation": 4,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 597,
+      "decisions": 605,
+      "fallbacks": 0,
+      "scores": [
+        35600,
+        20600,
+        23800,
+        20000
+      ],
+      "ranks": [
+        1,
+        3,
+        2,
+        4
+      ],
+      "decision_digest": "ecc9a49907cdb08ba5883c219e1c3d09bdd6597e27da9f1625c4d60c250d298b",
+      "backend_requests": {
+        "v1_2_0": 302,
+        "v1_3_0": 293
+      },
+      "event_digest": "73f14c412639791003b1be1bdb3716d7329903b7b8ff07cd3c813ffe6dbbafc3"
+    },
+    {
+      "game_id": "g00055",
+      "seed": 4,
+      "matchup_id": "two_vs_two",
+      "rotation": 5,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 205,
+      "decisions": 210,
+      "fallbacks": 0,
+      "scores": [
+        45000,
+        -5300,
+        34300,
+        26000
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "082c05ebedba78fb7a46ef61aeb29125ec90ea827be925de0fb9c86db2a5a7e9",
+      "backend_requests": {
+        "v1_2_0": 108,
+        "v1_3_0": 99
+      },
+      "event_digest": "e28e3dfa2738592d8abca57a58deb8e7085877d2623fc149ad608d8c7e1c4c2d"
+    },
+    {
+      "game_id": "g00056",
+      "seed": 5,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        5,
+        0
+      ],
+      "valid": true,
+      "steps": 760,
+      "decisions": 767,
+      "fallbacks": 0,
+      "scores": [
+        29000,
+        14900,
+        32400,
+        23700
+      ],
+      "ranks": [
+        2,
+        4,
+        1,
+        3
+      ],
+      "decision_digest": "7d1c818d478d9143fc57b06a325ae380faa718e3af2b4a11efbbda42dd569b8e",
+      "backend_requests": {
+        "v1_2_0": 567,
+        "v1_3_0": 184
+      },
+      "event_digest": "f8961d40736c0af95d4a39650d9aa999a01e98e6c005f74010fa29d4134bd703"
+    },
+    {
+      "game_id": "g00057",
+      "seed": 5,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        5,
+        1
+      ],
+      "valid": true,
+      "steps": 558,
+      "decisions": 565,
+      "fallbacks": 0,
+      "scores": [
+        28400,
+        -300,
+        42300,
+        29600
+      ],
+      "ranks": [
+        3,
+        4,
+        1,
+        2
+      ],
+      "decision_digest": "56d7f522f38f4a59bcc287705db524eedc32e75d44f505232d7cff8b15593e9a",
+      "backend_requests": {
+        "v1_2_0": 411,
+        "v1_3_0": 142
+      },
+      "event_digest": "29e392fa968bd87c2e53ed4622929f7503b0173d0df6a7eb81a2b2f7bc9db14e"
+    },
+    {
+      "game_id": "g00058",
+      "seed": 5,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        5,
+        2
+      ],
+      "valid": true,
+      "steps": 365,
+      "decisions": 369,
+      "fallbacks": 0,
+      "scores": [
+        61000,
+        -2400,
+        32200,
+        9200
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "46fa46c538a7efac1dc231f5d7dbabeb53ccabb2f2a8f546521926788784f411",
+      "backend_requests": {
+        "v1_2_0": 267,
+        "v1_3_0": 93
+      },
+      "event_digest": "80da03e7aedd5a998517916999f336c4088fcd170e5099edd0cc63093e6a6b17"
+    },
+    {
+      "game_id": "g00059",
+      "seed": 5,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        5,
+        3
+      ],
+      "valid": true,
+      "steps": 740,
+      "decisions": 751,
+      "fallbacks": 0,
+      "scores": [
+        34500,
+        13500,
+        13300,
+        38700
+      ],
+      "ranks": [
+        2,
+        3,
+        4,
+        1
+      ],
+      "decision_digest": "87cebd0fda2e42eacfea3883c235aa3e1befc10d4c416bcb9976cf4523c8b66c",
+      "backend_requests": {
+        "v1_2_0": 556,
+        "v1_3_0": 182
+      },
+      "event_digest": "23e0e9abea7f154deb352d4aaed8fed414f0e5e39caf3d1f9bc27b1fe2fce0c9"
+    },
+    {
+      "game_id": "g00060",
+      "seed": 5,
+      "matchup_id": "baseline_control",
+      "rotation": 0,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        5,
+        0
+      ],
+      "valid": true,
+      "steps": 579,
+      "decisions": 585,
+      "fallbacks": 0,
+      "scores": [
+        22900,
+        9300,
+        38400,
+        29400
+      ],
+      "ranks": [
+        3,
+        4,
+        1,
+        2
+      ],
+      "decision_digest": "122a3618eefe852cf83766943bba1945ace0a4ede2ccf7b8eec0d9c58c341dce",
+      "backend_requests": {
+        "v1_2_0": 573,
+        "v1_3_0": 0
+      },
+      "event_digest": "ba1b7d7030a1e85b9bb9f767c0ea02b1239414e061766ec4f693dd00e2ff7e06"
+    },
+    {
+      "game_id": "g00061",
+      "seed": 5,
+      "matchup_id": "baseline_control",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        5,
+        1
+      ],
+      "valid": true,
+      "steps": 579,
+      "decisions": 585,
+      "fallbacks": 0,
+      "scores": [
+        22900,
+        9300,
+        38400,
+        29400
+      ],
+      "ranks": [
+        3,
+        4,
+        1,
+        2
+      ],
+      "decision_digest": "122a3618eefe852cf83766943bba1945ace0a4ede2ccf7b8eec0d9c58c341dce",
+      "backend_requests": {
+        "v1_2_0": 573,
+        "v1_3_0": 0
+      },
+      "event_digest": "ba1b7d7030a1e85b9bb9f767c0ea02b1239414e061766ec4f693dd00e2ff7e06"
+    },
+    {
+      "game_id": "g00062",
+      "seed": 5,
+      "matchup_id": "baseline_control",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        5,
+        2
+      ],
+      "valid": true,
+      "steps": 579,
+      "decisions": 585,
+      "fallbacks": 0,
+      "scores": [
+        22900,
+        9300,
+        38400,
+        29400
+      ],
+      "ranks": [
+        3,
+        4,
+        1,
+        2
+      ],
+      "decision_digest": "122a3618eefe852cf83766943bba1945ace0a4ede2ccf7b8eec0d9c58c341dce",
+      "backend_requests": {
+        "v1_2_0": 573,
+        "v1_3_0": 0
+      },
+      "event_digest": "ba1b7d7030a1e85b9bb9f767c0ea02b1239414e061766ec4f693dd00e2ff7e06"
+    },
+    {
+      "game_id": "g00063",
+      "seed": 5,
+      "matchup_id": "baseline_control",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        5,
+        3
+      ],
+      "valid": true,
+      "steps": 579,
+      "decisions": 585,
+      "fallbacks": 0,
+      "scores": [
+        22900,
+        9300,
+        38400,
+        29400
+      ],
+      "ranks": [
+        3,
+        4,
+        1,
+        2
+      ],
+      "decision_digest": "122a3618eefe852cf83766943bba1945ace0a4ede2ccf7b8eec0d9c58c341dce",
+      "backend_requests": {
+        "v1_2_0": 573,
+        "v1_3_0": 0
+      },
+      "event_digest": "ba1b7d7030a1e85b9bb9f767c0ea02b1239414e061766ec4f693dd00e2ff7e06"
+    },
+    {
+      "game_id": "g00064",
+      "seed": 5,
+      "matchup_id": "two_vs_two",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 453,
+      "decisions": 455,
+      "fallbacks": 0,
+      "scores": [
+        30600,
+        -300,
+        39300,
+        30400
+      ],
+      "ranks": [
+        2,
+        4,
+        1,
+        3
+      ],
+      "decision_digest": "a00fef7f139b5d484fb0f318305e9775035aa9db89bde4e8983617b4129db688",
+      "backend_requests": {
+        "v1_2_0": 224,
+        "v1_3_0": 221
+      },
+      "event_digest": "b7c57bbe74b9c4f73a163de8f7f52be006cc3011dec425575f0e3fe80d71bbd4"
+    },
+    {
+      "game_id": "g00065",
+      "seed": 5,
+      "matchup_id": "two_vs_two",
+      "rotation": 1,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 837,
+      "decisions": 848,
+      "fallbacks": 0,
+      "scores": [
+        34200,
+        15400,
+        33700,
+        16700
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "6f49876b52c7c57232703dda2cf7da4222cffd46dd778f986fb1c8e1abf288dc",
+      "backend_requests": {
+        "v1_2_0": 413,
+        "v1_3_0": 423
+      },
+      "event_digest": "da0a0a2c0d12cf46e8bfaab1d2c9c64e82e52cfdf865ac2f3f900cfa1512c6d4"
+    },
+    {
+      "game_id": "g00066",
+      "seed": 5,
+      "matchup_id": "two_vs_two",
+      "rotation": 2,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 628,
+      "decisions": 637,
+      "fallbacks": 0,
+      "scores": [
+        29200,
+        27300,
+        38200,
+        5300
+      ],
+      "ranks": [
+        2,
+        3,
+        1,
+        4
+      ],
+      "decision_digest": "a42cd091f7f17f912c5961d986446c52081b83f8ff2023cc7438dd41e12dce4e",
+      "backend_requests": {
+        "v1_2_0": 321,
+        "v1_3_0": 302
+      },
+      "event_digest": "36366a53dc895fd7d2fc09cf7e375cfc52653f8b43bd34d3e060c17bcf38b4ea"
+    },
+    {
+      "game_id": "g00067",
+      "seed": 5,
+      "matchup_id": "two_vs_two",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 591,
+      "decisions": 598,
+      "fallbacks": 0,
+      "scores": [
+        8200,
+        6500,
+        31700,
+        53600
+      ],
+      "ranks": [
+        3,
+        4,
+        2,
+        1
+      ],
+      "decision_digest": "fb54fc3d83861eeddf17f5a78289595095847a35b9912524dac81e7076c6c7a8",
+      "backend_requests": {
+        "v1_2_0": 294,
+        "v1_3_0": 291
+      },
+      "event_digest": "26a9339c812742519ce6d6e46f7ceaba0e4cad5822ec416b5ea4a6cc1feaed9d"
+    },
+    {
+      "game_id": "g00068",
+      "seed": 5,
+      "matchup_id": "two_vs_two",
+      "rotation": 4,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 617,
+      "decisions": 625,
+      "fallbacks": 0,
+      "scores": [
+        20200,
+        21000,
+        26600,
+        32200
+      ],
+      "ranks": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "decision_digest": "64e6f5e45dfe8f390369a453e464e821adf0e5ca4a24a0eaa0eb39beadebe598",
+      "backend_requests": {
+        "v1_2_0": 313,
+        "v1_3_0": 304
+      },
+      "event_digest": "6d135e22a83588387c06deaa0c92dd65aa73c077d8c482a70ae68bcf4e816f0c"
+    },
+    {
+      "game_id": "g00069",
+      "seed": 5,
+      "matchup_id": "two_vs_two",
+      "rotation": 5,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 360,
+      "decisions": 365,
+      "fallbacks": 0,
+      "scores": [
+        61000,
+        -2400,
+        32200,
+        9200
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "883322ca04aeed1cccdeb7b37853036accf363a1811bb1b45841e10c643569e4",
+      "backend_requests": {
+        "v1_2_0": 178,
+        "v1_3_0": 178
+      },
+      "event_digest": "0146370ef09d54677445688cf8b82de5341f32e9541385d63aba40df980e55b8"
+    },
+    {
+      "game_id": "g00070",
+      "seed": 6,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        6,
+        0
+      ],
+      "valid": true,
+      "steps": 560,
+      "decisions": 565,
+      "fallbacks": 0,
+      "scores": [
+        15400,
+        21700,
+        39600,
+        23300
+      ],
+      "ranks": [
+        4,
+        3,
+        1,
+        2
+      ],
+      "decision_digest": "ff235c23df826e71bd023a6b774254bd41e21f3dcf7d9e035d63eaa301a0eec3",
+      "backend_requests": {
+        "v1_2_0": 416,
+        "v1_3_0": 134
+      },
+      "event_digest": "c5b73ba33322d20a3d2e42beb1beb9436c612a0eb7fa415c021cfc7cdc831b7d"
+    },
+    {
+      "game_id": "g00071",
+      "seed": 6,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        6,
+        1
+      ],
+      "valid": true,
+      "steps": 495,
+      "decisions": 499,
+      "fallbacks": 0,
+      "scores": [
+        24000,
+        20700,
+        21500,
+        33800
+      ],
+      "ranks": [
+        2,
+        4,
+        3,
+        1
+      ],
+      "decision_digest": "5b49513d8e0f15936de49aa813ce04a01eddcf047c54d0c1720309398198d24a",
+      "backend_requests": {
+        "v1_2_0": 365,
+        "v1_3_0": 123
+      },
+      "event_digest": "d1b76433fce1a0b9ba7e7b02c1f687d125a4ac1391bf7197497d3de12e3adc33"
+    },
+    {
+      "game_id": "g00072",
+      "seed": 6,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        6,
+        2
+      ],
+      "valid": true,
+      "steps": 490,
+      "decisions": 496,
+      "fallbacks": 0,
+      "scores": [
+        17900,
+        9400,
+        29900,
+        42800
+      ],
+      "ranks": [
+        3,
+        4,
+        2,
+        1
+      ],
+      "decision_digest": "25f18ff0ea3b7f864e7642a0f58101117405ee3940488bad7f236a34c3392aa5",
+      "backend_requests": {
+        "v1_2_0": 361,
+        "v1_3_0": 124
+      },
+      "event_digest": "a0aa5d9502ac6d65d456d28c53d24ebfdf8ad1b39ee8f3b08fbce0eb9c96a71f"
+    },
+    {
+      "game_id": "g00073",
+      "seed": 6,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        6,
+        3
+      ],
+      "valid": true,
+      "steps": 633,
+      "decisions": 638,
+      "fallbacks": 0,
+      "scores": [
+        25700,
+        26800,
+        3300,
+        44200
+      ],
+      "ranks": [
+        3,
+        2,
+        4,
+        1
+      ],
+      "decision_digest": "e98bc8fcd0a91008c609f772ba8e660757e0a3ed07107081f45d2ab4e0f66d33",
+      "backend_requests": {
+        "v1_2_0": 465,
+        "v1_3_0": 158
+      },
+      "event_digest": "1e5cb09d1a4945558f15fbb589d278ee75d9171bd99d5e165de1f445274dae7c"
+    },
+    {
+      "game_id": "g00074",
+      "seed": 6,
+      "matchup_id": "baseline_control",
+      "rotation": 0,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        6,
+        0
+      ],
+      "valid": true,
+      "steps": 492,
+      "decisions": 496,
+      "fallbacks": 0,
+      "scores": [
+        13900,
+        25900,
+        31000,
+        29200
+      ],
+      "ranks": [
+        4,
+        3,
+        1,
+        2
+      ],
+      "decision_digest": "0d9540ed006ae74806c0b6e26bf296c05c0178d9a3c98c1c12f29493b5671519",
+      "backend_requests": {
+        "v1_2_0": 485,
+        "v1_3_0": 0
+      },
+      "event_digest": "bc726bc78e0e76634553236f0bced1e8b889f91f5c6208ba180b393a5869810f"
+    },
+    {
+      "game_id": "g00075",
+      "seed": 6,
+      "matchup_id": "baseline_control",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        6,
+        1
+      ],
+      "valid": true,
+      "steps": 492,
+      "decisions": 496,
+      "fallbacks": 0,
+      "scores": [
+        13900,
+        25900,
+        31000,
+        29200
+      ],
+      "ranks": [
+        4,
+        3,
+        1,
+        2
+      ],
+      "decision_digest": "0d9540ed006ae74806c0b6e26bf296c05c0178d9a3c98c1c12f29493b5671519",
+      "backend_requests": {
+        "v1_2_0": 485,
+        "v1_3_0": 0
+      },
+      "event_digest": "bc726bc78e0e76634553236f0bced1e8b889f91f5c6208ba180b393a5869810f"
+    },
+    {
+      "game_id": "g00076",
+      "seed": 6,
+      "matchup_id": "baseline_control",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        6,
+        2
+      ],
+      "valid": true,
+      "steps": 492,
+      "decisions": 496,
+      "fallbacks": 0,
+      "scores": [
+        13900,
+        25900,
+        31000,
+        29200
+      ],
+      "ranks": [
+        4,
+        3,
+        1,
+        2
+      ],
+      "decision_digest": "0d9540ed006ae74806c0b6e26bf296c05c0178d9a3c98c1c12f29493b5671519",
+      "backend_requests": {
+        "v1_2_0": 485,
+        "v1_3_0": 0
+      },
+      "event_digest": "bc726bc78e0e76634553236f0bced1e8b889f91f5c6208ba180b393a5869810f"
+    },
+    {
+      "game_id": "g00077",
+      "seed": 6,
+      "matchup_id": "baseline_control",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        6,
+        3
+      ],
+      "valid": true,
+      "steps": 492,
+      "decisions": 496,
+      "fallbacks": 0,
+      "scores": [
+        13900,
+        25900,
+        31000,
+        29200
+      ],
+      "ranks": [
+        4,
+        3,
+        1,
+        2
+      ],
+      "decision_digest": "0d9540ed006ae74806c0b6e26bf296c05c0178d9a3c98c1c12f29493b5671519",
+      "backend_requests": {
+        "v1_2_0": 485,
+        "v1_3_0": 0
+      },
+      "event_digest": "bc726bc78e0e76634553236f0bced1e8b889f91f5c6208ba180b393a5869810f"
+    },
+    {
+      "game_id": "g00078",
+      "seed": 6,
+      "matchup_id": "two_vs_two",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 491,
+      "decisions": 494,
+      "fallbacks": 0,
+      "scores": [
+        9400,
+        6500,
+        38000,
+        46100
+      ],
+      "ranks": [
+        3,
+        4,
+        2,
+        1
+      ],
+      "decision_digest": "77d229a1f7978ba62b4469a7c34b84d82b659b289b19dd88a2aadfe7b18f816b",
+      "backend_requests": {
+        "v1_2_0": 244,
+        "v1_3_0": 239
+      },
+      "event_digest": "e3ec099966e5065d8311400337e38e5e96f8d047b3a88b482ac0425c129cef25"
+    },
+    {
+      "game_id": "g00079",
+      "seed": 6,
+      "matchup_id": "two_vs_two",
+      "rotation": 1,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 541,
+      "decisions": 548,
+      "fallbacks": 0,
+      "scores": [
+        39600,
+        36900,
+        26400,
+        -2900
+      ],
+      "ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "decision_digest": "74514cb5348d1694b4b08c8a79c15a8d68a81c64e32d91314016b4d9ca3ce8e8",
+      "backend_requests": {
+        "v1_2_0": 262,
+        "v1_3_0": 276
+      },
+      "event_digest": "49f7026b1d49df4488ced32e9c6da325e4c6946b6076057e319bd3e5c21659b8"
+    },
+    {
+      "game_id": "g00080",
+      "seed": 6,
+      "matchup_id": "two_vs_two",
+      "rotation": 2,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 687,
+      "decisions": 693,
+      "fallbacks": 0,
+      "scores": [
+        18300,
+        21300,
+        17300,
+        43100
+      ],
+      "ranks": [
+        3,
+        2,
+        4,
+        1
+      ],
+      "decision_digest": "cda41aa70ff49ab7d493f6fd99308487bc1ed7bd9be55a2f1a4e72e6f423e58f",
+      "backend_requests": {
+        "v1_2_0": 339,
+        "v1_3_0": 339
+      },
+      "event_digest": "558e2ea8b6406feba604ebff99fb03761390f6b563f67b310b8f0a605371888d"
+    },
+    {
+      "game_id": "g00081",
+      "seed": 6,
+      "matchup_id": "two_vs_two",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 500,
+      "decisions": 506,
+      "fallbacks": 0,
+      "scores": [
+        8000,
+        8000,
+        30200,
+        53800
+      ],
+      "ranks": [
+        3,
+        4,
+        2,
+        1
+      ],
+      "decision_digest": "2c8ccda5e68ed069d428cf7df054724d75c78651881ab9c2e3db59e22a68f65c",
+      "backend_requests": {
+        "v1_2_0": 251,
+        "v1_3_0": 243
+      },
+      "event_digest": "a949f9d4b65132baa38a5a09ad43d930bed1e66b8c3c68330ff8e798a409e6b9"
+    },
+    {
+      "game_id": "g00082",
+      "seed": 6,
+      "matchup_id": "two_vs_two",
+      "rotation": 4,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 549,
+      "decisions": 554,
+      "fallbacks": 0,
+      "scores": [
+        20300,
+        21900,
+        24500,
+        33300
+      ],
+      "ranks": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "decision_digest": "d0526496e7318e83d7769e350b4bf0ea3ed7f8ff99a8f887e80ccb85df1bfbd0",
+      "backend_requests": {
+        "v1_2_0": 279,
+        "v1_3_0": 266
+      },
+      "event_digest": "a2c09d7ee7ddb465e49eed4fede8c3b33d511311fadaf6f0bcb586ece042b0d6"
+    },
+    {
+      "game_id": "g00083",
+      "seed": 6,
+      "matchup_id": "two_vs_two",
+      "rotation": 5,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 639,
+      "decisions": 650,
+      "fallbacks": 0,
+      "scores": [
+        22700,
+        26200,
+        17400,
+        33700
+      ],
+      "ranks": [
+        3,
+        2,
+        4,
+        1
+      ],
+      "decision_digest": "1533ad80ea3199ad95d076442d6abede015e9a1742c69dab0b813074e318cb66",
+      "backend_requests": {
+        "v1_2_0": 326,
+        "v1_3_0": 312
+      },
+      "event_digest": "ec1388c35942d9d6363a9e7fa722a77a5214183ca07cbec594f4d8e235a2d294"
+    },
+    {
+      "game_id": "g00084",
+      "seed": 7,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        7,
+        0
+      ],
+      "valid": true,
+      "steps": 611,
+      "decisions": 617,
+      "fallbacks": 0,
+      "scores": [
+        17300,
+        23800,
+        47300,
+        11600
+      ],
+      "ranks": [
+        3,
+        2,
+        1,
+        4
+      ],
+      "decision_digest": "aa628375b111e831f23f9bd386892aa88481600ec7b8fe07a6b22a4a821e1d4c",
+      "backend_requests": {
+        "v1_2_0": 447,
+        "v1_3_0": 158
+      },
+      "event_digest": "b509b419b0b85ac4e057c2503fb3b8b76da7c2f4c891cb82634babb7b329f853"
+    },
+    {
+      "game_id": "g00085",
+      "seed": 7,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        7,
+        1
+      ],
+      "valid": true,
+      "steps": 574,
+      "decisions": 581,
+      "fallbacks": 0,
+      "scores": [
+        17000,
+        31100,
+        27800,
+        24100
+      ],
+      "ranks": [
+        4,
+        1,
+        2,
+        3
+      ],
+      "decision_digest": "8c696935f786508f2d84acf976d7609e36c3b348ca4f06e3961a962f005c99db",
+      "backend_requests": {
+        "v1_2_0": 420,
+        "v1_3_0": 153
+      },
+      "event_digest": "41d1d2730938d532701b3fbe59c1af934171bcd74d3c7fa5528001c0236a6a99"
+    },
+    {
+      "game_id": "g00086",
+      "seed": 7,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        7,
+        2
+      ],
+      "valid": true,
+      "steps": 576,
+      "decisions": 584,
+      "fallbacks": 0,
+      "scores": [
+        39300,
+        30100,
+        16300,
+        14300
+      ],
+      "ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "decision_digest": "def051baa628a45e03c19375f2b81cfedfdc257d06a5d71daa2851a21bcba453",
+      "backend_requests": {
+        "v1_2_0": 429,
+        "v1_3_0": 142
+      },
+      "event_digest": "8939b7c611bfb113cb8f5827b52e1d6598adb70c52920a577342f1d7de2e7f3f"
+    },
+    {
+      "game_id": "g00087",
+      "seed": 7,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        7,
+        3
+      ],
+      "valid": true,
+      "steps": 526,
+      "decisions": 533,
+      "fallbacks": 0,
+      "scores": [
+        13400,
+        46900,
+        24000,
+        15700
+      ],
+      "ranks": [
+        4,
+        1,
+        2,
+        3
+      ],
+      "decision_digest": "3d285f2819c1035e872c67b59c70d8599c44d7272143703d3ee4ee5d2c8982a6",
+      "backend_requests": {
+        "v1_2_0": 393,
+        "v1_3_0": 128
+      },
+      "event_digest": "fbed64395b6765fa2c53001d88b1a72379c9f8f5aed36faefd456360e19314b4"
+    },
+    {
+      "game_id": "g00088",
+      "seed": 7,
+      "matchup_id": "baseline_control",
+      "rotation": 0,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        7,
+        0
+      ],
+      "valid": true,
+      "steps": 483,
+      "decisions": 489,
+      "fallbacks": 0,
+      "scores": [
+        17000,
+        34100,
+        28600,
+        20300
+      ],
+      "ranks": [
+        4,
+        1,
+        2,
+        3
+      ],
+      "decision_digest": "2080dcf5f2bbc45d906985e4871a1c8c940ecb829d4c86a82983d7ccbd49da3d",
+      "backend_requests": {
+        "v1_2_0": 479,
+        "v1_3_0": 0
+      },
+      "event_digest": "6907bc3a2f24944bcd116ae6fa75a2e7b2b6082a2804dbdb44f1934dd849ac7e"
+    },
+    {
+      "game_id": "g00089",
+      "seed": 7,
+      "matchup_id": "baseline_control",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        7,
+        1
+      ],
+      "valid": true,
+      "steps": 483,
+      "decisions": 489,
+      "fallbacks": 0,
+      "scores": [
+        17000,
+        34100,
+        28600,
+        20300
+      ],
+      "ranks": [
+        4,
+        1,
+        2,
+        3
+      ],
+      "decision_digest": "2080dcf5f2bbc45d906985e4871a1c8c940ecb829d4c86a82983d7ccbd49da3d",
+      "backend_requests": {
+        "v1_2_0": 479,
+        "v1_3_0": 0
+      },
+      "event_digest": "6907bc3a2f24944bcd116ae6fa75a2e7b2b6082a2804dbdb44f1934dd849ac7e"
+    },
+    {
+      "game_id": "g00090",
+      "seed": 7,
+      "matchup_id": "baseline_control",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        7,
+        2
+      ],
+      "valid": true,
+      "steps": 483,
+      "decisions": 489,
+      "fallbacks": 0,
+      "scores": [
+        17000,
+        34100,
+        28600,
+        20300
+      ],
+      "ranks": [
+        4,
+        1,
+        2,
+        3
+      ],
+      "decision_digest": "2080dcf5f2bbc45d906985e4871a1c8c940ecb829d4c86a82983d7ccbd49da3d",
+      "backend_requests": {
+        "v1_2_0": 479,
+        "v1_3_0": 0
+      },
+      "event_digest": "6907bc3a2f24944bcd116ae6fa75a2e7b2b6082a2804dbdb44f1934dd849ac7e"
+    },
+    {
+      "game_id": "g00091",
+      "seed": 7,
+      "matchup_id": "baseline_control",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        7,
+        3
+      ],
+      "valid": true,
+      "steps": 483,
+      "decisions": 489,
+      "fallbacks": 0,
+      "scores": [
+        17000,
+        34100,
+        28600,
+        20300
+      ],
+      "ranks": [
+        4,
+        1,
+        2,
+        3
+      ],
+      "decision_digest": "2080dcf5f2bbc45d906985e4871a1c8c940ecb829d4c86a82983d7ccbd49da3d",
+      "backend_requests": {
+        "v1_2_0": 479,
+        "v1_3_0": 0
+      },
+      "event_digest": "6907bc3a2f24944bcd116ae6fa75a2e7b2b6082a2804dbdb44f1934dd849ac7e"
+    },
+    {
+      "game_id": "g00092",
+      "seed": 7,
+      "matchup_id": "two_vs_two",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 501,
+      "decisions": 506,
+      "fallbacks": 0,
+      "scores": [
+        11800,
+        33500,
+        45000,
+        9700
+      ],
+      "ranks": [
+        3,
+        2,
+        1,
+        4
+      ],
+      "decision_digest": "e90ff1fdd63dcf8bf2335ea04dae7de901d9b601acaf5f20cd49baf09ecd89b6",
+      "backend_requests": {
+        "v1_2_0": 248,
+        "v1_3_0": 248
+      },
+      "event_digest": "cb914e8b0d60ccf1d49d95afc37fb6f2a4607e8c45fae6e962014c125a4b5bf6"
+    },
+    {
+      "game_id": "g00093",
+      "seed": 7,
+      "matchup_id": "two_vs_two",
+      "rotation": 1,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 524,
+      "decisions": 532,
+      "fallbacks": 0,
+      "scores": [
+        24200,
+        24400,
+        31900,
+        19500
+      ],
+      "ranks": [
+        3,
+        2,
+        1,
+        4
+      ],
+      "decision_digest": "ea453687645fd36b5f057182384eb151e10275e6d067af817dcb1c8da924a87f",
+      "backend_requests": {
+        "v1_2_0": 265,
+        "v1_3_0": 258
+      },
+      "event_digest": "8fe1e0105a04f37048cf3a5e98e53a514e6d65eb431530db2c754da52bcc2e3a"
+    },
+    {
+      "game_id": "g00094",
+      "seed": 7,
+      "matchup_id": "two_vs_two",
+      "rotation": 2,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 577,
+      "decisions": 583,
+      "fallbacks": 0,
+      "scores": [
+        400,
+        17100,
+        37200,
+        45300
+      ],
+      "ranks": [
+        4,
+        3,
+        2,
+        1
+      ],
+      "decision_digest": "b09810e0e60c190b39a6709dc90b0968f6e924777012d50d554691bddbda45fd",
+      "backend_requests": {
+        "v1_2_0": 286,
+        "v1_3_0": 287
+      },
+      "event_digest": "8b23457935e3681dab702156cedd55c33835ced54d5f4eb4489bdcb78d148129"
+    },
+    {
+      "game_id": "g00095",
+      "seed": 7,
+      "matchup_id": "two_vs_two",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 622,
+      "decisions": 628,
+      "fallbacks": 0,
+      "scores": [
+        40400,
+        25900,
+        16100,
+        17600
+      ],
+      "ranks": [
+        1,
+        2,
+        4,
+        3
+      ],
+      "decision_digest": "0063c8205930d73c058117713e5e4f6331812c72408b7f0ac446bcf34ae4cbd1",
+      "backend_requests": {
+        "v1_2_0": 301,
+        "v1_3_0": 316
+      },
+      "event_digest": "9a7e1a3d5ea2c4276b39d0ce0d16ffa2b8c24f9732e185c0397605bfda31191a"
+    },
+    {
+      "game_id": "g00096",
+      "seed": 7,
+      "matchup_id": "two_vs_two",
+      "rotation": 4,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 574,
+      "decisions": 580,
+      "fallbacks": 0,
+      "scores": [
+        17000,
+        31100,
+        28800,
+        23100
+      ],
+      "ranks": [
+        4,
+        1,
+        2,
+        3
+      ],
+      "decision_digest": "146f516efacf64d9d167d8fc6b79ac5c53da75ff04cf327da14746dad4c8ac4a",
+      "backend_requests": {
+        "v1_2_0": 280,
+        "v1_3_0": 291
+      },
+      "event_digest": "bba3e7843feff2fda909f59155cbec48f2193d35e75d0543a3e4b197ec4babdf"
+    },
+    {
+      "game_id": "g00097",
+      "seed": 7,
+      "matchup_id": "two_vs_two",
+      "rotation": 5,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 545,
+      "decisions": 551,
+      "fallbacks": 0,
+      "scores": [
+        32500,
+        43600,
+        17800,
+        6100
+      ],
+      "ranks": [
+        2,
+        1,
+        3,
+        4
+      ],
+      "decision_digest": "a9fd8c7d092610eb690f8a3c6cd88cda84840d3015c26e93e57dc1b83b75747d",
+      "backend_requests": {
+        "v1_2_0": 270,
+        "v1_3_0": 269
+      },
+      "event_digest": "20aa3e4f20f380834c72340f12ef545fa8dfbb763753ff49af1521dd3e440169"
+    },
+    {
+      "game_id": "g00098",
+      "seed": 8,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        8,
+        0
+      ],
+      "valid": true,
+      "steps": 462,
+      "decisions": 467,
+      "fallbacks": 0,
+      "scores": [
+        29400,
+        32500,
+        20900,
+        17200
+      ],
+      "ranks": [
+        2,
+        1,
+        3,
+        4
+      ],
+      "decision_digest": "b26879cc7fb9469e51dd715de734443086309ad7f996fa3e6dfdd8423abdd22c",
+      "backend_requests": {
+        "v1_2_0": 337,
+        "v1_3_0": 121
+      },
+      "event_digest": "4f530c7ba975b133734e303e5966efd59cf55a713f2beb850b7f19a222f153d4"
+    },
+    {
+      "game_id": "g00099",
+      "seed": 8,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        8,
+        1
+      ],
+      "valid": true,
+      "steps": 534,
+      "decisions": 543,
+      "fallbacks": 0,
+      "scores": [
+        46900,
+        20900,
+        16500,
+        15700
+      ],
+      "ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "decision_digest": "ec1712854b56821a67a0ca0bb524db9a16a17eb111abcd58b7bdc92358eaaa0e",
+      "backend_requests": {
+        "v1_2_0": 399,
+        "v1_3_0": 133
+      },
+      "event_digest": "58a91d07bc71a11bd4b164a37109a1bb8b77703a68f90892315cc2f22464d886"
+    },
+    {
+      "game_id": "g00100",
+      "seed": 8,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        8,
+        2
+      ],
+      "valid": true,
+      "steps": 545,
+      "decisions": 550,
+      "fallbacks": 0,
+      "scores": [
+        38400,
+        22100,
+        26400,
+        13100
+      ],
+      "ranks": [
+        1,
+        3,
+        2,
+        4
+      ],
+      "decision_digest": "af5111cd2eb3323d246b078353d3cd27c5208d0070acba73ed652221424a24f1",
+      "backend_requests": {
+        "v1_2_0": 409,
+        "v1_3_0": 130
+      },
+      "event_digest": "40791bb34eefa8d96b96dbb09357103009f0e827e4152c7d11e09002053dd415"
+    },
+    {
+      "game_id": "g00101",
+      "seed": 8,
+      "matchup_id": "candidate_vs_baseline",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        8,
+        3
+      ],
+      "valid": true,
+      "steps": 543,
+      "decisions": 548,
+      "fallbacks": 0,
+      "scores": [
+        32800,
+        37000,
+        10800,
+        19400
+      ],
+      "ranks": [
+        2,
+        1,
+        4,
+        3
+      ],
+      "decision_digest": "ece886079799b22b49c26f11af5528b75127b2f75d95494c51108cb01cd72fb9",
+      "backend_requests": {
+        "v1_2_0": 406,
+        "v1_3_0": 134
+      },
+      "event_digest": "234f3ec5744f523d0d6caebc58379630ebb265db043c8e57403457282aa62eaf"
+    },
+    {
+      "game_id": "g00102",
+      "seed": 8,
+      "matchup_id": "baseline_control",
+      "rotation": 0,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 0,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        8,
+        0
+      ],
+      "valid": true,
+      "steps": 534,
+      "decisions": 539,
+      "fallbacks": 0,
+      "scores": [
+        33300,
+        21800,
+        22900,
+        22000
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "120494bbabadfb1a999c10861ae1efd5a1efb04271ba7c97566086099848d381",
+      "backend_requests": {
+        "v1_2_0": 530,
+        "v1_3_0": 0
+      },
+      "event_digest": "8ebcf6241cee9f56e2433dc5fa7156e01f9e643401d924e953dff40228094e36"
+    },
+    {
+      "game_id": "g00103",
+      "seed": 8,
+      "matchup_id": "baseline_control",
+      "rotation": 1,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 1,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        8,
+        1
+      ],
+      "valid": true,
+      "steps": 534,
+      "decisions": 539,
+      "fallbacks": 0,
+      "scores": [
+        33300,
+        21800,
+        22900,
+        22000
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "120494bbabadfb1a999c10861ae1efd5a1efb04271ba7c97566086099848d381",
+      "backend_requests": {
+        "v1_2_0": 530,
+        "v1_3_0": 0
+      },
+      "event_digest": "8ebcf6241cee9f56e2433dc5fa7156e01f9e643401d924e953dff40228094e36"
+    },
+    {
+      "game_id": "g00104",
+      "seed": 8,
+      "matchup_id": "baseline_control",
+      "rotation": 2,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 2,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        8,
+        2
+      ],
+      "valid": true,
+      "steps": 534,
+      "decisions": 539,
+      "fallbacks": 0,
+      "scores": [
+        33300,
+        21800,
+        22900,
+        22000
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "120494bbabadfb1a999c10861ae1efd5a1efb04271ba7c97566086099848d381",
+      "backend_requests": {
+        "v1_2_0": 530,
+        "v1_3_0": 0
+      },
+      "event_digest": "8ebcf6241cee9f56e2433dc5fa7156e01f9e643401d924e953dff40228094e36"
+    },
+    {
+      "game_id": "g00105",
+      "seed": 8,
+      "matchup_id": "baseline_control",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": 3,
+      "paired_group": "upgrade",
+      "paired_key": [
+        "upgrade",
+        8,
+        3
+      ],
+      "valid": true,
+      "steps": 534,
+      "decisions": 539,
+      "fallbacks": 0,
+      "scores": [
+        33300,
+        21800,
+        22900,
+        22000
+      ],
+      "ranks": [
+        1,
+        4,
+        2,
+        3
+      ],
+      "decision_digest": "120494bbabadfb1a999c10861ae1efd5a1efb04271ba7c97566086099848d381",
+      "backend_requests": {
+        "v1_2_0": 530,
+        "v1_3_0": 0
+      },
+      "event_digest": "8ebcf6241cee9f56e2433dc5fa7156e01f9e643401d924e953dff40228094e36"
+    },
+    {
+      "game_id": "g00106",
+      "seed": 8,
+      "matchup_id": "two_vs_two",
+      "rotation": 0,
+      "seats": [
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 583,
+      "decisions": 588,
+      "fallbacks": 0,
+      "scores": [
+        21100,
+        19800,
+        14700,
+        44400
+      ],
+      "ranks": [
+        2,
+        3,
+        4,
+        1
+      ],
+      "decision_digest": "c747e600988ba262fd444197f8d67128070906bbbe0cbc0e4ac1baf38944e2b3",
+      "backend_requests": {
+        "v1_2_0": 285,
+        "v1_3_0": 292
+      },
+      "event_digest": "e99f8af21a73bdb43f19f65aa17639e01659d5b6507b6571ce57d7540e8290ef"
+    },
+    {
+      "game_id": "g00107",
+      "seed": 8,
+      "matchup_id": "two_vs_two",
+      "rotation": 1,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 466,
+      "decisions": 471,
+      "fallbacks": 0,
+      "scores": [
+        32700,
+        33500,
+        23900,
+        9900
+      ],
+      "ranks": [
+        2,
+        1,
+        3,
+        4
+      ],
+      "decision_digest": "06220235f7a55a274abb85b2003a1f4f6ea427087a7130b3f1ba8294f4aac778",
+      "backend_requests": {
+        "v1_2_0": 228,
+        "v1_3_0": 235
+      },
+      "event_digest": "335a54d4e3a17104ea7f2ad03a65bcfead85ed4156e33809565a331d00e660d4"
+    },
+    {
+      "game_id": "g00108",
+      "seed": 8,
+      "matchup_id": "two_vs_two",
+      "rotation": 2,
+      "seats": [
+        "v1_3_0",
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 491,
+      "decisions": 495,
+      "fallbacks": 0,
+      "scores": [
+        30700,
+        43500,
+        11000,
+        14800
+      ],
+      "ranks": [
+        2,
+        1,
+        4,
+        3
+      ],
+      "decision_digest": "0f97a99c0e9eb54b7f33721a34f4a9f222be92a8cc0978fa77a832d0551816be",
+      "backend_requests": {
+        "v1_2_0": 243,
+        "v1_3_0": 243
+      },
+      "event_digest": "a3da84ab24cd72b5f5ee06aac6d9613eff3fc471e2b3003c2578c2bc912bbf7c"
+    },
+    {
+      "game_id": "g00109",
+      "seed": 8,
+      "matchup_id": "two_vs_two",
+      "rotation": 3,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0",
+        "v1_2_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 710,
+      "decisions": 719,
+      "fallbacks": 0,
+      "scores": [
+        13000,
+        69900,
+        14700,
+        2400
+      ],
+      "ranks": [
+        3,
+        1,
+        2,
+        4
+      ],
+      "decision_digest": "18332e9d346010f80686419cd198b93a8eaadfd85951c5c61d794c1cf906d2aa",
+      "backend_requests": {
+        "v1_2_0": 361,
+        "v1_3_0": 348
+      },
+      "event_digest": "29fe4d9a915c0fd218c5fb65ebbea5683db6976d22356d00122744b3a05b6f9c"
+    },
+    {
+      "game_id": "g00110",
+      "seed": 8,
+      "matchup_id": "two_vs_two",
+      "rotation": 4,
+      "seats": [
+        "v1_2_0",
+        "v1_3_0",
+        "v1_2_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 693,
+      "decisions": 699,
+      "fallbacks": 0,
+      "scores": [
+        16700,
+        38700,
+        47800,
+        -3200
+      ],
+      "ranks": [
+        3,
+        2,
+        1,
+        4
+      ],
+      "decision_digest": "6888f78b99092f85b53ffa6bb547b2b1fca400b4175cfbe976eb6d02aab18ff4",
+      "backend_requests": {
+        "v1_2_0": 347,
+        "v1_3_0": 341
+      },
+      "event_digest": "b4f247aadbbda4d314fdd860ba18f67649cb926b837a7c8b065c9e98da64a1b7"
+    },
+    {
+      "game_id": "g00111",
+      "seed": 8,
+      "matchup_id": "two_vs_two",
+      "rotation": 5,
+      "seats": [
+        "v1_2_0",
+        "v1_2_0",
+        "v1_3_0",
+        "v1_3_0"
+      ],
+      "focal_seat": null,
+      "paired_group": null,
+      "paired_key": null,
+      "valid": true,
+      "steps": 531,
+      "decisions": 536,
+      "fallbacks": 0,
+      "scores": [
+        48000,
+        23300,
+        17900,
+        10800
+      ],
+      "ranks": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "decision_digest": "251a977594974d0c55334df1e7c358cd8a134c7fd6211b8a0fa66cf626743bbc",
+      "backend_requests": {
+        "v1_2_0": 272,
+        "v1_3_0": 256
+      },
+      "event_digest": "b42f5c1d52a6e9455ff9411520d61d395db4e917b79f13c0df6b34f9f02910aa"
+    }
+  ]
+}

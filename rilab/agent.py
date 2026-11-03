@@ -84,6 +84,14 @@ class MjaiBotAgent:
             "new_events": events,
             "state": state,
             "candidates": [b.candidate for b in bindings],
+            "bindings": [
+                {
+                    "candidate": b.candidate,
+                    "engine_action": b.action.to_dict(),
+                    "riichi_tile": b.riichi_tile,
+                }
+                for b in bindings
+            ],
             "selected_action": selected,
             "engine_action": action.to_dict(),
             "prediction": result,

@@ -3,7 +3,7 @@ config_version: 1
 engine:
   game_mode: "4p-red-half"
   rule: "default_tenhou"
-  seeds: []  # Fill before running A3. The current arena CLI remains a placeholder.
+  seeds: [1, 2, 3, 4, 5, 6, 7, 8]  # A3 engineering acceptance: 112 half-games.
 backends:
   v1_2_0:
     mode: "http"
@@ -52,6 +52,8 @@ matchups:
 artifacts:
   output_dir: "outputs/arena"
   full_snapshots_first_run: true
+  snapshot_stride: 100
+  max_bytes: 2000000000
 evaluation:
   primary_paired_group: "upgrade"
   cluster: "seed_with_all_rotations"

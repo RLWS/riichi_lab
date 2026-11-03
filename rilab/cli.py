@@ -64,17 +64,21 @@ def _not_implemented(name: str) -> int:
 def cmd_selfplay(args: argparse.Namespace) -> int:
     from rilab.config import load_arena_config
     from rilab.selfplay import run_single_game
+    from rilab.batch import run_batch
 
-    if args.seed is None or not args.seats or not args.output_dir:
+    if not args.output_dir or ((args.seed is None) != (args.seats is None)):
         print(
-            "A1 requires --seed, --seats (four IDs), --output-dir (new directory); A3 scheduling is pending",
+            "requires --output-dir; single game additionally requires both --seed and --seats",
             file=sys.stderr,
         )
         return 2
     config = load_arena_config(args.config)
-    summary = run_single_game(
-        config, seed=args.seed, seats=args.seats.split(","), output_dir=args.output_dir
-    )
+    if args.seed is None:
+        summary = run_batch(config, args.output_dir)
+    else:
+        summary = run_single_game(
+            config, seed=args.seed, seats=args.seats.split(","), output_dir=args.output_dir
+        )
     json.dump(summary, sys.stdout, indent=2)
     sys.stdout.write("\n")
     return 0
@@ -108,7 +112,7 @@ def main(argv: list[str] | None = None) -> int:
     p_parity.set_defaults(func=cmd_parity)
 
     p_selfplay = sub.add_parser(
-        "arena-selfplay", help="A1 手工席位单局（A3 批量待实现）"
+        "arena-selfplay", help="配置日程批量运行，或显式手工四席单局"
     )
     p_selfplay.add_argument("--config", default="configs/arena_selfplay.yaml")
     p_selfplay.add_argument("--seed", type=int)
