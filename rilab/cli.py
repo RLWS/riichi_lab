@@ -121,6 +121,24 @@ def cmd_evaluate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_online(args: argparse.Namespace) -> int:
+    import asyncio
+    from rilab.online.client import run_validation
+
+    summary = asyncio.run(run_validation(args.config, args.output_dir))
+    print(json.dumps(summary, ensure_ascii=False))
+    return (
+        0
+        if (
+            summary["completed"]
+            and not summary["faults"]
+            and summary["validation_result"]
+            and summary["validation_result"]["passed"]
+        )
+        else 1
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="rilab", description="RiichiLab adapter CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -162,7 +180,10 @@ def main(argv: list[str] | None = None) -> int:
 
     p_online = sub.add_parser("arena-online", help="riichi.dev 在线对局（B1）")
     p_online.add_argument("--config", default="configs/arena_online.yaml")
-    p_online.set_defaults(func=lambda a: _not_implemented("arena-online"))
+    p_online.add_argument(
+        "--output-dir", required=True, help="new single-session artifact directory"
+    )
+    p_online.set_defaults(func=cmd_online)
 
     args = parser.parse_args(argv)
     return args.func(args)

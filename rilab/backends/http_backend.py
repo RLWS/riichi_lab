@@ -35,8 +35,11 @@ class HttpPredictBackend:
     def _read_models(self) -> dict:
         response = self.client.get("/v1/models")
         response.raise_for_status()
+        return self._validate_models(response.json())
+
+    def _validate_models(self, payload) -> dict:
         try:
-            models = response.json()["models"]
+            models = payload["models"]
             for index, task in enumerate(("turn", "response")):
                 info = models[task]
                 if (
@@ -55,6 +58,12 @@ class HttpPredictBackend:
         return models
 
     def predict(self, task: str, state: dict, candidates: list[dict]) -> dict:
+        request = self._prediction_request(task, state, candidates)
+        response = self.client.post(f"/v1/predict/{task}", json=request)
+        response.raise_for_status()
+        return self._validate_prediction(task, candidates, response.json())
+
+    def _prediction_request(self, task, state, candidates):
         if task not in ("turn", "response") or not candidates:
             raise AdapterError("invalid prediction task/candidates")
         if len(candidates) > self.metadata[task]["candidate_limit"]:
@@ -66,9 +75,9 @@ class HttpPredictBackend:
         }
         if task == "response":
             request["pass_bias"] = self.config.get("response", {}).get("pass_bias")
-        response = self.client.post(f"/v1/predict/{task}", json=request)
-        response.raise_for_status()
-        result = response.json()
+        return request
+
+    def _validate_prediction(self, task, candidates, result):
         if result.get("task") != task or result.get("model") != self.metadata[task]:
             raise AdapterError("prediction task/model changed during run")
         if result.get("selected_action") not in candidates:
@@ -82,6 +91,49 @@ class HttpPredictBackend:
 
     def close(self):
         self.client.close()
+
+
+class AsyncHttpPredictBackend(HttpPredictBackend):
+    """Online pool: metadata warm-up and cancellable HTTP, no worker threads."""
+
+    def __init__(self, backend_id, config, *, client=None):
+        self.backend_id = backend_id
+        self.config = deepcopy(config)
+        self.profile = config["adapter_profile"]
+        self.expected = PROFILES[self.profile]
+        headers = {}
+        if config.get("api_key_env"):
+            headers["X-API-Key"] = os.environ[config["api_key_env"]]
+        self.client = client or httpx.AsyncClient(
+            base_url=config["api_base"].rstrip("/"),
+            timeout=config["timeout_seconds"],
+            headers=headers,
+        )
+        self.requests = 0
+        self.metadata = None
+
+    async def warmup(self):
+        self.metadata = await self._read_models()
+
+    async def _read_models(self):
+        response = await self.client.get("/v1/models")
+        response.raise_for_status()
+        return self._validate_models(response.json())
+
+    async def predict(self, task, state, candidates):
+        if self.metadata is None:
+            raise AdapterError("online backend must be warmed up before connecting")
+        request = self._prediction_request(task, state, candidates)
+        response = await self.client.post(f"/v1/predict/{task}", json=request)
+        response.raise_for_status()
+        return self._validate_prediction(task, candidates, response.json())
+
+    async def check_unchanged(self):
+        if await self._read_models() != self.metadata:
+            raise AdapterError("model metadata changed during run")
+
+    async def close(self):
+        await self.client.aclose()
 
 
 class BackendRegistry:

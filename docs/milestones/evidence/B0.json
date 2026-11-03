@@ -1,0 +1,28 @@
+{
+  "milestone": "B0",
+  "date": "2026-11-03",
+  "scope": "local protocol simulation only",
+  "engine": "riichienv==0.4.11",
+  "checks": [
+    {"command": ".venv/Scripts/python.exe -m pytest tests/test_online.py -q", "passed": 28, "skipped": 0},
+    {"command": ".venv/Scripts/python.exe -m pytest -q", "passed": 141, "skipped": 0},
+    {"command": "ruff check .", "result": "passed"}
+  ],
+  "transport": "local WebSocket server plus httpx.AsyncClient MockTransport",
+  "real_platform_validation": false,
+  "ranked_games_started": 0,
+  "acceptance": {
+    "session_lifecycle": true,
+    "single_owner_tracker_and_snapshot_inference": true,
+    "dynamic_deadline_grace_bank": true,
+    "cancellable_async_http": true,
+    "legal_fallback_and_server_default": true,
+    "semantic_possible_actions_cross_check": true,
+    "independent_credentials_and_redaction": true,
+    "duplicate_request_without_observation_replay": true,
+    "all_five_ack_statuses": true,
+    "late_inference_discarded": true,
+    "disconnect_without_reconnect": true,
+    "one_reply_per_request_and_two_stage_riichi": true
+  }
+}
