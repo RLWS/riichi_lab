@@ -1,0 +1,182 @@
+{
+  "milestone": "B1",
+  "date": "2026-11-03",
+  "artifact_directory": "outputs\\b1_validate_20261103_01",
+  "attempts": 1,
+  "real_platform_validation": true,
+  "ranked_games_started": 0,
+  "runtime": {
+    "rilab_commit": "a340415cb31d1a5118b6e620758d2b8c3ca9f359",
+    "working_tree_dirty": true,
+    "note": "Online decision pipeline unchanged from a340415; new uncommitted launcher/review tools present during validation.",
+    "python": "3.11.5",
+    "dependencies": {
+      "riichienv": "0.4.11",
+      "httpx": "0.28.1",
+      "websockets": "17.4",
+      "PyYAML": "6.0.3"
+    }
+  },
+  "deployment": {
+    "revision": {
+      "tag": "v1.3.0",
+      "commit": "1e5092f344fb69bcdf4697f683f2ecf15b9865d8",
+      "branch_hint": "codex/full-state-features"
+    },
+    "weight_sha256": {
+      "turn_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90",
+      "response_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51"
+    },
+    "source_archive_sha256": "196cbba0507db9b97878dc5846cb73cc4f464ce28a58108116140db09204b405",
+    "rilab_commit": "a340415cb31d1a5118b6e620758d2b8c3ca9f359",
+    "rilab_dirty": true,
+    "endpoint": "wss://game.riichi.dev/ws/validate"
+  },
+  "model_metadata_unchanged": true,
+  "review": {
+    "b1_protocol_passed": true,
+    "validation_result": {
+      "passed": true,
+      "type": "validation_result"
+    },
+    "session_state": "Closed",
+    "faults": [],
+    "audit_errors": [],
+    "requests": 139,
+    "replies": 139,
+    "observation_roundtrips_equal": 139,
+    "ack_statuses": {
+      "accepted": 139
+    },
+    "fallback_request_ids": [],
+    "defaulted_request_ids": [],
+    "local_reply_ms": {
+      "count": 139,
+      "min": 0.0,
+      "p50": 15.99999999962165,
+      "p95": 16.00000000325963,
+      "p99": 30.999999999039574,
+      "max": 32.00000000288128
+    },
+    "server_elapsed_ms": {
+      "count": 139,
+      "min": 392,
+      "p50": 637.0,
+      "p95": 1921.3999999999999,
+      "p99": 2457.180000000001,
+      "max": 17609
+    },
+    "server_minus_local_ms": {
+      "count": 139,
+      "min": 379.9999999971187,
+      "p50": 622.9999999967404,
+      "p95": 1905.4000000003782,
+      "p99": 2447.260000000236,
+      "max": 17594.000000000582
+    },
+    "server_exceeded_grace": 1,
+    "bank_consumed_ms": 14609,
+    "slowest_requests": [
+      {
+        "request_id": 15,
+        "server_elapsed_ms": 17609,
+        "local_reply_ms": 14.999999999417923,
+        "time_budget": {
+          "bank_ms": 15000,
+          "deadline_ms": 18000,
+          "grace_ms": 3000
+        },
+        "bank_consumed_ms": 14609,
+        "bank_ms": 390
+      },
+      {
+        "request_id": 81,
+        "server_elapsed_ms": 2548,
+        "local_reply_ms": 15.99999999962165,
+        "time_budget": {
+          "bank_ms": 15000,
+          "deadline_ms": 18000,
+          "grace_ms": 3000
+        },
+        "bank_consumed_ms": 0,
+        "bank_ms": 15000
+      },
+      {
+        "request_id": 48,
+        "server_elapsed_ms": 2309,
+        "local_reply_ms": 0.0,
+        "time_budget": {
+          "bank_ms": 390,
+          "deadline_ms": 3390,
+          "grace_ms": 3000
+        },
+        "bank_consumed_ms": 0,
+        "bank_ms": 390
+      },
+      {
+        "request_id": 26,
+        "server_elapsed_ms": 2282,
+        "local_reply_ms": 14.999999999417923,
+        "time_budget": {
+          "bank_ms": 390,
+          "deadline_ms": 3390,
+          "grace_ms": 3000
+        },
+        "bank_consumed_ms": 0,
+        "bank_ms": 390
+      },
+      {
+        "request_id": 19,
+        "server_elapsed_ms": 2244,
+        "local_reply_ms": 14.999999999417923,
+        "time_budget": {
+          "bank_ms": 390,
+          "deadline_ms": 3390,
+          "grace_ms": 3000
+        },
+        "bank_consumed_ms": 0,
+        "bank_ms": 390
+      }
+    ],
+    "trace_sha256": "6d8783e221f176c82e3176b49a365e9ddebd9f391f7182b884b686d0e78ca6f2",
+    "summary_sha256": "e913616580420237e807b193a009ba0a1c437b5729d305d38b51094057755006",
+    "latency_note": "server-minus-local includes transit, server scheduling and clock measurement differences; not one-way latency",
+    "strength_claim": null
+  },
+  "prediction_tasks": {
+    "turn": 108,
+    "response": 28
+  },
+  "reply_types": {
+    "dahai": 106,
+    "pon": 1,
+    "none": 23,
+    "chi": 2,
+    "hora": 3,
+    "reach": 3,
+    "ryukyoku": 1
+  },
+  "artifact_sha256": {
+    "session/session.jsonl": "6d8783e221f176c82e3176b49a365e9ddebd9f391f7182b884b686d0e78ca6f2",
+    "session/summary.json": "e913616580420237e807b193a009ba0a1c437b5729d305d38b51094057755006",
+    "models.before.json": "1248132cc2dfc18f5f15420440a3f16b89669dceefa5bf8e35f3e25665634d21",
+    "models.after.json": "1248132cc2dfc18f5f15420440a3f16b89669dceefa5bf8e35f3e25665634d21",
+    "deployment.json": "de034bb6c6140f26c07f8628117cdaa470d846cc726678d2680154e0130d4fe9",
+    "online.yaml": "99e612640fe3c9ac699af3788a845f58868db1748708342089a796f2d42ad89f",
+    "launcher.executed.py": "f49f80ba7a0dc4c5b26d6b13d977f6b651823fbc3e6bb8c31cd28708bc7ddbdb",
+    "review.json": "a11d04720dedf54d28248264366595270bfc1c01274f66ef3cd37de520ca4f2f"
+  },
+  "checks": {
+    "pytest_passed": 150,
+    "pytest_skipped": 0,
+    "ruff": "passed"
+  },
+  "latency_review": {
+    "low_latency_proven": false,
+    "configured_inbound_estimate_seconds": 0.1,
+    "configured_send_reserve_seconds": 0.1,
+    "finding": "Request 15 consumed 14609 ms of bank: server elapsed 17609 ms against 18000 ms deadline. Local processing was about 15 ms; server-minus-local is not one-way network latency. Fixed allowances do not cover observed tail jitter.",
+    "local_clock_note": "Windows time.monotonic samples quantized to approximately 15-16 ms; a recorded 0 ms does not mean zero processing time.",
+    "next_stage": "B2 requires separately specified batch and stop thresholds with explicit latency/bank guardrails; no ranked session started."
+  }
+}

@@ -1,4 +1,4 @@
-# B0 客户端；真实平台验收属于 B1。仅支持单次验证，不循环排位。
+# B0/B1 单次验证客户端。真实验收见 docs/milestones/B1.md，不循环排位。
 online:
   endpoint_validate: "wss://game.riichi.dev/ws/validate"
   token_env: RIICHI_DEV_BOT_TOKEN

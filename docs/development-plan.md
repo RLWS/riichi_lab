@@ -1,6 +1,6 @@
 # 开发计划
 
-> 状态：A0/A1/A3/A4 已实现并验收，见 [A3 记录](milestones/A3.md)和 [A4 正式记录](milestones/A4-formal.md)。A2 冻结 tag 保留 DEF-001 已知失败，上游修复分支已通过检查，见 [A2 记录](milestones/A2.md)；按用户确认，该已知例外不阻塞 A3/A4。正式强度结论为证据不足，不等于确认模型提升；B0 已完成本地协议模拟验收，见 [B0 记录](milestones/B0.md)；B1/B2 待实施。
+> 状态：A0/A1/A3/A4 已实现并验收，见 [A3 记录](milestones/A3.md)和 [A4 正式记录](milestones/A4-formal.md)。A2 冻结 tag 保留 DEF-001 已知失败，上游修复分支已通过检查，见 [A2 记录](milestones/A2.md)；按用户确认，该已知例外不阻塞 A3/A4。正式强度结论为证据不足，不等于确认模型提升；B0/B1 已验收，见 [B0 记录](milestones/B0.md)和 [B1 真实验证](milestones/B1.md)；B2 待实施。
 > 创建时间：2026-11-02。
 > 唯一依据：[接入方案](riichi-dev-integration.md)（审查修订版）及其引用的 [可行性审查](feasibility-review.md)。本计划不引入方案之外的范围；方案变更时本计划必须同步修订，冲突处以方案为准。
 > 每项任务标注方案章节出处（如 §4.2）；退出条件未注明出处的，均来自方案 §10 阶段表。
@@ -152,6 +152,8 @@ A4 消费 A3 已落盘的配对键和焦点身份，不负责后端注入或调�
 | B0-7 | 模拟服务器测试 | 覆盖请求、ack、超时、迟到、重复 request_id、断线；每请求最多一条回复（禁止同次 reach+dahai） | §10 |
 
 ### B1 / B2
+
+2026-11-03：B1-1 已完成真实 `/ws/validate` 验证，取得 passed=true 的 validation_result；139 个请求与 139 条 accepted ack，零 defaulted/fallback。139 份 Observation 序列化往返无差异，模型元信息前后一致。已审查延迟：服务器 p95=1,921.4 ms，最大 17,609 ms；存在明显长尾，不等于低延迟证明。详见 [B1 验收记录](milestones/B1.md)。未开启排位，B2 仍须预定批次和停止阈值。
 
 | # | 任务 | 内容 | 出处 |
 |---|---|---|---|

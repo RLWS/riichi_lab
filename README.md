@@ -23,4 +23,6 @@
 
 - [B0 在线协议模拟验收](docs/milestones/B0.md)：异步客户端、动态预算、ack 确认、合法备用及模拟服务器测试。
 
-A4 与 B0 已完成，不自动追加强度样本或调整模型。真实平台验证 B1、有界排位 B2 及训练数据/权重修复采纳另行安排。
+- [B1 真实平台验证](docs/milestones/B1.md)：真实 validation_result 通过，139 条 accepted ack，零 fallback/defaulted；延迟长尾单列审查。
+
+A4、B0 与 B1 已完成，不自动追加强度样本或调整模型。有界排位 B2 及训练数据/权重修复采纳另行安排。
