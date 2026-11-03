@@ -20,22 +20,45 @@ import httpx
 import yaml
 
 
-def main():
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--train-mj-root", required=True, type=Path)
     parser.add_argument("--output-dir", required=True, type=Path)
     parser.add_argument("--seed", default=1, type=int)
     parser.add_argument(
+        "--config",
+        type=Path,
+        default=Path(__file__).resolve().parents[1] / "configs/arena_selfplay.yaml",
+    )
+    parser.add_argument("--batch-runs", type=int, choices=(1, 2), default=2)
+    parser.add_argument(
+        "--batch-timeout", type=int, default=7200, help="seconds per batch"
+    )
+    parser.add_argument(
+        "--strength-protocol",
+        type=Path,
+        help="seal planned strength protocol before first game",
+    )
+    parser.add_argument(
         "--batch", action="store_true", help="A3: full configured schedule, run twice"
     )
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    if args.batch_timeout <= 0:
+        parser.error("--batch-timeout must be positive")
+    if args.strength_protocol and (not args.batch or args.batch_runs != 1):
+        parser.error("strength experiment requires --batch --batch-runs 1")
     repo = Path(__file__).resolve().parents[1]
     train = args.train_mj_root.resolve()
     out = args.output_dir.resolve()
     out.mkdir(parents=True, exist_ok=False)
-    config = yaml.safe_load(
-        (repo / "configs/arena_selfplay.yaml").read_text(encoding="utf-8")
-    )
+    config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
+    if args.strength_protocol:
+        sys.path.insert(0, str(repo))
+        from rilab.strength import validate_plan
+
+        validate_plan(
+            yaml.safe_load(args.strength_protocol.read_text(encoding="utf-8")), config
+        )
     processes = []
     logs = []
     used_ports = set()
@@ -111,6 +134,18 @@ def main():
                 if time.monotonic() >= deadline:
                     raise TimeoutError(f"{name} startup timed out")
                 time.sleep(0.1)
+        if args.strength_protocol:
+            from rilab.strength import register_protocol
+
+            metadata = {
+                name: httpx.get(b["api_base"] + "/v1/models", timeout=10)
+                .raise_for_status()
+                .json()["models"]
+                for name, b in config["backends"].items()
+            }
+            register_protocol(
+                args.strength_protocol, args.config, config, metadata, out
+            )
         config_path = out / "arena.yaml"
         config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
         command = [
@@ -130,21 +165,26 @@ def main():
         if args.batch:
             command = command[: command.index("--seed")]
             summaries = []
-            for label in ("batch", "replay"):
+            for label in ("batch", "replay") if args.batch_runs == 2 else ("batch",):
                 subprocess.run(
                     command + ["--output-dir", str(out / label)],
                     cwd=repo,
                     check=True,
-                    timeout=7200,
+                    timeout=args.batch_timeout,
                 )
                 summaries.append(
                     json.loads(
                         (out / label / "summary.json").read_text(encoding="utf-8")
                     )
                 )
-            same = summaries[0]["games"] == summaries[1]["games"]
+            same = (
+                summaries[0]["games"] == summaries[1]["games"]
+                if len(summaries) == 2
+                else None
+            )
             evidence = {
-                "valid": all(s["valid"] for s in summaries) and same,
+                "valid": all(s["valid"] for s in summaries) and same is not False,
+                "runs": len(summaries),
                 "replay_identical": same,
                 "games_per_run": len(summaries[0]["games"]),
                 "digests": [s["replay_digest"] for s in summaries],
@@ -162,7 +202,7 @@ def main():
                 json.dumps(evidence, indent=2), encoding="utf-8"
             )
             if not evidence["valid"]:
-                raise RuntimeError("A3 replay mismatch or invalid batch")
+                raise RuntimeError("replay mismatch or invalid batch")
             return
         subprocess.run(command, cwd=repo, check=True, timeout=300)
         evidence = {

@@ -33,5 +33,5 @@ registration:
   registered_before_run: false
   registered_at: null
   protocol_sha256: null
-  # A4 tool acceptance currently supports exploratory reports only. Formal
-  # protocol sealing/eligibility will be implemented with the separately agreed run.
+  # This draft is not executable. The manual launch uses strength_protocol.yaml
+  # and seals it before games; formal result eligibility is checked afterwards.

@@ -1,0 +1,200 @@
+# Fixed-budget strength run; engineering seeds 1-8 excluded.
+config_version: 1
+engine:
+  game_mode: 4p-red-half
+  rule: default_tenhou
+  seeds:
+  - 10001
+  - 10002
+  - 10003
+  - 10004
+  - 10005
+  - 10006
+  - 10007
+  - 10008
+  - 10009
+  - 10010
+  - 10011
+  - 10012
+  - 10013
+  - 10014
+  - 10015
+  - 10016
+  - 10017
+  - 10018
+  - 10019
+  - 10020
+  - 10021
+  - 10022
+  - 10023
+  - 10024
+  - 10025
+  - 10026
+  - 10027
+  - 10028
+  - 10029
+  - 10030
+  - 10031
+  - 10032
+  - 10033
+  - 10034
+  - 10035
+  - 10036
+  - 10037
+  - 10038
+  - 10039
+  - 10040
+  - 10041
+  - 10042
+  - 10043
+  - 10044
+  - 10045
+  - 10046
+  - 10047
+  - 10048
+  - 10049
+  - 10050
+  - 10051
+  - 10052
+  - 10053
+  - 10054
+  - 10055
+  - 10056
+  - 10057
+  - 10058
+  - 10059
+  - 10060
+  - 10061
+  - 10062
+  - 10063
+  - 10064
+  - 10065
+  - 10066
+  - 10067
+  - 10068
+  - 10069
+  - 10070
+  - 10071
+  - 10072
+  - 10073
+  - 10074
+  - 10075
+  - 10076
+  - 10077
+  - 10078
+  - 10079
+  - 10080
+  - 10081
+  - 10082
+  - 10083
+  - 10084
+  - 10085
+  - 10086
+  - 10087
+  - 10088
+  - 10089
+  - 10090
+  - 10091
+  - 10092
+  - 10093
+  - 10094
+  - 10095
+  - 10096
+  - 10097
+  - 10098
+  - 10099
+  - 10100
+  - 10101
+  - 10102
+  - 10103
+  - 10104
+  - 10105
+  - 10106
+  - 10107
+  - 10108
+  - 10109
+  - 10110
+  - 10111
+  - 10112
+  - 10113
+  - 10114
+  - 10115
+  - 10116
+  - 10117
+  - 10118
+  - 10119
+  - 10120
+  - 10121
+  - 10122
+  - 10123
+  - 10124
+  - 10125
+  - 10126
+  - 10127
+  - 10128
+backends:
+  v1_2_0:
+    mode: http
+    api_base: http://127.0.0.1:8000
+    adapter_profile: legacy_v1_2
+    revision:
+      tag: v1.2.0
+      commit: 758981ab9fb457c882ab9c577c9377976f97f42b
+      branch_hint: main
+    timeout_seconds: 30.0
+    response:
+      pass_bias: null
+    model_identity:
+      turn_sha256: 532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7
+      response_sha256: 3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4
+  v1_3_0:
+    mode: http
+    api_base: http://127.0.0.1:8001
+    adapter_profile: full_state_v2
+    revision:
+      tag: v1.3.0
+      commit: 1e5092f344fb69bcdf4697f683f2ecf15b9865d8
+      branch_hint: codex/full-state-features
+    timeout_seconds: 30.0
+    response:
+      pass_bias: null
+    model_identity:
+      turn_sha256: 30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90
+      response_sha256: e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51
+matchups:
+- id: candidate_vs_baseline
+  seats:
+  - v1_3_0
+  - v1_2_0
+  - v1_2_0
+  - v1_2_0
+  focal_seat: 0
+  rotation: cyclic4
+  paired_group: upgrade
+- id: baseline_control
+  seats:
+  - v1_2_0
+  - v1_2_0
+  - v1_2_0
+  - v1_2_0
+  focal_seat: 0
+  rotation: cyclic4
+  paired_group: upgrade
+- id: two_vs_two
+  seats:
+  - v1_3_0
+  - v1_3_0
+  - v1_2_0
+  - v1_2_0
+  focal_seat: null
+  rotation: unique6
+  paired_group: null
+artifacts:
+  output_dir: outputs/arena
+  full_snapshots_first_run: false
+  snapshot_stride: 100
+  max_bytes: 2000000000
+evaluation:
+  primary_paired_group: upgrade
+  cluster: seed_with_all_rotations
+  confidence_level: 0.95
