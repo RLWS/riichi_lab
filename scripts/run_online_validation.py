@@ -136,7 +136,7 @@ def main():
             print("Verified model ready; starting one validation session.", flush=True)
             result = subprocess.run(
                 [
-                    str(ROOT / ".venv/Scripts/python.exe"),
+                    sys.executable,
                     "-m",
                     "rilab.cli",
                     "arena-online",
@@ -160,7 +160,7 @@ def main():
                 raise RuntimeError("model metadata changed")
             review = subprocess.run(
                 [
-                    str(ROOT / ".venv/Scripts/python.exe"),
+                    sys.executable,
                     "-m",
                     "rilab.online.validation",
                     "--session-dir",

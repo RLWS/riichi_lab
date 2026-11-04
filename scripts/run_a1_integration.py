@@ -1,6 +1,6 @@
 """Run a real-weight dual-HTTP A1 game without modifying train_mj checkout.
 
-Use the training development Python (torch/FastAPI/uvicorn/httpx installed).
+Use a venv with rilab and CPU inference dependencies installed.
 python scripts/run_a1_integration.py --train-mj-root <repo> --output-dir <new dir>
 """
 
@@ -149,7 +149,7 @@ def main(argv=None):
         config_path = out / "arena.yaml"
         config_path.write_text(yaml.safe_dump(config), encoding="utf-8")
         command = [
-            str(repo / ".venv/Scripts/python.exe"),
+            sys.executable,
             "-m",
             "rilab.cli",
             "arena-selfplay",

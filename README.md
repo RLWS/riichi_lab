@@ -2,7 +2,7 @@
 
 独立四麻适配层，计划连接 RiichiEnv 与 train_mj 推理服务，用于本地对局回归及 riichi.dev 在线机器人。
 
-**首次使用：[干净环境使用指南](docs/getting-started.md)**。以 Windows x64 / Python 3.11 / venv 为主，从安装依赖、准备代码与权重、本地对弈，到平台验证和有界排位；无需 Anaconda、uv 或 GPU。
+**首次使用：[Linux 使用指南](docs/getting-started-linux.md) · [Windows 使用指南](docs/getting-started.md)**。两份指南均从仅预装 Python 3.11 的环境出发，使用 venv，覆盖依赖安装、代码与权重准备、本地对弈、平台验证和有界排位；无需 Anaconda、uv 或 GPU。
 
 当前已完成 A0/A1、A2 检查工具、A3 工程验收与 A4 正式强度验收。正式实验为 128 个独立种子、1,792 半庄，全部产物及 1,102,487 次决策离线回放通过；按预登记规则，v1.3.0 相对 v1.2.0 的强度结论为证据不足。原冻结 tag 的 DEF-001 保留为已知失败，上游修复已在新分支提交并验证。
 

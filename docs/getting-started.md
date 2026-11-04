@@ -1,6 +1,6 @@
-# 从干净环境到本地对弈、线上排位
+# Windows：从干净环境到本地对弈、线上排位
 
-本指南面向 **Windows x64 + CPython 3.11.x + PowerShell**，仅需预装 Python，之后用标准库 `venv` 安装依赖。默认 CPU 推理，无需 Anaconda、uv、CUDA 或训练环境。所有命令从 `riichi_lab` 仓库根目录执行；每条命令成功后再执行下一条。Linux/macOS 的启动脚本尚未验证，部分脚本明确使用 `.venv/Scripts/python.exe`，不要直接照搬。
+本指南面向 **Windows x64 + CPython 3.11.x + PowerShell**，仅需预装 Python，之后用标准库 `venv` 安装依赖。默认 CPU 推理，无需 Anaconda、uv、CUDA 或训练环境。所有命令从 `riichi_lab` 仓库根目录执行；每条命令成功后再执行下一条。**Linux 用户请使用 [Linux 使用指南](getting-started-linux.md)**。自动启动脚本统一使用调用它的 Python 解释器启动服务及适配层。
 
 流程：安装适配层 → 准备固定版本的 train_mj 和权重 → 安装 CPU 推理依赖 → 本地单局 → 平台验证 → 单局有界排位。这里的本地对弈是模型控制四席的自动对局，当前 CLI 没有人类交互打牌界面。
 

@@ -11,16 +11,31 @@
 
 可以在启动前调整预算或门槛，但配置与协议中的种子/簇数/半庄数必须一致；启动后不能根据中途成绩改模型、种子、门槛或预算。
 
-## PowerShell 命令
+## 环境准备
 
-新机器先按 [干净环境使用指南](getting-started.md) 安装 Python 3.11、venv、CPU 推理依赖，并准备固定 tag 与四份权重。以下在仓库根目录执行：
+新机器先按 [Linux 指南](getting-started-linux.md) 或 [Windows 指南](getting-started.md) 安装 Python 3.11、venv、CPU 推理依赖，并准备固定 tag 与四份权重。以下在仓库根目录执行。
+
+## Bash 命令（Linux）
+
+```bash
+run_dir="outputs/strength_$(date +%Y%m%d_%H%M%S)"
+.venv/bin/python scripts/run_strength.py --output-dir "$run_dir"
+```
+
+只检查计划、不启动服务或对局：
+
+```bash
+.venv/bin/python scripts/run_strength.py --output-dir outputs/check_only --dry-run
+```
+
+## PowerShell 命令（Windows）
 
 ```powershell
 $runDir = "outputs/strength_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
 .\.venv\Scripts\python.exe scripts/run_strength.py --output-dir $runDir
 ```
 
-这里使用同一个已安装适配层和 torch/FastAPI/uvicorn 的项目 venv。脚本自动启动服务并调用项目 .venv 运行适配层，不需要手动开服务或设置端口。保持电脑运行、终端开启。
+两平台均使用同一个已安装适配层和 torch/FastAPI/uvicorn 的 venv。脚本通过当前 Python 解释器启动服务和适配层，不需要手动开服务或设置端口。保持电脑运行、终端开启。
 
 只检查计划、不启动服务或对局：
 
