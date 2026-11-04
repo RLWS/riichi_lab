@@ -13,20 +13,19 @@
 
 ## PowerShell 命令
 
-在当前这台机器执行：
+新机器先按 [干净环境使用指南](getting-started.md) 安装 Python 3.11、venv、CPU 推理依赖，并准备固定 tag 与四份权重。以下在仓库根目录执行：
 
 ```powershell
-Set-Location 'F:\Code\AI\train_study\riichi_lab'
 $runDir = "outputs/strength_$(Get-Date -Format 'yyyyMMdd_HHmmss')"
-& 'D:\Anaconda3\python.exe' scripts/run_strength.py --output-dir $runDir
+.\.venv\Scripts\python.exe scripts/run_strength.py --output-dir $runDir
 ```
 
-这里使用已安装 torch/FastAPI/uvicorn 的训练开发 Python。脚本自动调用项目 .venv 运行适配层，不需要手动开服务或设置端口。保持电脑运行、终端开启。
+这里使用同一个已安装适配层和 torch/FastAPI/uvicorn 的项目 venv。脚本自动启动服务并调用项目 .venv 运行适配层，不需要手动开服务或设置端口。保持电脑运行、终端开启。
 
 只检查计划、不启动服务或对局：
 
 ```powershell
-& 'D:\Anaconda3\python.exe' scripts/run_strength.py --output-dir outputs/check_only --dry-run
+.\.venv\Scripts\python.exe scripts/run_strength.py --output-dir outputs/check_only --dry-run
 ```
 
 dry-run 只核对计划结构，不创建目录；实际启动还核对 tag、四份权重 SHA256 和服务实际校准。默认从相邻 train_mj 读取代码与权重，可用 --train-mj-root 指定。输出目录必须不存在，时间戳命名避免覆盖旧结果。

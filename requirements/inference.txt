@@ -1,0 +1,6 @@
+# CPU PyTorch is installed separately; see docs/getting-started.md.
+# Minimal dependencies for scripts/serve_integration_backend.py, no training stack.
+numpy==1.24.3
+fastapi==0.135.1
+pydantic==2.12.5
+uvicorn==0.42.0
