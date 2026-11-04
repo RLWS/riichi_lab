@@ -6,7 +6,10 @@ A1 提供注入后端的手工四席单局；自动编排与其他命令随里�
 from __future__ import annotations
 
 import argparse
+from datetime import datetime
 import json
+from pathlib import Path
+import re
 import sys
 
 import httpx
@@ -121,6 +124,28 @@ def cmd_evaluate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _online_output_dir(config_path: str, mode: str) -> str:
+    """Build a readable, filesystem-safe directory from non-secret run parameters."""
+    import yaml
+
+    config = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
+    backend = config["backend"]
+    bias = backend.get("response", {}).get("pass_bias")
+    parts = [mode]
+    if tag := backend.get("revision", {}).get("tag"):
+        parts.append(tag)
+    parts.extend(
+        [backend["adapter_profile"], f"r{config['online'].get('match_rounds', 4)}"]
+    )
+    if mode == "ranked":
+        parts.append(f"g{config['ranked']['max_games']}")
+    parts.append(f"pb{bias if bias is not None else 'default'}")
+    # Keep even custom config values within a practical Windows path length.
+    slug = "_".join(re.sub(r"[^A-Za-z0-9._-]+", "-", str(p))[:24] for p in parts)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    return str(Path("outputs") / f"{slug}_{timestamp}")
+
+
 def cmd_online(args: argparse.Namespace) -> int:
     import asyncio
     from rilab.online.client import run_validation
@@ -143,17 +168,19 @@ def cmd_online(args: argparse.Namespace) -> int:
                 )
             )
             return 0
-        if not args.output_dir:
-            raise ValueError("ranked requires --output-dir (new directory)")
-        summary = asyncio.run(run_ranked(config_path, args.output_dir))
+        output_dir = args.output_dir or _online_output_dir(config_path, args.mode)
+        print(f"Output directory: {output_dir}", file=sys.stderr)
+        summary = asyncio.run(run_ranked(config_path, output_dir))
+        summary = {**summary, "output_dir": output_dir}
         print(json.dumps(summary, ensure_ascii=False))
         return 0 if summary["completed"] else 1
-    if args.dry_run or not args.output_dir:
-        raise ValueError(
-            "validate requires --output-dir and does not support --dry-run"
-        )
+    if args.dry_run:
+        raise ValueError("validate does not support --dry-run")
 
-    summary = asyncio.run(run_validation(config_path, args.output_dir))
+    output_dir = args.output_dir or _online_output_dir(config_path, args.mode)
+    print(f"Output directory: {output_dir}", file=sys.stderr)
+    summary = asyncio.run(run_validation(config_path, output_dir))
+    summary = {**summary, "output_dir": output_dir}
     print(json.dumps(summary, ensure_ascii=False))
     return (
         0
@@ -218,7 +245,8 @@ def main(argv: list[str] | None = None) -> int:
         help="defaults to arena_online.yaml for validate, arena_ranked.yaml for ranked",
     )
     p_online.add_argument(
-        "--output-dir", help="new session or ranked batch artifact directory"
+        "--output-dir",
+        help="new artifact directory (default: outputs/<core config parameters>_<local timestamp>)",
     )
     p_online.set_defaults(func=cmd_online)
 
