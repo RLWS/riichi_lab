@@ -1,0 +1,37 @@
+# 真实排位批次配置：机器人 B / 后端 v1.3.0（full_state_v2）。
+# 预算与阈值暂沿用 B2 保守示例值，开局前必须由部署者确定真实预算。
+# 端口遵循 arena_selfplay.yaml 双实例约定（8001=v1.3.0）；运行前须与实际部署核对。
+# 平台 token 只经环境变量 RIICHI_DEV_BOT_TOKEN_V130 传入，不写入本文件。
+online:
+  endpoint_ranked: wss://game.riichi.dev/ws/ranked
+  token_env: RIICHI_DEV_BOT_TOKEN_V130
+  match_rounds: 8
+  send_reserve_seconds: 0.5
+  inbound_estimate_seconds: 0.5
+  finish_timeout_seconds: 5.0
+backend:
+  adapter_profile: full_state_v2
+  api_base: http://127.0.0.1:8013
+  api_key_env: TRAIN_MJ_API_KEY_V130  # 两实例密钥若相同，可设同值的不同变量。
+  timeout_seconds: 10.0
+  revision:
+    tag: v1.3.0
+    commit: 1e5092f344fb69bcdf4697f683f2ecf15b9865d8
+    branch_hint: codex/full-state-features
+  # 部署者声明，须与实际部署清单一致；API 不提供权重哈希。
+  model_identity:
+    turn_sha256: 30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90
+    response_sha256: e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51
+  response:
+    pass_bias: null  # 使用该实例服务端默认（v1.3.0 api_local: pass_bias=1.5）。
+ranked:
+  max_games: 100  # 占位：真实局数待定。
+  max_total_seconds: 7200
+  session_timeout_seconds: 7200
+  matchmaking_timeout_seconds: 300
+  stop:
+    max_fallbacks: 0
+    max_defaulted: 0
+    max_server_elapsed_ms: 8000
+    min_bank_ms: 1000
+    min_deadline_margin_ms: 500
