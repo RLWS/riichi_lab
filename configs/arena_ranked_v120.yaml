@@ -26,7 +26,7 @@ backend:
     pass_bias: null  # 使用该实例服务端默认（v1.2.0 api_local: pass_bias=2.0）。
 ranked:
   max_games: 100  # 占位：真实局数待定。
-  max_total_seconds: 7200
+  max_total_seconds: 0  # 0 不限制；正数到时后等待当前对局结束，不再开新局。
   session_timeout_seconds: 7200
   matchmaking_timeout_seconds: 300
   stop:

@@ -3,6 +3,7 @@
 import asyncio
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from websockets.asyncio.server import serve
@@ -64,7 +65,15 @@ def config_file(tmp_path, endpoint, *, change=None):
 
 
 async def game(
-    ws, *, status="accepted", elapsed=20, bank=500, grace=500, missing_timing=False
+    ws,
+    *,
+    status="accepted",
+    elapsed=20,
+    bank=500,
+    grace=500,
+    missing_timing=False,
+    before_end=None,
+    end_delay=0,
 ):
     await send(ws, {"type": "start_game", "id": 0})
     await send(ws, request(grace=grace))
@@ -84,6 +93,9 @@ async def game(
     if status == "defaulted":
         ack["action"] = {"type": "dahai", "pai": "9s"}
     await send(ws, ack)
+    if before_end:
+        before_end()
+    await asyncio.sleep(end_delay)
     await send(ws, {"type": "end_game", "scores": [25000] * 4})
     await ws.wait_closed()
 
@@ -239,7 +251,7 @@ def test_disk_failure_stops_before_next_game(tmp_path, monkeypatch):
     )
 
 
-@pytest.mark.parametrize("limit", ["matchmaking", "session", "total"])
+@pytest.mark.parametrize("limit", ["matchmaking", "session"])
 def test_time_limits_prevent_infinite_wait_and_new_games(tmp_path, limit):
     async def scenario(ws):
         if limit == "session":
@@ -249,19 +261,16 @@ def test_time_limits_prevent_infinite_wait_and_new_games(tmp_path, limit):
         await ws.wait_closed()
 
     def change(c):
+        c["ranked"]["max_total_seconds"] = 0
         c["ranked"][
             {
                 "matchmaking": "matchmaking_timeout_seconds",
                 "session": "session_timeout_seconds",
-                "total": "max_total_seconds",
             }[limit]
         ] = 0.03
 
     result, connections, _ = asyncio.run(batch(tmp_path, scenario, change=change))
-    assert len(connections) <= 1 and not result["completed"]
-    if not connections:
-        assert limit == "total" and result["attempted"] == 0
-        return
+    assert len(connections) == 1 and not result["completed"]
     log = (tmp_path / "batch/game_0001/session.jsonl").read_text()
     assert (
         "matchmaking_timeout" if limit == "matchmaking" else "session_time_limit"
@@ -309,6 +318,10 @@ def test_cancel_preserves_current_session_and_never_reconnects(tmp_path):
         ("max_games", 0),
         ("max_games", True),
         ("max_total_seconds", float("inf")),
+        ("max_total_seconds", float("nan")),
+        ("max_total_seconds", -1),
+        ("max_total_seconds", True),
+        ("session_timeout_seconds", 0),
         ("session_timeout_seconds", -1),
     ],
 )
@@ -382,8 +395,83 @@ def test_total_budget_includes_model_startup_and_never_connects_if_expired(tmp_p
             change=lambda c: c["ranked"].update(max_total_seconds=0.03),
         )
     )
-    assert result["status"] == "failed" and result["attempted"] == 0
+    assert result["status"] == "stopped" and result["attempted"] == 0
+    assert result["stop_reasons"] == ["batch_time_limit"]
     assert not connections and backend.closed
+
+
+@pytest.mark.parametrize("total_limit", [10, 0, None])
+def test_total_limit_finishes_current_game_and_zero_or_missing_is_unlimited(
+    tmp_path, monkeypatch, total_limit
+):
+    import rilab.online.ranked as module
+
+    clock = [0.0]
+    monkeypatch.setattr(module, "time", SimpleNamespace(perf_counter=lambda: clock[0]))
+
+    def advance_past_limit():
+        clock[0] += 11
+
+    async def scenario(ws):
+        await game(ws, before_end=advance_past_limit)
+
+    def change(c):
+        if total_limit is None:
+            c["ranked"].pop("max_total_seconds")
+        else:
+            c["ranked"]["max_total_seconds"] = total_limit
+
+    result, connections, backend = asyncio.run(batch(tmp_path, scenario, change=change))
+    expected = 1 if total_limit else 3
+    assert len(connections) == result["games_completed"] == expected
+    assert result["elapsed_seconds"] == expected * 11
+    assert backend.checks == expected * 2 and backend.closed
+    assert all(g["protocol_passed"] and not g["stop_reasons"] for g in result["games"])
+    assert result["status"] == ("stopped" if total_limit else "completed_budget")
+    assert result["stop_reasons"] == (["batch_time_limit"] if total_limit else [])
+    assert result["completed"] is (not bool(total_limit))
+    manifest = json.loads((tmp_path / "batch/manifest.json").read_text())
+    assert manifest["config"]["ranked"]["max_total_seconds"] == (total_limit or 0)
+
+
+def test_total_limit_expiring_during_preflight_prevents_connection(
+    tmp_path, monkeypatch
+):
+    import rilab.online.ranked as module
+
+    clock = [0.0]
+    monkeypatch.setattr(module, "time", SimpleNamespace(perf_counter=lambda: clock[0]))
+
+    class SlowPreflightBackend(RankedBackend):
+        async def check_unchanged(self):
+            await super().check_unchanged()
+            clock[0] = 11
+
+    result, connections, backend = asyncio.run(
+        batch(tmp_path, game, SlowPreflightBackend())
+    )
+    assert not connections and result["attempted"] == 0 and backend.closed
+    assert result["status"] == "stopped"
+    assert result["stop_reasons"] == ["batch_time_limit"]
+
+
+def test_total_limit_does_not_cancel_live_game(tmp_path):
+    async def scenario(ws):
+        await game(ws, end_delay=1.1)
+
+    result, connections, backend = asyncio.run(
+        batch(
+            tmp_path,
+            scenario,
+            change=lambda c: c["ranked"].update(max_total_seconds=1),
+        )
+    )
+    assert len(connections) == result["games_completed"] == 1
+    assert result["games"][0]["protocol_passed"]
+    assert result["elapsed_seconds"] > 1
+    assert result["status"] == "stopped"
+    assert result["stop_reasons"] == ["batch_time_limit"]
+    assert backend.closed
 
 
 def test_existing_output_is_not_overwritten_or_resumed(tmp_path):

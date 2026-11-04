@@ -1,4 +1,4 @@
-"""Predeclared finite ranked batches. No retry, resume, or automatic budget extension."""
+"""Ranked batches with optional time limits checked between complete sessions."""
 
 from __future__ import annotations
 
@@ -89,8 +89,9 @@ def load_ranked_config(path):
     positive(online["finish_timeout_seconds"], "finish_timeout_seconds")
     positive(backend["timeout_seconds"], "backend timeout")
     positive(batch["max_games"], "max_games", integer=True)
+    batch.setdefault("max_total_seconds", 0)
+    positive(batch["max_total_seconds"], "max_total_seconds", zero=True)
     for key in (
-        "max_total_seconds",
         "session_timeout_seconds",
         "matchmaking_timeout_seconds",
     ):
@@ -186,7 +187,9 @@ async def run_ranked(
     totals = {"fallbacks": 0, "defaulted": 0}
     batch = config["ranked"]
     started = time.perf_counter()
-    deadline = started + batch["max_total_seconds"]
+    deadline = (
+        started + batch["max_total_seconds"] if batch["max_total_seconds"] else None
+    )
     summary = {
         "status": "running",
         "completed": False,
@@ -198,8 +201,8 @@ async def run_ranked(
         **totals,
     }
 
-    def time_left():
-        return max(0, deadline - time.perf_counter())
+    def batch_expired():
+        return deadline is not None and time.perf_counter() >= deadline
 
     def checkpoint():
         summary.update(totals, elapsed_seconds=time.perf_counter() - started)
@@ -241,17 +244,15 @@ async def run_ranked(
             output / "manifest.json", manifest
         )  # Seal limits before any connection.
         checkpoint()
-        async with asyncio.timeout(time_left()):
-            await backend.warmup()
+        await backend.warmup()
         manifest["models"] = sanitizer.redact(backend.metadata)
         write_json(output / "manifest.json", manifest)
         for index in range(batch["max_games"]):
-            if time_left() <= 0:
+            if batch_expired():
                 summary["stop_reasons"] = ["batch_time_limit"]
                 break
-            async with asyncio.timeout(time_left()):
-                await backend.check_unchanged()
-            if time_left() <= 0:
+            await backend.check_unchanged()
+            if batch_expired():
                 summary["stop_reasons"] = ["batch_time_limit"]
                 break
             game_dir = output / f"game_{index + 1:04d}"
@@ -266,18 +267,15 @@ async def run_ranked(
             summary["attempted"] += 1
             checkpoint()  # If interrupted, never silently reattempt this slot.
             try:
-                allowance = min(time_left(), batch["session_timeout_seconds"])
-                if allowance <= 0:
-                    session.state = SessionState.Disconnected
-                    session.fault("batch_time_limit_before_connection")
-                else:
-                    async with asyncio.timeout(allowance):
-                        await connect_session(
-                            config["online"]["endpoint_ranked"],
-                            token,
-                            session,
-                            connector=connector,
-                        )
+                # The batch limit only gates new connections. An admitted session
+                # keeps its full independent timeout, including matchmaking.
+                async with asyncio.timeout(batch["session_timeout_seconds"]):
+                    await connect_session(
+                        config["online"]["endpoint_ranked"],
+                        token,
+                        session,
+                        connector=connector,
+                    )
             except TimeoutError:
                 session.state = SessionState.Disconnected
                 session.fault("session_time_limit")
@@ -311,8 +309,7 @@ async def run_ranked(
                 }
             )
             checkpoint()
-            async with asyncio.timeout(time_left()):
-                await backend.check_unchanged()
+            await backend.check_unchanged()
             if reasons:
                 summary["stop_reasons"] = reasons
                 break

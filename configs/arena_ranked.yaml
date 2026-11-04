@@ -23,7 +23,7 @@ backend:
     pass_bias: null
 ranked:
   max_games: 1
-  max_total_seconds: 7200
+  max_total_seconds: 0  # 0 不限制；正数到时后等待当前对局结束，不再开新局。
   session_timeout_seconds: 7200
   matchmaking_timeout_seconds: 300
   stop:
