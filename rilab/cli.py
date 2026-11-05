@@ -124,6 +124,29 @@ def cmd_evaluate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_compare_online(args: argparse.Namespace) -> int:
+    from rilab.ranked_evaluation import evaluate_online
+
+    report = evaluate_online(
+        args.snapshot,
+        args.display,
+        args.output_dir,
+        prior_path=args.prior_report,
+        identity_path=args.identity_check,
+    )
+    print(
+        json.dumps(
+            {
+                "valid": report["valid"],
+                "observed_leader": report["observed_leader"],
+                "promotion_verdict": report["causal_or_formal_promotion_verdict"],
+                "output_dir": args.output_dir,
+            }
+        )
+    )
+    return 0
+
+
 def _online_output_dir(config_path: str, mode: str) -> str:
     """Build a readable, filesystem-safe directory from non-secret run parameters."""
     import yaml
@@ -232,6 +255,25 @@ def main(argv: list[str] | None = None) -> int:
         help="verify preregistration, offline replay and apply sealed decision rules",
     )
     p_evaluate.set_defaults(func=cmd_evaluate)
+
+    p_compare = sub.add_parser(
+        "arena-compare-online", help="线上逐局快照与截图的版本评分、时间/席位敏感性报告"
+    )
+    p_compare.add_argument("--snapshot", required=True)
+    p_compare.add_argument(
+        "--display",
+        required=True,
+        help="JSON transcription of profile aggregate statistics",
+    )
+    p_compare.add_argument(
+        "--prior-report",
+        help="historical A4 report, kept as a different opponent environment",
+    )
+    p_compare.add_argument("--output-dir", required=True)
+    p_compare.add_argument(
+        "--identity-check", help="optional file and tensor fingerprint comparison"
+    )
+    p_compare.set_defaults(func=cmd_compare_online)
 
     p_online = sub.add_parser("arena-online", help="单次平台验证或 B2 有界排位")
     p_online.add_argument("--mode", choices=("validate", "ranked"), default="validate")

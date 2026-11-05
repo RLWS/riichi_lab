@@ -12,6 +12,7 @@ import random
 
 from rilab.artifacts import audit_batch, encode, write_json
 from rilab.scheduling import expand_schedule
+from rilab.scoring import rank_scorecard
 
 METRICS = {
     "mean_rank": ("rank_sum", "games"),
@@ -391,6 +392,13 @@ def evaluate_run(
         report["implementation"]["formal_py_sha256"] = hashlib.sha256(
             (Path(__file__).parent / "formal.py").read_bytes()
         ).hexdigest()
+    report["version_scorecard"] = rank_scorecard(
+        primary["mean_rank"],
+        primary["last_place_rate"],
+        minimum_gain=decision["minimum_meaningful_rank_gain"] if formal else None,
+        guardrail=decision["last_place_rate_guardrail"] if formal else None,
+        scope="A+3B versus B+3B against a fixed baseline; heterogeneous online opponents are a separate estimand",
+    )
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=False)
     write_json(out / "report.json", report)
@@ -402,6 +410,7 @@ def evaluate_run(
     )
     text = (
         headline
+        + f"观测顺位改善：{report['version_scorecard']['observed_rank_gain']:.6f}（正值为好）；方向证据：{report['version_scorecard']['direction_evidence']}。正式门槛结论与观测收益分别呈现。\n\n"
         + f"种子簇：{len(clusters)}；主实验焦点半庄：{len(observations)}；补充 2v2 单独报告。\n\n"
         f"平均顺位差（候选−基线，低为好）：{rank['difference']:.6f}，95% 区间 {rank['ci95']}。\n\n"
         "两版本校准不同，比较的是完整部署策略。DEF-001 保留为已知例外。完整分子、分母与辅助指标见 report.json。\n"

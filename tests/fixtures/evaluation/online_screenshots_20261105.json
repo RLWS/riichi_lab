@@ -1,0 +1,27 @@
+{
+  "source": "User-supplied all-time ranked profile screenshots received 2026-11-05; capture times unavailable",
+  "candidate": "v1.3.0",
+  "baseline": "v1.2.0",
+  "versions": {
+    "v1.2.0": {
+      "games": 294,
+      "displayed_mean_rank": 2.57,
+      "rank_percentages": [23.8, 22.1, 27.2, 26.9],
+      "mean_final_points": 25286,
+      "platform_rating": 1642,
+      "rates_percent": {"wins": 21.5, "deal_ins": 13.5, "riichi": 27.3, "calls": 22.9, "bankruptcy": 7.5},
+      "mean_win_points": 7535,
+      "mean_deal_in_points": 5403
+    },
+    "v1.3.0": {
+      "games": 334,
+      "displayed_mean_rank": 2.39,
+      "rank_percentages": [28.4, 26.3, 22.8, 22.5],
+      "mean_final_points": 26051,
+      "platform_rating": 1844,
+      "rates_percent": {"wins": 23.7, "deal_ins": 14.2, "riichi": 24.8, "calls": 29.9, "bankruptcy": 8.4},
+      "mean_win_points": 7107,
+      "mean_deal_in_points": 5628
+    }
+  }
+}

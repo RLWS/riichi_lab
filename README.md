@@ -4,6 +4,8 @@
 
 **首次使用：[Linux 使用指南](docs/getting-started-linux.md) · [Windows 使用指南](docs/getting-started.md)**。两份指南均从仅预装 Python 3.11 的环境出发，使用 venv，覆盖依赖安装、代码与权重准备、本地对弈、平台验证和有界排位；无需 Anaconda、uv 或 GPU。
 
+**阶段基线：[v1.3.0 收尾里程碑](docs/milestones/v1.3.0-closeout.md)**，tag 为 `milestone-v1.3.0-online-evaluation`。后续 v1.4.0 接入从此基线继续，先对齐新版本契约与部署身份，再使用独立样本评估。
+
 当前已完成 A0/A1、A2 检查工具、A3 工程验收与 A4 正式强度验收。正式实验为 128 个独立种子、1,792 半庄，全部产物及 1,102,487 次决策离线回放通过；按预登记规则，v1.3.0 相对 v1.2.0 的强度结论为证据不足。原冻结 tag 的 DEF-001 保留为已知失败，上游修复已在新分支提交并验证。
 
 - [可行性与问题审查](docs/feasibility-review.md)：审查结论、问题清单、上游引擎实测及验证边界。
@@ -20,6 +22,8 @@
 - [A4 统计工具与探索性报告](docs/milestones/A4.md)：计数口径、区间、复现检查及正式实验边界。
 
 - [A4 正式强度验收](docs/milestones/A4-formal.md)：完整资格审计、正式指标、阈值判定和证据。
+
+- [线上实绩与版本评分改进](docs/online-version-scoring-20261105.md)：云端只读结果核对、参数等价检查、观测收益与正式门槛分层、时间/席位敏感性分析。
 
 - [手动启动强度对局](docs/run-strength.md)：128 个独立种子、1,792 半庄，开局前登记协议，单轮运行命令。
 

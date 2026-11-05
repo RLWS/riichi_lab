@@ -1,0 +1,1459 @@
+{
+  "analysis_date": "2026-11-05",
+  "tests_passed": 193,
+  "verification": {
+    "isolated_root": "F:\\Code\\AI\\train_study\\riichi_lab\\outputs\\scoring_validation_4pywj8rp",
+    "original_index_modified": false,
+    "source_files_copied": 219,
+    "exit_code": 0
+  },
+  "cloud_access": "read-only file extraction and low-priority parameter hashing; no service restarts/config writes",
+  "inference_service_pids_before_after": [
+    5993,
+    6274
+  ],
+  "report": {
+    "valid": true,
+    "analysis_kind": "online_observational",
+    "candidate": "v1.3.0",
+    "baseline": "v1.2.0",
+    "observed_rank_gain_bounds": [
+      0.1609170358534877,
+      0.17483719466434255
+    ],
+    "observed_rank_score_gain_bounds": [
+      5.363901195116257,
+      5.8279064888114185
+    ],
+    "observed_leader": "v1.3.0",
+    "causal_or_formal_promotion_verdict": "not_established_by_observational_data",
+    "arms": {
+      "v1.3.0": {
+        "sessions": 296,
+        "started_sessions": 296,
+        "terminal_games": 294,
+        "nonterminal_started": 2,
+        "sessions_without_observed_start": 0,
+        "mean_rank_bounds": [
+          2.3945578231292517,
+          2.401360544217687
+        ],
+        "mean_rank_midpoint_descriptive": 2.3979591836734695,
+        "rank_score_bounds": [
+          53.28798185941044,
+          53.51473922902494
+        ],
+        "unresolved_ties": 2,
+        "all_started_rank_bounds_with_missing": [
+          2.385135135135135,
+          2.4121621621621623
+        ],
+        "mean_final_points": 26159.863945578232,
+        "nonpassing_terminal_games_retained": 0,
+        "batch_status_counts": {
+          "failed": 96,
+          "completed_budget": 200
+        },
+        "exact_rank_counts": {
+          "2": 78,
+          "4": 67,
+          "3": 64,
+          "1": 83
+        },
+        "rates": {
+          "wins": {
+            "numerator": 710,
+            "denominator": 2985,
+            "value": 0.23785594639865998
+          },
+          "deal_ins": {
+            "numerator": 416,
+            "denominator": 2985,
+            "value": 0.13936348408710217
+          },
+          "riichi": {
+            "numerator": 712,
+            "denominator": 2985,
+            "value": 0.23852596314907873
+          },
+          "calls": {
+            "numerator": 894,
+            "denominator": 2985,
+            "value": 0.2994974874371859
+          }
+        },
+        "rate_scope": "observed completed hands in terminal traces only; screenshot denominators may differ"
+      },
+      "v1.2.0": {
+        "sessions": 285,
+        "started_sessions": 283,
+        "terminal_games": 281,
+        "nonterminal_started": 2,
+        "sessions_without_observed_start": 2,
+        "mean_rank_bounds": [
+          2.5622775800711746,
+          2.5693950177935942
+        ],
+        "mean_rank_midpoint_descriptive": 2.5658362989323846,
+        "rank_score_bounds": [
+          47.686832740213525,
+          47.92408066429419
+        ],
+        "unresolved_ties": 2,
+        "all_started_rank_bounds_with_missing": [
+          2.5512367491166077,
+          2.579505300353357
+        ],
+        "mean_final_points": 25427.046263345197,
+        "nonpassing_terminal_games_retained": 0,
+        "batch_status_counts": {
+          "cancelled": 2,
+          "failed": 82,
+          "stopped": 1,
+          "completed_budget": 200
+        },
+        "exact_rank_counts": {
+          "3": 77,
+          "2": 62,
+          "1": 67,
+          "4": 73
+        },
+        "rates": {
+          "wins": {
+            "numerator": 627,
+            "denominator": 2923,
+            "value": 0.21450564488539173
+          },
+          "deal_ins": {
+            "numerator": 386,
+            "denominator": 2923,
+            "value": 0.13205610673965104
+          },
+          "riichi": {
+            "numerator": 769,
+            "denominator": 2923,
+            "value": 0.2630858706808074
+          },
+          "calls": {
+            "numerator": 671,
+            "denominator": 2923,
+            "value": 0.22955867259664728
+          }
+        },
+        "rate_scope": "observed completed hands in terminal traces only; screenshot denominators may differ"
+      }
+    },
+    "screenshot_analysis": {
+      "versions": {
+        "v1.2.0": {
+          "games": 294,
+          "rank_counts": [
+            70,
+            65,
+            80,
+            79
+          ],
+          "mean_rank": 2.5714285714285716,
+          "rank_score_0_100": 47.61904761904761,
+          "top_two_rate": 0.45918367346938777,
+          "first_rate": 0.23809523809523808,
+          "last_rate": 0.2687074829931973,
+          "sample_rank_variance": 1.2627986348122866,
+          "count_provenance": "unique reconstruction from rounded screenshot",
+          "displayed_metrics": {
+            "games": 294,
+            "displayed_mean_rank": 2.57,
+            "rank_percentages": [
+              23.8,
+              22.1,
+              27.2,
+              26.9
+            ],
+            "mean_final_points": 25286,
+            "platform_rating": 1642,
+            "rates_percent": {
+              "wins": 21.5,
+              "deal_ins": 13.5,
+              "riichi": 27.3,
+              "calls": 22.9,
+              "bankruptcy": 7.5
+            },
+            "mean_win_points": 7535,
+            "mean_deal_in_points": 5403
+          }
+        },
+        "v1.3.0": {
+          "games": 334,
+          "rank_counts": [
+            95,
+            88,
+            76,
+            75
+          ],
+          "mean_rank": 2.3922155688622753,
+          "rank_score_0_100": 53.5928143712575,
+          "top_two_rate": 0.5479041916167665,
+          "first_rate": 0.2844311377245509,
+          "last_rate": 0.2245508982035928,
+          "sample_rank_variance": 1.2601194008379637,
+          "count_provenance": "unique reconstruction from rounded screenshot",
+          "displayed_metrics": {
+            "games": 334,
+            "displayed_mean_rank": 2.39,
+            "rank_percentages": [
+              28.4,
+              26.3,
+              22.8,
+              22.5
+            ],
+            "mean_final_points": 26051,
+            "platform_rating": 1844,
+            "rates_percent": {
+              "wins": 23.7,
+              "deal_ins": 14.2,
+              "riichi": 24.8,
+              "calls": 29.9,
+              "bankruptcy": 8.4
+            },
+            "mean_win_points": 7107,
+            "mean_deal_in_points": 5628
+          }
+        }
+      },
+      "observed_rank_gain": 0.17921300256629635,
+      "rank_score_gain": 5.973766752209879,
+      "top_two_rate_gain": 0.08872051814737875,
+      "first_rate_gain": 0.04633589962931284,
+      "last_rate_change": -0.04415658478960449,
+      "unadjusted_iid_normal_rank_difference_ci95": [
+        -0.35526148050421746,
+        -0.003164524628375215
+      ],
+      "inference_status": "conditional diagnostic only; independence, equal opponent pool and time coverage unverified; no preregistered causal promotion claim",
+      "hand_metric_intervals": null,
+      "missing_information": [
+        "per-hand denominators for displayed rates",
+        "opponent identities/ratings",
+        "match times and shared games"
+      ]
+    },
+    "time_seat_sensitivity": {
+      "available": true,
+      "time_clusters": 14,
+      "common_cells": [
+        {
+          "hour_utc": "2026-11-04T10:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 1,
+          "baseline_games": 2,
+          "overlap_weight": 1
+        },
+        {
+          "hour_utc": "2026-11-04T11:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 2,
+          "baseline_games": 3,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-04T11:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 6,
+          "baseline_games": 3,
+          "overlap_weight": 3
+        },
+        {
+          "hour_utc": "2026-11-04T11:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 7,
+          "baseline_games": 8,
+          "overlap_weight": 7
+        },
+        {
+          "hour_utc": "2026-11-04T11:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 9,
+          "baseline_games": 7,
+          "overlap_weight": 7
+        },
+        {
+          "hour_utc": "2026-11-04T12:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 3,
+          "baseline_games": 6,
+          "overlap_weight": 3
+        },
+        {
+          "hour_utc": "2026-11-04T12:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 5,
+          "baseline_games": 8,
+          "overlap_weight": 5
+        },
+        {
+          "hour_utc": "2026-11-04T12:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 3,
+          "baseline_games": 1,
+          "overlap_weight": 1
+        },
+        {
+          "hour_utc": "2026-11-04T12:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 7,
+          "baseline_games": 6,
+          "overlap_weight": 6
+        },
+        {
+          "hour_utc": "2026-11-04T14:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 3,
+          "baseline_games": 2,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-04T14:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 3,
+          "baseline_games": 6,
+          "overlap_weight": 3
+        },
+        {
+          "hour_utc": "2026-11-04T14:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 10,
+          "baseline_games": 8,
+          "overlap_weight": 8
+        },
+        {
+          "hour_utc": "2026-11-04T14:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 10,
+          "baseline_games": 2,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-04T15:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 8,
+          "baseline_games": 5,
+          "overlap_weight": 5
+        },
+        {
+          "hour_utc": "2026-11-04T15:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 8,
+          "baseline_games": 9,
+          "overlap_weight": 8
+        },
+        {
+          "hour_utc": "2026-11-04T15:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 9,
+          "baseline_games": 1,
+          "overlap_weight": 1
+        },
+        {
+          "hour_utc": "2026-11-04T16:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 1,
+          "baseline_games": 5,
+          "overlap_weight": 1
+        },
+        {
+          "hour_utc": "2026-11-04T16:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 2,
+          "baseline_games": 4,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-04T16:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 2,
+          "baseline_games": 3,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-04T16:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 5,
+          "baseline_games": 2,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-04T17:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 7,
+          "baseline_games": 8,
+          "overlap_weight": 7
+        },
+        {
+          "hour_utc": "2026-11-04T17:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 5,
+          "baseline_games": 8,
+          "overlap_weight": 5
+        },
+        {
+          "hour_utc": "2026-11-04T17:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 8,
+          "baseline_games": 4,
+          "overlap_weight": 4
+        },
+        {
+          "hour_utc": "2026-11-04T17:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 2,
+          "baseline_games": 4,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-04T18:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 4,
+          "baseline_games": 2,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-04T18:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 9,
+          "baseline_games": 8,
+          "overlap_weight": 8
+        },
+        {
+          "hour_utc": "2026-11-04T18:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 8,
+          "baseline_games": 4,
+          "overlap_weight": 4
+        },
+        {
+          "hour_utc": "2026-11-04T18:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 6,
+          "baseline_games": 9,
+          "overlap_weight": 6
+        },
+        {
+          "hour_utc": "2026-11-04T19:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 7,
+          "baseline_games": 4,
+          "overlap_weight": 4
+        },
+        {
+          "hour_utc": "2026-11-04T19:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 9,
+          "baseline_games": 3,
+          "overlap_weight": 3
+        },
+        {
+          "hour_utc": "2026-11-04T19:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 2,
+          "baseline_games": 2,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-04T19:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 9,
+          "baseline_games": 9,
+          "overlap_weight": 9
+        },
+        {
+          "hour_utc": "2026-11-04T20:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 5,
+          "baseline_games": 2,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-04T20:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 1,
+          "baseline_games": 6,
+          "overlap_weight": 1
+        },
+        {
+          "hour_utc": "2026-11-04T20:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 3,
+          "baseline_games": 2,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-04T20:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 10,
+          "baseline_games": 14,
+          "overlap_weight": 10
+        },
+        {
+          "hour_utc": "2026-11-04T21:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 7,
+          "baseline_games": 1,
+          "overlap_weight": 1
+        },
+        {
+          "hour_utc": "2026-11-04T21:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 3,
+          "baseline_games": 4,
+          "overlap_weight": 3
+        },
+        {
+          "hour_utc": "2026-11-04T21:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 9,
+          "baseline_games": 9,
+          "overlap_weight": 9
+        },
+        {
+          "hour_utc": "2026-11-04T21:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 9,
+          "baseline_games": 15,
+          "overlap_weight": 9
+        },
+        {
+          "hour_utc": "2026-11-04T22:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 3,
+          "baseline_games": 7,
+          "overlap_weight": 3
+        },
+        {
+          "hour_utc": "2026-11-04T22:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 8,
+          "baseline_games": 7,
+          "overlap_weight": 7
+        },
+        {
+          "hour_utc": "2026-11-04T22:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 9,
+          "baseline_games": 3,
+          "overlap_weight": 3
+        },
+        {
+          "hour_utc": "2026-11-04T22:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 7,
+          "baseline_games": 7,
+          "overlap_weight": 7
+        },
+        {
+          "hour_utc": "2026-11-04T23:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 3,
+          "baseline_games": 12,
+          "overlap_weight": 3
+        },
+        {
+          "hour_utc": "2026-11-04T23:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 6,
+          "baseline_games": 4,
+          "overlap_weight": 4
+        },
+        {
+          "hour_utc": "2026-11-04T23:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 5,
+          "baseline_games": 9,
+          "overlap_weight": 5
+        },
+        {
+          "hour_utc": "2026-11-04T23:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 13,
+          "baseline_games": 2,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-05T00:00:00+00:00",
+          "seat": 0,
+          "candidate_games": 6,
+          "baseline_games": 2,
+          "overlap_weight": 2
+        },
+        {
+          "hour_utc": "2026-11-05T00:00:00+00:00",
+          "seat": 1,
+          "candidate_games": 3,
+          "baseline_games": 4,
+          "overlap_weight": 3
+        },
+        {
+          "hour_utc": "2026-11-05T00:00:00+00:00",
+          "seat": 2,
+          "candidate_games": 1,
+          "baseline_games": 2,
+          "overlap_weight": 1
+        },
+        {
+          "hour_utc": "2026-11-05T00:00:00+00:00",
+          "seat": 3,
+          "candidate_games": 3,
+          "baseline_games": 9,
+          "overlap_weight": 3
+        }
+      ],
+      "included_candidate_games": 294,
+      "included_baseline_games": 277,
+      "rank_difference_bounds": [
+        -0.12189057587608312,
+        -0.10551913196840733
+      ],
+      "conservative_hour_cluster_ci95": [
+        -0.36682890008393526,
+        0.12460472643433539
+      ],
+      "method": "same UTC trace-completion hour and initial seat; min(arm counts) overlap weights; resample whole hours; widen for unresolved ties",
+      "limitations": "observational sensitivity analysis, not randomized; opponent difficulty and account rating unavailable; hour is trace persistence time, not authoritative match start"
+    },
+    "records_read": 581,
+    "duplicate_records": [],
+    "read_errors": [
+      {
+        "path": "ranked_v1.2.0_legacy_v1_2_r8_g100_pbdefault_20261104_104103_766261/game_0001",
+        "reason": "missing_trace"
+      }
+    ],
+    "screenshot_counts_not_assumed_same_cohort": {
+      "v1.3.0": {
+        "cloud_terminal": 294,
+        "screenshot_games": 334
+      },
+      "v1.2.0": {
+        "cloud_terminal": 281,
+        "screenshot_games": 294
+      }
+    },
+    "deployment": [
+      {
+        "batch_id": "ranked_v1.2.0_legacy_v1_2_r8_g100_pbdefault_20261104_104103_766261",
+        "backend": {
+          "adapter_profile": "legacy_v1_2",
+          "revision": {
+            "tag": "v1.2.0",
+            "commit": "758981ab9fb457c882ab9c577c9377976f97f42b",
+            "branch_hint": "main"
+          },
+          "model_identity": {
+            "turn_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "response_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4"
+          },
+          "response": {
+            "pass_bias": null
+          }
+        },
+        "models": {
+          "turn": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_turn.pt",
+            "checkpoint_task": "multitask",
+            "task": "turn",
+            "device": "cpu",
+            "state_dim": 8173,
+            "action_dim": 89,
+            "candidate_limit": 64,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": null,
+            "no_yaku_call_penalty": 0.0
+          },
+          "response": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_response.pt",
+            "checkpoint_task": "multitask",
+            "task": "response",
+            "device": "cpu",
+            "state_dim": 8216,
+            "action_dim": 91,
+            "candidate_limit": 16,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": 2.0,
+            "no_yaku_call_penalty": 0.8
+          }
+        },
+        "current_weight_checks": {
+          "turn": {
+            "declared_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_matches": true
+          },
+          "response": {
+            "declared_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_matches": true
+          }
+        }
+      },
+      {
+        "batch_id": "ranked_v1.2.0_legacy_v1_2_r8_g100_pbdefault_20261104_104332_718546",
+        "backend": {
+          "adapter_profile": "legacy_v1_2",
+          "revision": {
+            "tag": "v1.2.0",
+            "commit": "758981ab9fb457c882ab9c577c9377976f97f42b",
+            "branch_hint": "main"
+          },
+          "model_identity": {
+            "turn_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "response_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4"
+          },
+          "response": {
+            "pass_bias": null
+          }
+        },
+        "models": {
+          "turn": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_turn.pt",
+            "checkpoint_task": "multitask",
+            "task": "turn",
+            "device": "cpu",
+            "state_dim": 8173,
+            "action_dim": 89,
+            "candidate_limit": 64,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": null,
+            "no_yaku_call_penalty": 0.0
+          },
+          "response": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_response.pt",
+            "checkpoint_task": "multitask",
+            "task": "response",
+            "device": "cpu",
+            "state_dim": 8216,
+            "action_dim": 91,
+            "candidate_limit": 16,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": 2.0,
+            "no_yaku_call_penalty": 0.8
+          }
+        },
+        "current_weight_checks": {
+          "turn": {
+            "declared_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_matches": true
+          },
+          "response": {
+            "declared_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_matches": true
+          }
+        }
+      },
+      {
+        "batch_id": "ranked_v1.2.0_legacy_v1_2_r8_g200_pbdefault_20261104_105130_312000",
+        "backend": {
+          "adapter_profile": "legacy_v1_2",
+          "revision": {
+            "tag": "v1.2.0",
+            "commit": "758981ab9fb457c882ab9c577c9377976f97f42b",
+            "branch_hint": "main"
+          },
+          "model_identity": {
+            "turn_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "response_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4"
+          },
+          "response": {
+            "pass_bias": null
+          }
+        },
+        "models": {
+          "turn": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_turn.pt",
+            "checkpoint_task": "multitask",
+            "task": "turn",
+            "device": "cpu",
+            "state_dim": 8173,
+            "action_dim": 89,
+            "candidate_limit": 64,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": null,
+            "no_yaku_call_penalty": 0.0
+          },
+          "response": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_response.pt",
+            "checkpoint_task": "multitask",
+            "task": "response",
+            "device": "cpu",
+            "state_dim": 8216,
+            "action_dim": 91,
+            "candidate_limit": 16,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": 2.0,
+            "no_yaku_call_penalty": 0.8
+          }
+        },
+        "current_weight_checks": {
+          "turn": {
+            "declared_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_matches": true
+          },
+          "response": {
+            "declared_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_matches": true
+          }
+        }
+      },
+      {
+        "batch_id": "ranked_v1.2.0_legacy_v1_2_r8_g200_pbdefault_20261104_105336_729664",
+        "backend": {
+          "adapter_profile": "legacy_v1_2",
+          "revision": {
+            "tag": "v1.2.0",
+            "commit": "758981ab9fb457c882ab9c577c9377976f97f42b",
+            "branch_hint": "main"
+          },
+          "model_identity": {
+            "turn_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "response_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4"
+          },
+          "response": {
+            "pass_bias": null
+          }
+        },
+        "models": {
+          "turn": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_turn.pt",
+            "checkpoint_task": "multitask",
+            "task": "turn",
+            "device": "cpu",
+            "state_dim": 8173,
+            "action_dim": 89,
+            "candidate_limit": 64,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": null,
+            "no_yaku_call_penalty": 0.0
+          },
+          "response": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_response.pt",
+            "checkpoint_task": "multitask",
+            "task": "response",
+            "device": "cpu",
+            "state_dim": 8216,
+            "action_dim": 91,
+            "candidate_limit": 16,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": 2.0,
+            "no_yaku_call_penalty": 0.8
+          }
+        },
+        "current_weight_checks": {
+          "turn": {
+            "declared_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_matches": true
+          },
+          "response": {
+            "declared_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_matches": true
+          }
+        }
+      },
+      {
+        "batch_id": "ranked_v1.2.0_legacy_v1_2_r8_g200_pbdefault_20261104_135757_494886",
+        "backend": {
+          "adapter_profile": "legacy_v1_2",
+          "revision": {
+            "tag": "v1.2.0",
+            "commit": "758981ab9fb457c882ab9c577c9377976f97f42b",
+            "branch_hint": "main"
+          },
+          "model_identity": {
+            "turn_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "response_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4"
+          },
+          "response": {
+            "pass_bias": null
+          }
+        },
+        "models": {
+          "turn": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_turn.pt",
+            "checkpoint_task": "multitask",
+            "task": "turn",
+            "device": "cpu",
+            "state_dim": 8173,
+            "action_dim": 89,
+            "candidate_limit": 64,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": null,
+            "no_yaku_call_penalty": 0.0
+          },
+          "response": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_response.pt",
+            "checkpoint_task": "multitask",
+            "task": "response",
+            "device": "cpu",
+            "state_dim": 8216,
+            "action_dim": 91,
+            "candidate_limit": 16,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": 2.0,
+            "no_yaku_call_penalty": 0.8
+          }
+        },
+        "current_weight_checks": {
+          "turn": {
+            "declared_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_matches": true
+          },
+          "response": {
+            "declared_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_matches": true
+          }
+        }
+      },
+      {
+        "batch_id": "ranked_v1.2.0_legacy_v1_2_r8_g200_pbdefault_20261104_162540_039866",
+        "backend": {
+          "adapter_profile": "legacy_v1_2",
+          "revision": {
+            "tag": "v1.2.0",
+            "commit": "758981ab9fb457c882ab9c577c9377976f97f42b",
+            "branch_hint": "main"
+          },
+          "model_identity": {
+            "turn_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "response_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4"
+          },
+          "response": {
+            "pass_bias": null
+          }
+        },
+        "models": {
+          "turn": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_turn.pt",
+            "checkpoint_task": "multitask",
+            "task": "turn",
+            "device": "cpu",
+            "state_dim": 8173,
+            "action_dim": 89,
+            "candidate_limit": 64,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": null,
+            "no_yaku_call_penalty": 0.0
+          },
+          "response": {
+            "checkpoint": "/usr/local/rlws/train_mj_120/runs/2026-06-24_p800_multitask_v1_1_ddp_40w/multitask/checkpoints/best_response.pt",
+            "checkpoint_task": "multitask",
+            "task": "response",
+            "device": "cpu",
+            "state_dim": 8216,
+            "action_dim": 91,
+            "candidate_limit": 16,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": 2.0,
+            "no_yaku_call_penalty": 0.8
+          }
+        },
+        "current_weight_checks": {
+          "turn": {
+            "declared_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_sha256": "532ca85655e42b37d037688e8ca71382b3f425e6f9057c42429b471c4d1c8dd7",
+            "current_file_matches": true
+          },
+          "response": {
+            "declared_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_sha256": "3c9b43d3ac2ff0ac5a9b1e90a2a9a32bf1057f4d7f823f90bdc0caa3ce39e2d4",
+            "current_file_matches": true
+          }
+        }
+      },
+      {
+        "batch_id": "ranked_v1.3.0_full_state_v2_r8_g200_pbdefault_20261104_105553_198798",
+        "backend": {
+          "adapter_profile": "full_state_v2",
+          "revision": {
+            "tag": "v1.3.0",
+            "commit": "1e5092f344fb69bcdf4697f683f2ecf15b9865d8",
+            "branch_hint": "codex/full-state-features"
+          },
+          "model_identity": {
+            "turn_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90",
+            "response_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51"
+          },
+          "response": {
+            "pass_bias": null
+          }
+        },
+        "models": {
+          "turn": {
+            "feature_schema": "full_state_v2",
+            "checkpoint": "/usr/local/rlws/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/final.inference.pt",
+            "checkpoint_task": "multitask",
+            "task": "turn",
+            "device": "cpu",
+            "state_dim": 11969,
+            "action_dim": 89,
+            "candidate_limit": 64,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": null,
+            "no_yaku_call_penalty": 0.0
+          },
+          "response": {
+            "feature_schema": "full_state_v2",
+            "checkpoint": "/usr/local/rlws/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/final.inference.pt",
+            "checkpoint_task": "multitask",
+            "task": "response",
+            "device": "cpu",
+            "state_dim": 12012,
+            "action_dim": 91,
+            "candidate_limit": 16,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": 1.5,
+            "no_yaku_call_penalty": 0.0
+          }
+        },
+        "current_weight_checks": {
+          "turn": {
+            "declared_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90",
+            "current_file_sha256": "7e6ed0b8aa6161ecc0a0699f8a7f701393d9cce81ec31b65a5f239b261654e99",
+            "current_file_matches": false
+          },
+          "response": {
+            "declared_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51",
+            "current_file_sha256": "7e6ed0b8aa6161ecc0a0699f8a7f701393d9cce81ec31b65a5f239b261654e99",
+            "current_file_matches": false
+          }
+        }
+      },
+      {
+        "batch_id": "ranked_v1.3.0_full_state_v2_r8_g200_pbdefault_20261104_135803_367721",
+        "backend": {
+          "adapter_profile": "full_state_v2",
+          "revision": {
+            "tag": "v1.3.0",
+            "commit": "1e5092f344fb69bcdf4697f683f2ecf15b9865d8",
+            "branch_hint": "codex/full-state-features"
+          },
+          "model_identity": {
+            "turn_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90",
+            "response_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51"
+          },
+          "response": {
+            "pass_bias": null
+          }
+        },
+        "models": {
+          "turn": {
+            "feature_schema": "full_state_v2",
+            "checkpoint": "/usr/local/rlws/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/final.inference.pt",
+            "checkpoint_task": "multitask",
+            "task": "turn",
+            "device": "cpu",
+            "state_dim": 11969,
+            "action_dim": 89,
+            "candidate_limit": 64,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": null,
+            "no_yaku_call_penalty": 0.0
+          },
+          "response": {
+            "feature_schema": "full_state_v2",
+            "checkpoint": "/usr/local/rlws/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/final.inference.pt",
+            "checkpoint_task": "multitask",
+            "task": "response",
+            "device": "cpu",
+            "state_dim": 12012,
+            "action_dim": 91,
+            "candidate_limit": 16,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": 1.5,
+            "no_yaku_call_penalty": 0.0
+          }
+        },
+        "current_weight_checks": {
+          "turn": {
+            "declared_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90",
+            "current_file_sha256": "7e6ed0b8aa6161ecc0a0699f8a7f701393d9cce81ec31b65a5f239b261654e99",
+            "current_file_matches": false
+          },
+          "response": {
+            "declared_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51",
+            "current_file_sha256": "7e6ed0b8aa6161ecc0a0699f8a7f701393d9cce81ec31b65a5f239b261654e99",
+            "current_file_matches": false
+          }
+        }
+      },
+      {
+        "batch_id": "ranked_v1.3.0_full_state_v2_r8_g200_pbdefault_20261104_162620_072639",
+        "backend": {
+          "adapter_profile": "full_state_v2",
+          "revision": {
+            "tag": "v1.3.0",
+            "commit": "1e5092f344fb69bcdf4697f683f2ecf15b9865d8",
+            "branch_hint": "codex/full-state-features"
+          },
+          "model_identity": {
+            "turn_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90",
+            "response_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51"
+          },
+          "response": {
+            "pass_bias": null
+          }
+        },
+        "models": {
+          "turn": {
+            "feature_schema": "full_state_v2",
+            "checkpoint": "/usr/local/rlws/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/final.inference.pt",
+            "checkpoint_task": "multitask",
+            "task": "turn",
+            "device": "cpu",
+            "state_dim": 11969,
+            "action_dim": 89,
+            "candidate_limit": 64,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": null,
+            "no_yaku_call_penalty": 0.0
+          },
+          "response": {
+            "feature_schema": "full_state_v2",
+            "checkpoint": "/usr/local/rlws/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/final.inference.pt",
+            "checkpoint_task": "multitask",
+            "task": "response",
+            "device": "cpu",
+            "state_dim": 12012,
+            "action_dim": 91,
+            "candidate_limit": 16,
+            "hidden_size": 512,
+            "dropout": 0.1,
+            "default_pass_bias": 1.5,
+            "no_yaku_call_penalty": 0.0
+          }
+        },
+        "current_weight_checks": {
+          "turn": {
+            "declared_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90",
+            "current_file_sha256": "7e6ed0b8aa6161ecc0a0699f8a7f701393d9cce81ec31b65a5f239b261654e99",
+            "current_file_matches": false
+          },
+          "response": {
+            "declared_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51",
+            "current_file_sha256": "7e6ed0b8aa6161ecc0a0699f8a7f701393d9cce81ec31b65a5f239b261654e99",
+            "current_file_matches": false
+          }
+        }
+      }
+    ],
+    "source": {
+      "captured_at": "2026-11-05T01:07:07.935769+00:00",
+      "read_only": true,
+      "extractor_sha256": "69bdcd0814afc379c34b40f3511fb4c164924fbff8052d07d41e02bbf599983b",
+      "snapshot_sha256": "f381f43d1835b5251b8fff0aeeaa9a6386e4cddff67cc4609a15e2cb6b7c01b9",
+      "display_transcription_sha256": "12964cefcc784899f2d7e3de75e8aa28405ad4d19248b5000a3d8aeddb413690"
+    },
+    "implementation_sha256": {
+      "ranked_evaluation.py": "1ad450e1d939d20f6297fc7308265f08dbb1731eeed6d0c76140338e66f0dd4b",
+      "ranked_snapshot.py": "b791d9e5c697a43987b75c8b5a50aa7cd438a212b82826a423c7cf8d6218fec9",
+      "scoring.py": "4f52e03ea2c7cbecfa6d45297747eb8526fcf14188e8495bd2e0145b35d9bbde",
+      "evaluation.py": "a5fccff07a450d8d6a9884b9d3cdf2e61607333cfde345ae1fe7ac422aa9a55e"
+    },
+    "limits": [
+      "Do not pool local selfplay and online ranked means as the same estimand",
+      "Do not exclude completed games from failed batches based on batch status; operational faults and unknown outcomes are reported",
+      "Displayed all-time counts and cloud traces do not fully align; do not add them together",
+      "Platform ratings are contextual observations, not interchangeable with linear rank scores",
+      "Opponent identities/ratings and authoritative tie rules absent from stored MJAI protocol"
+    ],
+    "prior_selfplay": {
+      "primary": {
+        "mean_rank": {
+          "candidate": {
+            "numerator": 1244,
+            "denominator": 512,
+            "value": 2.4296875
+          },
+          "control": {
+            "numerator": 1280,
+            "denominator": 512,
+            "value": 2.5
+          },
+          "difference": -0.0703125,
+          "ci95": [
+            -0.173828125,
+            0.02934570312499929
+          ],
+          "direction": "lower_is_better"
+        },
+        "last_place_rate": {
+          "candidate": {
+            "numerator": 119,
+            "denominator": 512,
+            "value": 0.232421875
+          },
+          "control": {
+            "numerator": 128,
+            "denominator": 512,
+            "value": 0.25
+          },
+          "difference": -0.017578125,
+          "ci95": [
+            -0.052734375,
+            0.017578125
+          ],
+          "direction": "lower_is_better"
+        },
+        "mean_final_points": {
+          "candidate": {
+            "numerator": 12963400,
+            "denominator": 512,
+            "value": 25319.140625
+          },
+          "control": {
+            "numerator": 12800000,
+            "denominator": 512,
+            "value": 25000.0
+          },
+          "difference": 319.140625,
+          "ci95": [
+            -1080.87890625,
+            1723.4423828125
+          ],
+          "direction": "higher_is_better"
+        },
+        "win_rate": {
+          "candidate": {
+            "numerator": 1221,
+            "denominator": 5143,
+            "value": 0.23741007194244604
+          },
+          "control": {
+            "numerator": 1108,
+            "denominator": 5236,
+            "value": 0.21161191749427044
+          },
+          "difference": 0.025798154448175598,
+          "ci95": [
+            0.014597552994943743,
+            0.03705430936978844
+          ],
+          "direction": "higher_is_better"
+        },
+        "deal_in_rate": {
+          "candidate": {
+            "numerator": 745,
+            "denominator": 5143,
+            "value": 0.14485708730313046
+          },
+          "control": {
+            "numerator": 697,
+            "denominator": 5236,
+            "value": 0.1331168831168831
+          },
+          "difference": 0.011740204186247355,
+          "ci95": [
+            0.0006148482059854153,
+            0.022724940803670123
+          ],
+          "direction": "lower_is_better"
+        },
+        "riichi_rate": {
+          "candidate": {
+            "numerator": 1164,
+            "denominator": 5143,
+            "value": 0.22632704647093135
+          },
+          "control": {
+            "numerator": 1293,
+            "denominator": 5236,
+            "value": 0.24694423223834988
+          },
+          "difference": -0.020617185767418528,
+          "ci95": [
+            -0.03263129579715522,
+            -0.008528124858859915
+          ],
+          "direction": "descriptive_only"
+        },
+        "riichi_declaration_rate": {
+          "candidate": {
+            "numerator": 1241,
+            "denominator": 5143,
+            "value": 0.24129885280964417
+          },
+          "control": {
+            "numerator": 1350,
+            "denominator": 5236,
+            "value": 0.2578304048892284
+          },
+          "difference": -0.01653155207958426,
+          "ci95": [
+            -0.02784636153564096,
+            -0.0052600680577748644
+          ],
+          "direction": "descriptive_only"
+        },
+        "call_rate": {
+          "candidate": {
+            "numerator": 1532,
+            "denominator": 5143,
+            "value": 0.297880614427377
+          },
+          "control": {
+            "numerator": 1208,
+            "denominator": 5236,
+            "value": 0.23071046600458364
+          },
+          "difference": 0.06717014842279337,
+          "ci95": [
+            0.05490417582196286,
+            0.07979916838726027
+          ],
+          "direction": "descriptive_only"
+        }
+      },
+      "strength_verdict": "insufficient_evidence",
+      "scope": {
+        "candidate": "v1_3_0",
+        "control": "v1_2_0",
+        "paired_group": "upgrade",
+        "estimand": "complete deployed policies, including different calibration settings"
+      },
+      "historical_gate_preserved": true,
+      "version_scorecard": {
+        "scope": "fixed baseline selfplay only",
+        "observed_direction": "improvement",
+        "observed_rank_gain": 0.0703125,
+        "rank_gain_ci95": [
+          -0.02934570312499929,
+          0.173828125
+        ],
+        "direction_evidence": "uncertain",
+        "linear_rank_score": {
+          "candidate": 52.34375,
+          "control": 50.0,
+          "difference": 2.34375,
+          "difference_ci95": [
+            -0.978190104166643,
+            5.794270833333333
+          ],
+          "definition": "100*(4-mean_rank)/3; first=100, second=66.67, third=33.33, fourth=0",
+          "interpretation": "linear presentation of the same rank data, not platform rating/Elo or additional evidence"
+        },
+        "practical_gain": {
+          "minimum_registered_gain": 0.05,
+          "supported": false
+        },
+        "last_place_guardrail": {
+          "registered_maximum_increase": 0.02,
+          "passed": true
+        },
+        "interpretation": "An inconclusive gate does not erase an observed benefit or demonstrate equality. Evidence applies only to the stated opponent population and deployment."
+      }
+    },
+    "parameter_identity_check": {
+      "checks": [
+        {
+          "batch_id": "ranked_v1.3.0_full_state_v2_r8_g200_pbdefault_20261104_105553_198798",
+          "task": "turn",
+          "inference_parameters_equal": true,
+          "code_revision_equal": true,
+          "file_artifact_changed": true
+        },
+        {
+          "batch_id": "ranked_v1.3.0_full_state_v2_r8_g200_pbdefault_20261104_105553_198798",
+          "task": "response",
+          "inference_parameters_equal": true,
+          "code_revision_equal": true,
+          "file_artifact_changed": true
+        },
+        {
+          "batch_id": "ranked_v1.3.0_full_state_v2_r8_g200_pbdefault_20261104_135803_367721",
+          "task": "turn",
+          "inference_parameters_equal": true,
+          "code_revision_equal": true,
+          "file_artifact_changed": true
+        },
+        {
+          "batch_id": "ranked_v1.3.0_full_state_v2_r8_g200_pbdefault_20261104_135803_367721",
+          "task": "response",
+          "inference_parameters_equal": true,
+          "code_revision_equal": true,
+          "file_artifact_changed": true
+        },
+        {
+          "batch_id": "ranked_v1.3.0_full_state_v2_r8_g200_pbdefault_20261104_162620_072639",
+          "task": "turn",
+          "inference_parameters_equal": true,
+          "code_revision_equal": true,
+          "file_artifact_changed": true
+        },
+        {
+          "batch_id": "ranked_v1.3.0_full_state_v2_r8_g200_pbdefault_20261104_162620_072639",
+          "task": "response",
+          "inference_parameters_equal": true,
+          "code_revision_equal": true,
+          "file_artifact_changed": true
+        }
+      ],
+      "proof": {
+        "cloud_checkpoint": {
+          "checkpoint": "/usr/local/rlws/train_mj/runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/final.inference.pt",
+          "file_sha256": "7e6ed0b8aa6161ecc0a0699f8a7f701393d9cce81ec31b65a5f239b261654e99",
+          "tensor_fingerprints": {
+            "all": "be90a2938417ed9bd4f2b1345625804187d7de06d28fa4eec30e8b4b79d67431",
+            "turn": "1c7cf6c508a8004aa317a25f1c2ef370363f50a134dcf1c407d99ffcc26649e6",
+            "response": "8c2caf5915130186aea196057bbcd76ecd77542fb254c32c455a84d1f02c9b73"
+          },
+          "has_optimizer_state": false,
+          "provenance": "Read-only SSH, CPU weights_only torch.load, canonical parameter-byte hashing; stdout captured during this analysis"
+        },
+        "local_checkpoints": [
+          {
+            "checkpoint": "..\\train_mj\\runs\\2026-10-28_p800_multitask_full_state_v2\\multitask\\checkpoints\\best_turn.pt",
+            "file_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90",
+            "tensor_fingerprints": {
+              "all": "be90a2938417ed9bd4f2b1345625804187d7de06d28fa4eec30e8b4b79d67431",
+              "turn": "1c7cf6c508a8004aa317a25f1c2ef370363f50a134dcf1c407d99ffcc26649e6",
+              "response": "8c2caf5915130186aea196057bbcd76ecd77542fb254c32c455a84d1f02c9b73"
+            },
+            "algorithm": "sorted parameter names + dtype + shape + contiguous raw bytes; excludes optimizer/config/summary"
+          },
+          {
+            "checkpoint": "..\\train_mj\\runs\\2026-10-28_p800_multitask_full_state_v2\\multitask\\checkpoints\\best_response.pt",
+            "file_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51",
+            "tensor_fingerprints": {
+              "all": "be90a2938417ed9bd4f2b1345625804187d7de06d28fa4eec30e8b4b79d67431",
+              "turn": "1c7cf6c508a8004aa317a25f1c2ef370363f50a134dcf1c407d99ffcc26649e6",
+              "response": "8c2caf5915130186aea196057bbcd76ecd77542fb254c32c455a84d1f02c9b73"
+            },
+            "algorithm": "sorted parameter names + dtype + shape + contiguous raw bytes; excludes optimizer/config/summary"
+          }
+        ]
+      },
+      "scope": "current checkpoint tensors versus pinned A4 files; not a historical in-memory model attestation"
+    }
+  }
+}

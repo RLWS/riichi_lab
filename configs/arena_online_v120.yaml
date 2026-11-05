@@ -1,0 +1,15 @@
+# V1.2.0 机器人（RIICHI_DEV_BOT_TOKEN_V120）的 /ws/validate 激活验证配置。
+# 后端为本机已部署的 v1.2.0 实例（8012，回环无鉴权）；验证为东风 match_rounds=4。
+online:
+  endpoint_validate: "wss://game.riichi.dev/ws/validate"
+  token_env: RIICHI_DEV_BOT_TOKEN_V120
+  match_rounds: 4
+  send_reserve_seconds: 0.1
+  inbound_estimate_seconds: 0.1  # 入站网络估计，沿用 B1 口径
+  finish_timeout_seconds: 5.0
+backend:
+  adapter_profile: legacy_v1_2
+  api_base: "http://127.0.0.1:8012"
+  timeout_seconds: 10.0
+  response:
+    pass_bias: null

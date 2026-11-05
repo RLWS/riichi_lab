@@ -130,7 +130,10 @@ def test_formal_decision_uses_sealed_thresholds_and_guardrail(
         formal, "replay_recorded_games", lambda *args: {"valid": True, "model_calls": 0}
     )
     clusters = [
-        {"candidate": {"games": 4, "hands": 4}, "control": {"games": 4, "hands": 4}}
+        {
+            "candidate": {"games": 4, "hands": 4, "rank_sum": 10},
+            "control": {"games": 4, "hands": 4, "rank_sum": 10},
+        }
     ] * 2
     metrics = paired_bootstrap(clusters, iterations=100)
     metrics["mean_rank"]["ci95"] = rank_ci
