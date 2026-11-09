@@ -868,7 +868,11 @@ def run_contract(cmdlog, train: Path, out: Path, smoke_dir: Path,
     try:
         for name in ["baseline", *CANDIDATE_IDS]:
             backend_id = BASELINE_ID if name == "baseline" else name
-            source = sources["baseline"] if name == "baseline" else sources[CANDIDATE_SOURCE_ID]
+            source = (
+                sources[BASELINE_ID]
+                if name == "baseline"
+                else sources[CANDIDATE_SOURCE_ID]
+            )
             service_config = (
                 service_configs["baseline"]
                 if name == "baseline"
@@ -939,7 +943,7 @@ def run_contract(cmdlog, train: Path, out: Path, smoke_dir: Path,
                 sys.executable,
                 str(CHECK_LEGACY),
                 "--source-root",
-                str(Path(sources["baseline"]["source_dir"])),
+                str(Path(sources[BASELINE_ID]["source_dir"])),
                 "--weights-root",
                 str(train),
                 "--profile",
@@ -985,14 +989,14 @@ def run_contract(cmdlog, train: Path, out: Path, smoke_dir: Path,
             "valid": all(checks.values()),
             "checks": checks,
             "services": {
-                name: {
+                item.backend_id: {
                     "api_base": item.api_base,
                     "port": item.port,
                     "pid": item.process.pid,
                     "external_config": str(item.service_config_path),
                     "resolved_config": str(item.resolved_config_path),
                 }
-                for name, item in services.items()
+                for item in running
             },
             "evidence_files": {
                 "service_contract": str(service_evidence),
@@ -1047,7 +1051,7 @@ def run_group(cmdlog, train: Path, out: Path, plan: dict, stage: str,
             train,
             group_dir,
             BASELINE_ID,
-            Path(sources["baseline"]["source_dir"]),
+            Path(sources[BASELINE_ID]["source_dir"]),
             Path(service_configs["baseline"]["path"]),
             baseline_expected["backends"][BASELINE_ID],
         )
@@ -1075,7 +1079,9 @@ def run_group(cmdlog, train: Path, out: Path, plan: dict, stage: str,
             handoff_sha256=handoff_sha,
         )
         config["backends"][BASELINE_ID]["deployment"] = deployment_record(
-            sources["baseline"], baseline_service, config["backends"][BASELINE_ID]
+            sources[BASELINE_ID],
+            baseline_service,
+            config["backends"][BASELINE_ID],
         )
         config["backends"][candidate_id]["deployment"] = deployment_record(
             sources[CANDIDATE_SOURCE_ID], candidate_service, config["backends"][candidate_id]
