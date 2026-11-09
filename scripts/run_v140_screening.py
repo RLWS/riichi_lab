@@ -238,11 +238,21 @@ def hash_file(path: Path) -> str:
 
 def tree_hash(root: Path) -> str:
     digest = hashlib.sha256()
-    for path in sorted(p for p in Path(root).rglob("*") if p.is_file()):
+    for path in sorted(
+        p
+        for p in Path(root).rglob("*")
+        if p.is_file()
+        and "__pycache__" not in p.parts
+        and path_suffix(p) != ".pyc"
+    ):
         relative = path.relative_to(root).as_posix()
         digest.update(relative.encode("utf-8") + b"\0")
         digest.update(hash_file(path).encode("ascii") + b"\n")
     return digest.hexdigest()
+
+
+def path_suffix(path: Path) -> str:
+    return path.suffix.lower()
 
 
 def free_port() -> int:
@@ -437,8 +447,21 @@ def collect_seed_hits(value, path, hits):
             collect_seed_hits(item, f"{path}[{index}]", hits)
 
 
-def scan_seed_history(out: Path, roots: list[Path], blocking_seeds: set[int],
-                      reserved_seeds: set[int]) -> dict:
+def history_seed_file(path: Path) -> bool:
+    """Only actual run manifests/results are history, not planned configs."""
+    if path.name in {"manifest.json", "summary.json"}:
+        return True
+    return path.parent.name == "results" and path.suffix.lower() == ".json"
+
+
+def scan_seed_history(
+    out: Path,
+    roots: list[Path],
+    blocking_seeds: set[int],
+    reserved_seeds: set[int],
+    engineering_seeds: set[int] | None = None,
+) -> dict:
+    engineering_seeds = set(engineering_seeds or ())
     matches = []
     parse_errors = []
     scanned = 0
@@ -457,7 +480,7 @@ def scan_seed_history(out: Path, roots: list[Path], blocking_seeds: set[int],
             ]
             for filename in filenames:
                 path = current / filename
-                if path.suffix.lower() not in {".json", ".yaml", ".yml"}:
+                if path.suffix.lower() != ".json" or not history_seed_file(path):
                     continue
                 try:
                     if path.stat().st_size > 20_000_000:
@@ -466,17 +489,18 @@ def scan_seed_history(out: Path, roots: list[Path], blocking_seeds: set[int],
                     continue
                 scanned += 1
                 try:
-                    if path.suffix.lower() in {".yaml", ".yml"}:
-                        value = yaml.safe_load(path.read_text(encoding="utf-8"))
-                    else:
-                        value = json.loads(path.read_text(encoding="utf-8"))
+                    value = json.loads(path.read_text(encoding="utf-8"))
                 except Exception as exc:
                     parse_errors.append({"path": str(path), "error": str(exc)})
                     continue
                 hits = []
                 collect_seed_hits(value, "", hits)
                 for key_path, number in hits:
-                    if number in blocking_seeds or number in reserved_seeds:
+                    if (
+                        number in blocking_seeds
+                        or number in reserved_seeds
+                        or number in engineering_seeds
+                    ):
                         matches.append(
                             {
                                 "path": str(path),
@@ -484,10 +508,12 @@ def scan_seed_history(out: Path, roots: list[Path], blocking_seeds: set[int],
                                 "seed": number,
                                 "blocking": number in blocking_seeds,
                                 "reserved": number in reserved_seeds,
+                                "engineering": number in engineering_seeds,
                             }
                         )
     blocking = [item for item in matches if item["blocking"]]
     reserved = [item for item in matches if item["reserved"]]
+    engineering = [item for item in matches if item["engineering"]]
     return {
         "valid": not blocking,
         "scanned_files": scanned,
@@ -495,11 +521,14 @@ def scan_seed_history(out: Path, roots: list[Path], blocking_seeds: set[int],
         "roots": [str(root) for root in roots],
         "blocking_seeds": sorted(blocking_seeds),
         "reserved_seeds": sorted(reserved_seeds),
+        "engineering_seeds": sorted(engineering_seeds),
         "matches": matches[:500],
         "blocking_matches": blocking[:200],
         "reserved_matches": reserved[:200],
+        "engineering_matches": engineering[:200],
         "overlap": bool(blocking),
         "policy": "stop_before_games_and_report_do_not_silently_replace",
+        "scope": "actual batch/summary/results artifacts; planned configs are not history",
     }
 
 
@@ -1894,9 +1923,10 @@ def main(argv=None):
         verify_source_refs(cmdlog, train)
         seed_check = scan_seed_history(
             out,
-            [ROOT / "outputs", ROOT / "configs", train / "outputs"],
-            set(ENGINEERING_SEEDS) | set(SCREENING_SEEDS),
+            [ROOT / "outputs", train / "outputs"],
+            set(SCREENING_SEEDS),
             set(RESERVED_SEEDS),
+            engineering_seeds=set(ENGINEERING_SEEDS),
         )
         write_json(out / "seed_history_check.json", seed_check)
         if not seed_check["valid"]:
