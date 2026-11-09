@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-from copy import deepcopy
 import json
 from pathlib import Path
 import sys
@@ -12,12 +11,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from rilab.artifacts import audit_batch  # noqa: E402
-from rilab.screening import (  # noqa: E402
-    BASELINE_ID,
-    CANDIDATE_IDS,
-    recommendation,
-    verify_group_decisions,
-)
+from rilab.screening import recommendation, verify_group_decisions  # noqa: E402
+
+CANDIDATE_IDS = ["A_more_calls", "B_balanced", "C_fewer_calls"]
 
 
 def hash_file(path: Path) -> str:
