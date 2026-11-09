@@ -16,6 +16,8 @@ PROFILES = {
         "feature_schema": None,
         "state_dims": (8173, 8216),
         "action_dims": (89, 91),
+        "calibration_contract": "legacy_pass_bias",
+        "source_kind": "tag",
     },
     "full_state_v2": {
         "tag": "v1.3.0",
@@ -23,8 +25,103 @@ PROFILES = {
         "feature_schema": "full_state_v2",
         "state_dims": (11969, 12012),
         "action_dims": (89, 91),
+        "calibration_contract": "legacy_pass_bias",
+        "source_kind": "tag",
+    },
+    # v1.4.0 keeps the full_state_v2 tensor layout but changes only the
+    # response calibration contract.  It is deliberately a separate deployment
+    # identity: the old full_state_v2 profile stays pinned to v1.3.0.
+    "full_state_v2_action_biases": {
+        "tag": None,
+        "commit": "0710aa0f31d1d3c8d96ddd7cc31bf832cd68ada6",
+        "feature_schema": "full_state_v2",
+        "state_dims": (11969, 12012),
+        "action_dims": (89, 91),
+        "calibration_contract": "action_biases_v1",
+        "source_kind": "commit",
     },
 }
+
+CALIBRATION_CONTRACTS = ("legacy_pass_bias", "action_biases_v1")
+ACTION_BIAS_KEYS = frozenset({"ron", "kan", "pon", "chi"})
+
+
+def calibration_contract(backend: dict) -> str:
+    profile = PROFILES[backend["adapter_profile"]]
+    return backend.get("calibration_contract", profile["calibration_contract"])
+
+
+def effective_calibration(backend: dict, response_metadata: dict) -> dict:
+    """Return the contract-shaped calibration actually used by a deployment."""
+    if calibration_contract(backend) == "legacy_pass_bias":
+        bias = backend.get("response", {}).get("pass_bias")
+        if bias is None:
+            bias = response_metadata.get("default_pass_bias")
+        return {
+            "pass_bias": bias,
+            "no_yaku_call_penalty": response_metadata.get("no_yaku_call_penalty"),
+        }
+    return {
+        "calibration_contract": "action_biases_v1",
+        "action_biases": response_metadata.get("action_biases"),
+        "no_yaku_call_penalty": response_metadata.get("no_yaku_call_penalty"),
+    }
+
+
+def validate_expected_calibration(backend: dict, expected: dict) -> None:
+    """Reject a protocol whose frozen calibration cannot match the deployment."""
+    name = backend.get("adapter_profile", "backend")
+    contract = calibration_contract(backend)
+    if not isinstance(expected, dict):
+        raise ValueError(f"invalid expected calibration: {name}")
+    if contract == "legacy_pass_bias":
+        if set(expected) != {"pass_bias", "no_yaku_call_penalty"}:
+            raise ValueError(f"invalid legacy expected calibration: {name}")
+        bias = expected["pass_bias"]
+        if (
+            type(bias) not in (int, float)
+            or not math.isfinite(bias)
+            or bias < 0
+        ):
+            raise ValueError(f"invalid expected pass_bias: {name}")
+        configured = backend.get("response", {}).get("pass_bias")
+        if configured is not None and configured != bias:
+            raise ValueError(f"configured pass_bias differs from protocol: {name}")
+    elif contract == "action_biases_v1":
+        if set(expected) != {
+            "calibration_contract",
+            "action_biases",
+            "no_yaku_call_penalty",
+        } or expected["calibration_contract"] != "action_biases_v1":
+            raise ValueError(f"invalid action_biases expected calibration: {name}")
+        if expected["action_biases"] != backend.get("response", {}).get(
+            "action_biases"
+        ):
+            raise ValueError(f"action_biases differ from protocol: {name}")
+        if expected["no_yaku_call_penalty"] != backend.get("response", {}).get(
+            "no_yaku_call_penalty"
+        ):
+            raise ValueError(f"no_yaku_call_penalty differs from protocol: {name}")
+        if not valid_action_biases(expected["action_biases"]):
+            raise ValueError(f"invalid expected action_biases: {name}")
+    else:  # pragma: no cover - guarded by load_arena_config
+        raise ValueError(f"unknown calibration contract: {contract}")
+    penalty = expected["no_yaku_call_penalty"]
+    if (
+        type(penalty) not in (int, float)
+        or not math.isfinite(penalty)
+        or penalty < 0
+    ):
+        raise ValueError(f"invalid expected no_yaku_call_penalty: {name}")
+
+
+def valid_action_biases(value) -> bool:
+    if not isinstance(value, dict) or set(value) != ACTION_BIAS_KEYS:
+        return False
+    for raw in value.values():
+        if type(raw) not in (int, float) or not math.isfinite(raw) or raw < 0:
+            return False
+    return True
 
 
 def load_arena_config(path: str | Path) -> dict:
@@ -49,10 +146,21 @@ def load_arena_config(path: str | Path) -> dict:
         if profile is None:
             raise ValueError(f"unknown adapter_profile: {name}")
         revision = backend.get("revision", {})
-        if not isinstance(revision, dict) or any(
-            revision.get(k) != profile[k] for k in ("tag", "commit")
-        ):
+        if not isinstance(revision, dict) or revision.get("commit") != profile["commit"]:
             raise ValueError(f"profile/revision mismatch: {name}")
+        if profile["tag"] is not None:
+            if revision.get("tag") != profile["tag"]:
+                raise ValueError(f"profile/revision mismatch: {name}")
+        elif revision.get("tag") is not None:
+            raise ValueError(f"commit-pinned profile must not claim a tag: {name}")
+        contract = backend.get(
+            "calibration_contract", profile["calibration_contract"]
+        )
+        if (
+            contract not in CALIBRATION_CONTRACTS
+            or contract != profile["calibration_contract"]
+        ):
+            raise ValueError(f"profile/calibration contract mismatch: {name}")
         url = backend.get("api_base", "")
         if not isinstance(url, str):
             raise ValueError(f"invalid api_base: {name}")
@@ -78,11 +186,39 @@ def load_arena_config(path: str | Path) -> dict:
         response = backend.get("response", {})
         if not isinstance(response, dict):
             raise ValueError(f"invalid response config: {name}")
-        bias = response.get("pass_bias")
-        if bias is not None and (
-            type(bias) not in (int, float) or not math.isfinite(bias) or bias < 0
-        ):
-            raise ValueError(f"invalid pass_bias: {name}")
+        if contract == "legacy_pass_bias":
+            if "action_biases" in response:
+                raise ValueError(
+                    f"legacy calibration must not carry action_biases: {name}"
+                )
+            if set(response) - {"pass_bias", "no_yaku_call_penalty"}:
+                raise ValueError(f"unknown legacy response field: {name}")
+            bias = response.get("pass_bias")
+            if bias is not None and (
+                type(bias) not in (int, float)
+                or not math.isfinite(bias)
+                or bias < 0
+            ):
+                raise ValueError(f"invalid pass_bias: {name}")
+        else:
+            if "pass_bias" in response:
+                raise ValueError(
+                    f"action_biases calibration must not carry pass_bias: {name}"
+                )
+            if set(response) - {"action_biases", "no_yaku_call_penalty"}:
+                raise ValueError(f"unknown action_biases response field: {name}")
+            if not valid_action_biases(response.get("action_biases")):
+                raise ValueError(f"invalid action_biases: {name}")
+            if "no_yaku_call_penalty" not in response:
+                raise ValueError(f"action_biases requires explicit penalty: {name}")
+        if "no_yaku_call_penalty" in response:
+            penalty = response["no_yaku_call_penalty"]
+            if (
+                type(penalty) not in (int, float)
+                or not math.isfinite(penalty)
+                or penalty < 0
+            ):
+                raise ValueError(f"invalid no_yaku_call_penalty: {name}")
         identity = backend.get("model_identity", {})
         if not isinstance(identity, dict):
             raise ValueError(f"invalid model_identity: {name}")

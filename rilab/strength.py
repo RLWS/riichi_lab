@@ -9,7 +9,11 @@ from pathlib import Path
 import yaml
 
 from rilab.artifacts import encode, write_json
-from rilab.config import load_arena_config
+from rilab.config import (
+    effective_calibration,
+    load_arena_config,
+    validate_expected_calibration,
+)
 from rilab.scheduling import expand_schedule
 
 
@@ -69,6 +73,14 @@ def validate_plan(plan, config):
         "no_peeking_to_change_budget_or_models": True,
     }:
         raise ValueError("invalid stopping rules")
+    expected_calibration = plan.get("expected_calibration")
+    if (
+        not isinstance(expected_calibration, dict)
+        or set(expected_calibration) != set(config["backends"])
+    ):
+        raise ValueError("expected calibration does not cover the backend registry")
+    for name, backend in config["backends"].items():
+        validate_expected_calibration(backend, expected_calibration[name])
     comparison = plan["comparison"]
     group = config["evaluation"]["primary_paired_group"]
     members = [m for m in config["matchups"] if m.get("paired_group") == group]
@@ -114,13 +126,7 @@ def register_protocol(plan_path, config_path, runtime_config, metadata, output_d
         ):
             raise ValueError("missing clean deployment and verified weight hashes")
         response = metadata[name]["response"]
-        actual_bias = backend["response"]["pass_bias"]
-        if actual_bias is None:
-            actual_bias = response["default_pass_bias"]
-        actual = {
-            "pass_bias": actual_bias,
-            "no_yaku_call_penalty": response["no_yaku_call_penalty"],
-        }
+        actual = effective_calibration(backend, response)
         if actual != plan["expected_calibration"][name]:
             raise ValueError(f"effective service calibration differs from plan: {name}")
     out = Path(output_dir)

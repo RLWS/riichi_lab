@@ -20,7 +20,9 @@ from rilab.scheduling import expand_schedule
 from rilab.selfplay import warmup_backends
 
 
-def run_batch(config, output_dir, *, backend_factory=HttpPredictBackend):
+def run_batch(
+    config, output_dir, *, backend_factory=HttpPredictBackend, manifest_extra=None
+):
     schedule = expand_schedule(config)
     if (
         config["engine"]["game_mode"] != "4p-red-half"
@@ -93,6 +95,11 @@ def run_batch(config, output_dir, *, backend_factory=HttpPredictBackend):
             },
             "weight_verification": "expected hashes only; HTTP metadata cannot prove remote file hashes; see deployment evidence",
         }
+        if manifest_extra:
+            overlap = set(manifest_extra) & set(manifest)
+            if overlap:
+                raise ValueError(f"manifest_extra would overwrite: {sorted(overlap)}")
+            manifest.update(deepcopy(manifest_extra))
         write_json(out / "manifest.json", manifest)
         registry = BackendRegistry(config["backends"], factory=backend_factory)
         warmup_backends(registry)

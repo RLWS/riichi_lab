@@ -13,6 +13,7 @@ from riichienv import GameRule, RiichiEnv
 from rilab.adapters import create_adapter
 from rilab.agent import MjaiBotAgent
 from rilab.artifacts import encode
+from rilab.config import effective_calibration
 from rilab.strength import validate_plan
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -109,11 +110,7 @@ def validate_completed_registration(run, manifest):
         ):
             raise ValueError("deployment/archive/weight identity mismatch")
         response = manifest["models"][name]["response"]
-        bias = backend["response"]["pass_bias"]
-        calibration = {
-            "pass_bias": response["default_pass_bias"] if bias is None else bias,
-            "no_yaku_call_penalty": response["no_yaku_call_penalty"],
-        }
+        calibration = effective_calibration(backend, response)
         if calibration != plan["expected_calibration"][name]:
             raise ValueError("effective calibration differs from preregistration")
     verification = json.loads(

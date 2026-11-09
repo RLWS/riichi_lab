@@ -1,4 +1,5 @@
 from collections import Counter
+from copy import deepcopy
 import gzip
 import json
 from pathlib import Path
@@ -192,11 +193,19 @@ def test_http_backend_checks_contract_routes_and_null_zero():
             return httpx.Response(200, json=info)
         payload = json.loads(request.content)
         requests.append(payload)
+        bias = payload.get("pass_bias")
+        if bias is None:
+            bias = info["models"]["response"]["default_pass_bias"]
         return httpx.Response(
             200,
             json={
                 "task": "response",
+                "selection_mode": "calibrated",
+                "pass_bias": bias,
+                "no_yaku_call_penalty": 0.0,
                 "selected_action": payload["legal_actions"][0],
+                "raw_selected_action": payload["legal_actions"][0],
+                "predictions": [],
                 "model": info["models"]["response"],
             },
         )
@@ -204,11 +213,14 @@ def test_http_backend_checks_contract_routes_and_null_zero():
     client = httpx.Client(base_url="http://new", transport=httpx.MockTransport(handle))
     backend = HttpPredictBackend("new", config, client=client)
     backend.predict("response", {}, [{"kind": "pass"}])
-    backend.config["response"]["pass_bias"] = 0
-    backend.predict("response", {}, [{"kind": "pass"}])
+    zero_config = deepcopy(config)
+    zero_config["response"]["pass_bias"] = 0
+    zero_backend = HttpPredictBackend("new", zero_config, client=client)
+    zero_backend.predict("response", {}, [{"kind": "pass"}])
     assert [r["pass_bias"] for r in requests] == [None, 0]
     with pytest.raises(AdapterError, match="candidate limit"):
-        backend.predict("response", {}, [{"kind": "pass"}] * 17)
+        zero_backend.predict("response", {}, [{"kind": "pass"}] * 17)
+    zero_backend.close()
     backend.close()
 
 

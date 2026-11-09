@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import math
 import os
 
 import httpx
 
-from rilab.config import PROFILES
+from rilab.config import (
+    PROFILES,
+    calibration_contract,
+    valid_action_biases,
+)
 from rilab.decision import AdapterError
 
 
@@ -17,6 +22,7 @@ class HttpPredictBackend:
         self.config = deepcopy(config)
         self.profile = config["adapter_profile"]
         self.expected = PROFILES[self.profile]
+        self.calibration_contract = calibration_contract(config)
         headers = {}
         if config.get("api_key_env"):
             headers["X-API-Key"] = os.environ[config["api_key_env"]]
@@ -27,6 +33,7 @@ class HttpPredictBackend:
         )
         try:
             self.metadata = self._read_models()
+            self.calibration = self._expected_calibration()
         except BaseException:
             self.client.close()
             raise
@@ -53,9 +60,82 @@ class HttpPredictBackend:
                     raise AdapterError(
                         f"incompatible model contract: {self.backend_id}/{task}"
                     )
+            response = models["response"]
+            if self.calibration_contract == "legacy_pass_bias":
+                if "action_biases" in response:
+                    raise AdapterError(
+                        f"legacy service exposed action_biases: {self.backend_id}"
+                    )
+                default = response.get("default_pass_bias")
+                if default is not None and (
+                    type(default) not in (int, float)
+                    or not math.isfinite(default)
+                    or default < 0
+                ):
+                    raise AdapterError(
+                        f"invalid default_pass_bias: {self.backend_id}"
+                    )
+                configured = self.config.get("response", {}).get("pass_bias")
+                if configured is None and default is None:
+                    raise AdapterError(
+                        f"legacy service has no effective pass_bias: {self.backend_id}"
+                    )
+            else:
+                if "default_pass_bias" in response:
+                    raise AdapterError(
+                        f"action_biases service exposed default_pass_bias: "
+                        f"{self.backend_id}"
+                    )
+                self._check_action_calibration(response, "models")
+            penalty = response.get("no_yaku_call_penalty", 0.0)
+            if (
+                type(penalty) not in (int, float)
+                or not math.isfinite(penalty)
+                or penalty < 0
+            ):
+                raise AdapterError(
+                    f"invalid service no_yaku_call_penalty: {self.backend_id}"
+                )
         except (KeyError, TypeError, ValueError) as exc:
+            if isinstance(exc, AdapterError):
+                raise
             raise AdapterError(f"invalid models response: {self.backend_id}") from exc
         return models
+
+    def _check_action_calibration(self, info: dict, source: str) -> None:
+        configured = self.config.get("response", {})
+        biases = info.get("action_biases")
+        if not valid_action_biases(biases):
+            raise AdapterError(
+                f"invalid {source} action_biases: {self.backend_id}"
+            )
+        if biases != configured.get("action_biases"):
+            raise AdapterError(
+                f"{source} action_biases differ from config: {self.backend_id}"
+            )
+        if info.get("no_yaku_call_penalty") != configured.get(
+            "no_yaku_call_penalty"
+        ):
+            raise AdapterError(
+                f"{source} no_yaku_call_penalty differs from config: "
+                f"{self.backend_id}"
+            )
+
+    def _expected_calibration(self) -> dict:
+        response = self.metadata["response"]
+        if self.calibration_contract == "legacy_pass_bias":
+            bias = self.config.get("response", {}).get("pass_bias")
+            if bias is None:
+                bias = response["default_pass_bias"]
+            return {
+                "pass_bias": bias,
+                "no_yaku_call_penalty": response.get("no_yaku_call_penalty", 0.0),
+            }
+        return {
+            "calibration_contract": "action_biases_v1",
+            "action_biases": dict(response["action_biases"]),
+            "no_yaku_call_penalty": response["no_yaku_call_penalty"],
+        }
 
     def predict(self, task: str, state: dict, candidates: list[dict]) -> dict:
         request = self._prediction_request(task, state, candidates)
@@ -74,7 +154,16 @@ class HttpPredictBackend:
             "top_k": min(5, len(candidates)),
         }
         if task == "response":
-            request["pass_bias"] = self.config.get("response", {}).get("pass_bias")
+            if self.calibration_contract == "legacy_pass_bias":
+                # Legacy requests must stay byte-for-byte on the old contract.
+                request["pass_bias"] = self.config.get("response", {}).get(
+                    "pass_bias"
+                )
+            else:
+                # Never send pass_bias (not even null) to a v1.4.0 service.
+                request["action_biases"] = dict(
+                    self.config["response"]["action_biases"]
+                )
         return request
 
     def _validate_prediction(self, task, candidates, result):
@@ -82,8 +171,43 @@ class HttpPredictBackend:
             raise AdapterError("prediction task/model changed during run")
         if result.get("selected_action") not in candidates:
             raise AdapterError("prediction selected an unsubmitted candidate")
+        if task == "response":
+            self._validate_response_calibration(result)
+            raw = result.get("raw_selected_action")
+            if raw not in candidates:
+                raise AdapterError("prediction raw action is not a submitted candidate")
+            if result.get("selection_mode") != "calibrated":
+                raise AdapterError("response selection mode changed")
+        elif any(
+            key in result for key in ("pass_bias", "action_biases")
+        ):
+            raise AdapterError("turn response unexpectedly carried calibration")
         self.requests += 1
         return result
+
+    def _validate_response_calibration(self, result: dict) -> None:
+        if self.calibration_contract == "legacy_pass_bias":
+            if "action_biases" in result:
+                raise AdapterError(
+                    "legacy response unexpectedly carried action_biases"
+                )
+            if result.get("pass_bias") != self.calibration["pass_bias"]:
+                raise AdapterError("response pass_bias differs from pinned value")
+        else:
+            if "pass_bias" in result:
+                raise AdapterError(
+                    "action_biases response unexpectedly carried pass_bias"
+                )
+            if result.get("action_biases") != self.calibration["action_biases"]:
+                raise AdapterError(
+                    "response action_biases differ from pinned request"
+                )
+        if result.get("no_yaku_call_penalty") != self.calibration[
+            "no_yaku_call_penalty"
+        ]:
+            raise AdapterError(
+                "response no_yaku_call_penalty differs from pinned value"
+            )
 
     def check_unchanged(self) -> None:
         if self._read_models() != self.metadata:
@@ -101,6 +225,7 @@ class AsyncHttpPredictBackend(HttpPredictBackend):
         self.config = deepcopy(config)
         self.profile = config["adapter_profile"]
         self.expected = PROFILES[self.profile]
+        self.calibration_contract = calibration_contract(config)
         headers = {}
         if config.get("api_key_env"):
             headers["X-API-Key"] = os.environ[config["api_key_env"]]
@@ -114,6 +239,7 @@ class AsyncHttpPredictBackend(HttpPredictBackend):
 
     async def warmup(self):
         self.metadata = await self._read_models()
+        self.calibration = self._expected_calibration()
 
     async def _read_models(self):
         response = await self.client.get("/v1/models")

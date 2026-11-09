@@ -64,23 +64,48 @@ def main(argv=None):
     used_ports = set()
     try:
         for name, backend in config["backends"].items():
-            tag = backend["revision"]["tag"]
-            commit = subprocess.check_output(
-                ["git", "rev-parse", f"{tag}^{{commit}}"], cwd=train, text=True
-            ).strip()
-            if commit != backend["revision"]["commit"]:
-                raise RuntimeError(f"tag moved: {tag}")
+            tag = backend["revision"].get("tag")
+            commit = backend["revision"]["commit"]
+            if tag:
+                resolved = subprocess.check_output(
+                    ["git", "rev-parse", f"{tag}^{{commit}}"], cwd=train, text=True
+                ).strip()
+                if resolved != commit:
+                    raise RuntimeError(f"tag moved: {tag}")
+                source_ref = tag
+                source_label = "git archive of verified immutable tag"
+            else:
+                resolved = subprocess.check_output(
+                    ["git", "rev-parse", f"{commit}^{{commit}}"], cwd=train, text=True
+                ).strip()
+                if resolved != commit:
+                    raise RuntimeError(f"fixed commit does not resolve: {commit}")
+                source_ref = commit
+                source_label = "git archive of verified fixed commit"
             archive = out / f"{name}.zip"
             subprocess.run(
-                ["git", "archive", "--format=zip", "--output", str(archive), tag],
+                [
+                    "git",
+                    "archive",
+                    "--format=zip",
+                    "--output",
+                    str(archive),
+                    source_ref,
+                ],
                 cwd=train,
                 check=True,
             )
             source = out / name
             with zipfile.ZipFile(archive) as z:
                 z.extractall(source)
+            external_service_config = backend.get("service_config")
+            service_config_path = (
+                Path(external_service_config).resolve()
+                if external_service_config
+                else source / "configs/api_local.yaml"
+            )
             service_config = yaml.safe_load(
-                (source / "configs/api_local.yaml").read_text(encoding="utf-8")
+                service_config_path.read_text(encoding="utf-8")
             )
             for task in ("turn", "response"):
                 path = train / service_config["models"][task]["checkpoint"]
@@ -90,9 +115,14 @@ def main(argv=None):
                 ):
                     raise RuntimeError(f"weight hash mismatch: {name}/{task}")
             backend["deployment"] = {
-                "source": "git archive of verified immutable tag",
+                "source": source_label,
+                "source_ref": source_ref,
+                "source_commit": commit,
                 "source_dirty": False,
                 "archive_sha256": hashlib.sha256(archive.read_bytes()).hexdigest(),
+                "service_config_sha256": hashlib.sha256(
+                    service_config_path.read_bytes()
+                ).hexdigest(),
                 "verified_weight_sha256": backend["model_identity"].copy(),
             }
             while True:
@@ -105,17 +135,22 @@ def main(argv=None):
             backend["api_base"] = f"http://127.0.0.1:{port}"
             log = (out / f"{name}.log").open("w", encoding="utf-8")
             logs.append(log)
+            serve_command = [
+                sys.executable,
+                str(repo / "scripts/serve_integration_backend.py"),
+                "--source-root",
+                str(source),
+                "--weights-root",
+                str(train),
+                "--port",
+                str(port),
+                "--service-config",
+                str(service_config_path),
+                "--resolved-config-out",
+                str(out / f"{name}.resolved-service.yaml"),
+            ]
             process = subprocess.Popen(
-                [
-                    sys.executable,
-                    str(repo / "scripts/serve_integration_backend.py"),
-                    "--source-root",
-                    str(source),
-                    "--weights-root",
-                    str(train),
-                    "--port",
-                    str(port),
-                ],
+                serve_command,
                 stdout=log,
                 stderr=subprocess.STDOUT,
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
@@ -192,7 +227,7 @@ def main(argv=None):
                     name: {
                         "revision": b["revision"],
                         "verified_weight_sha256": b["model_identity"],
-                        "source": "git archive of verified immutable tag",
+                        "source": b["deployment"]["source"],
                         "source_dirty": False,
                     }
                     for name, b in config["backends"].items()
