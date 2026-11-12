@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 from copy import deepcopy
 import json
 from pathlib import Path
@@ -28,14 +29,31 @@ def main():
     from rilab.config import PROFILES
 
     torch.set_num_threads(1)
-    config = load_resolved_yaml(args.source_root / "configs/api_local.yaml")
+    config_path = (
+        repo / "configs/services/v140_raw.yaml"
+        if args.profile == "full_state_v3"
+        else args.source_root / "configs/api_local.yaml"
+    )
+    config = load_resolved_yaml(config_path)
     config["device"] = "cpu"
     config["api"].update(debug_log_requests=False, debug_log_responses=False)
     config["security"] = {"allow_without_api_key": True}
+    verified_weights = {}
     for task in ("turn", "response"):
         config["models"][task]["checkpoint"] = str(
             args.weights_root / config["models"][task]["checkpoint"]
         )
+        if args.profile == "full_state_v3":
+            from rilab.config import load_arena_config
+
+            identity = load_arena_config(repo / "configs/arena_v140_smoke.yaml")[
+                "backends"
+            ]["v1_4_0"]["model_identity"]
+            actual_hash = hashlib.sha256(
+                Path(config["models"][task]["checkpoint"]).read_bytes()
+            ).hexdigest()
+            assert actual_hash == identity[f"{task}_sha256"]
+            verified_weights[task] = actual_hash
     client = TestClient(create_app(config=config))
     models = client.get("/v1/models").json()["models"]
     expected = PROFILES[args.profile]
@@ -52,6 +70,17 @@ def main():
     }
     for request in requests.values():
         request["state"] = create_adapter(args.profile).project(request["state"])
+    action_contract = expected["calibration_contract"] == "action_biases_v1"
+    if action_contract:
+        requests["response"].pop("pass_bias", None)
+        assert (
+            models["response"]["action_biases"]
+            == config["models"]["response"]["action_biases"]
+        )
+        assert (
+            models["response"]["no_yaku_call_penalty"]
+            == config["models"]["response"]["no_yaku_call_penalty"]
+        )
     checks = []
     for task, request in requests.items():
         response = client.post(f"/v1/predict/{task}", json=request)
@@ -60,14 +89,34 @@ def main():
         checks.append({"case": f"{task}_valid", "status": 200})
     for bias in (None, 0):
         request = deepcopy(requests["response"])
-        request["pass_bias"] = bias
+        if action_contract:
+            request["action_biases"] = (
+                None
+                if bias is None
+                else dict.fromkeys(("ron", "kan", "pon", "chi"), 0.0)
+            )
+        else:
+            request["pass_bias"] = bias
         response = client.post("/v1/predict/response", json=request)
         assert response.status_code == 200
-        assert response.json()["pass_bias"] == (
-            models["response"]["default_pass_bias"] if bias is None else 0
-        )
+        if action_contract:
+            assert "pass_bias" not in response.json()
+            assert response.json()["action_biases"] == (
+                models["response"]["action_biases"]
+                if bias is None
+                else request["action_biases"]
+            )
+        else:
+            assert response.json()["pass_bias"] == (
+                models["response"]["default_pass_bias"] if bias is None else 0
+            )
         checks.append({"case": f"calibration_{bias}", "status": 200})
     cases = []
+    if action_contract:
+        for bias in (None, 1.5):
+            request = deepcopy(requests["response"])
+            request["pass_bias"] = bias
+            cases.append((f"reject_pass_bias_{bias}", "response", request, 400))
     request = deepcopy(requests["response"])
     del request["state"]["round_wind"]
     cases.append(("missing_state", "response", request, 422))
@@ -98,6 +147,8 @@ def main():
         "checks": checks,
         "transport": "FastAPI TestClient",
         "device": "cpu",
+        "models": models,
+        "verified_weight_sha256": verified_weights,
     }
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2), encoding="utf-8")

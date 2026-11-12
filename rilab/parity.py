@@ -190,7 +190,7 @@ def check_file(path: Path, profile: str, *, encode_stride: int = 1) -> dict:
                 validate_and_normalize_state(
                     sample.decision_type, actual, require_full_state=True
                 )
-                if profile == "full_state_v2"
+                if profile != "legacy_v1_2"
                 else validate_and_normalize_state(sample.decision_type, actual)
             )
             state_encoder = (
@@ -203,6 +203,13 @@ def check_file(path: Path, profile: str, *, encode_stride: int = 1) -> dict:
                 if sample.decision_type == "turn"
                 else encode_response_candidate_actions
             )
+            if profile == "full_state_v3":
+                from mjai.features.action_features_v3 import encode_candidate_actions_v3
+
+                def candidate_encoder(actions, state):
+                    return encode_candidate_actions_v3(
+                        actions, state, task=sample.decision_type
+                    )
             state_features = state_encoder(normalized)
             candidate_features = candidate_encoder(sample.legal_actions, normalized)
             if state_features != state_encoder(
@@ -379,7 +386,7 @@ def check_red_chankan(profile: str, fixture: Path) -> dict:
     )
     normalized = (
         validate_and_normalize_state("response", actual, require_full_state=True)
-        if profile == "full_state_v2"
+        if profile != "legacy_v1_2"
         else validate_and_normalize_state("response", actual)
     )
     a, b = encode_response_state(normalized), encode_response_state(expected)

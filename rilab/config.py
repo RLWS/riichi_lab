@@ -10,6 +10,15 @@ from urllib.parse import urlparse
 import yaml
 
 PROFILES = {
+    "full_state_v3": {
+        "tag": None,
+        "commit": "57e8fb336ed4aa7b19afd8ca1ef4ee4c41a96ed2",
+        "feature_schema": "full_state_v3",
+        "state_dims": (11969, 12012),
+        "action_dims": (249, 251),
+        "calibration_contract": "action_biases_v1",
+        "source_kind": "commit",
+    },
     "legacy_v1_2": {
         "tag": "v1.2.0",
         "commit": "758981ab9fb457c882ab9c577c9377976f97f42b",

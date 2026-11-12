@@ -29,11 +29,12 @@ def run_parity(config_path: str | Path, output_dir: str | Path) -> dict:
     reports = []
     for profile in config.get("profiles", PROFILES):
         expected = PROFILES[profile]
+        source_ref = expected["tag"] or expected["commit"]
         commit = subprocess.check_output(
-            ["git", "rev-parse", f"{expected['tag']}^{{commit}}"], cwd=root, text=True
+            ["git", "rev-parse", f"{source_ref}^{{commit}}"], cwd=root, text=True
         ).strip()
         if commit != expected["commit"]:
-            raise ValueError(f"tag moved: {expected['tag']}")
+            raise ValueError(f"revision moved: {source_ref}")
         source = out / f"source_{profile}"
         archive = out / f"{profile}.zip"
         subprocess.run(
@@ -43,7 +44,7 @@ def run_parity(config_path: str | Path, output_dir: str | Path) -> dict:
                 "--format=zip",
                 "--output",
                 str(archive),
-                expected["tag"],
+                source_ref,
             ],
             cwd=root,
             check=True,

@@ -1,0 +1,17 @@
+# Frozen raw candidate; checkpoint paths relative to train_mj root.
+device: cpu
+api:
+  host: 127.0.0.1
+  port: 8003
+  max_legal_actions: 64
+models:
+  turn:
+    checkpoint: runs/2026-11-11_p800_multitask_full_state_v3/multitask/checkpoints/best_turn.pt
+  response:
+    checkpoint: runs/2026-11-11_p800_multitask_full_state_v3/multitask/checkpoints/best_response.pt
+    action_biases:
+      ron: 0.0
+      kan: 1.5
+      pon: 1.6
+      chi: 1.8
+    no_yaku_call_penalty: 0.0

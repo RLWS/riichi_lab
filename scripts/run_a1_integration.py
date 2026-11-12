@@ -51,7 +51,10 @@ def main(argv=None):
     train = args.train_mj_root.resolve()
     out = args.output_dir.resolve()
     out.mkdir(parents=True, exist_ok=False)
-    config = yaml.safe_load(args.config.read_text(encoding="utf-8"))
+    sys.path.insert(0, str(repo))
+    from rilab.config import load_arena_config
+
+    config = load_arena_config(args.config)
     if args.strength_protocol:
         sys.path.insert(0, str(repo))
         from rilab.strength import validate_plan
@@ -100,7 +103,7 @@ def main(argv=None):
                 z.extractall(source)
             external_service_config = backend.get("service_config")
             service_config_path = (
-                Path(external_service_config).resolve()
+                (repo / external_service_config).resolve()
                 if external_service_config
                 else source / "configs/api_local.yaml"
             )
@@ -193,7 +196,7 @@ def main(argv=None):
             "--seed",
             str(args.seed),
             "--seats",
-            "v1_3_0,v1_2_0,v1_2_0,v1_2_0",
+            ",".join(config["matchups"][0]["seats"]),
             "--output-dir",
             str(out / "game"),
         ]
