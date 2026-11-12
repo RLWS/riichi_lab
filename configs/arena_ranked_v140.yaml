@@ -1,0 +1,40 @@
+# Frozen v1.4.0 raw candidate: ten online ranked hanchan.
+# Platform token and backend HTTP key use separate environment variables.
+online:
+  endpoint_ranked: wss://game.riichi.dev/ws/ranked
+  token_env: RIICHI_DEV_BOT_TOKEN_V140
+  match_rounds: 8
+  send_reserve_seconds: 0.5
+  inbound_estimate_seconds: 0.5
+  finish_timeout_seconds: 5.0
+backend:
+  api_base: http://127.0.0.1:8014
+  api_key_env: TRAIN_MJ_API_KEY_V140  # Match the API key required by the deployed backend.
+  adapter_profile: full_state_v3
+  revision:
+    tag: null
+    commit: 57e8fb336ed4aa7b19afd8ca1ef4ee4c41a96ed2
+    branch_hint: main
+  service_config: configs/services/v140_raw.yaml
+  timeout_seconds: 30.0
+  response:
+    action_biases:
+      ron: 0.0
+      kan: 1.5
+      pon: 1.6
+      chi: 1.8
+    no_yaku_call_penalty: 0.0
+  model_identity:
+    turn_sha256: eeaa87b9c122fd49dd917758f299430764d305acc69d46f8a84c333448646cfe
+    response_sha256: 41403f23015ee6cc364f48975bbffd6124122a717a760eccc127d01efa18e3df
+ranked:
+  max_games: 10
+  max_total_seconds: 0
+  session_timeout_seconds: 7200
+  matchmaking_timeout_seconds: 300
+  stop:
+    max_fallbacks: 0
+    max_defaulted: 0
+    max_server_elapsed_ms: 8000
+    min_bank_ms: 1000
+    min_deadline_margin_ms: 500
