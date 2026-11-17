@@ -30,7 +30,11 @@ def warmup_backends(registry) -> None:
     )
     response = env.step({0: discard})[1]
     for backend in registry.backends.values():
-        adapter = create_adapter(backend.profile)
+        adapter = (
+            backend.create_adapter()
+            if hasattr(backend, "create_adapter")
+            else create_adapter(backend.profile)
+        )
         for obs in (turn, response):
             tracker = StateTracker(obs.player_id)
             tracker.consume(obs.new_events())
@@ -38,9 +42,14 @@ def warmup_backends(registry) -> None:
             context = tracker.context(obs.legal_actions())
             canonical = tracker.snapshot(context)
             bindings = bind_candidates(obs, context, canonical)
+            state = (
+                adapter.project_for_task(context.task, canonical)
+                if hasattr(adapter, "project_for_task")
+                else adapter.project(canonical)
+            )
             backend.predict(
                 context.task,
-                adapter.project(canonical),
+                state,
                 [b.candidate for b in bindings],
             )
 

@@ -14,16 +14,24 @@ from riichienv import GameRule, RiichiEnv
 from rilab.adapters import create_adapter
 from rilab.agent import MjaiBotAgent
 from rilab.artifacts import audit_batch, encode, write_json
-from rilab.backends.http_backend import BackendRegistry, HttpPredictBackend
+from rilab.backends import create_backend
+from rilab.backends.http_backend import BackendRegistry
 from rilab.decision import AdapterError
 from rilab.scheduling import expand_schedule
 from rilab.selfplay import warmup_backends
 
 
 def run_batch(
-    config, output_dir, *, backend_factory=HttpPredictBackend, manifest_extra=None
+    config,
+    output_dir,
+    *,
+    backend_factory=create_backend,
+    manifest_extra=None,
+    schedule=None,
+    stage="A3",
+    purpose="engineering_acceptance_only",
 ):
-    schedule = expand_schedule(config)
+    schedule = expand_schedule(config) if schedule is None else schedule
     if (
         config["engine"]["game_mode"] != "4p-red-half"
         or config["engine"]["rule"] != "default_tenhou"
@@ -39,13 +47,13 @@ def run_batch(
     for folder in ("games", "decisions", "results"):
         (out / folder).mkdir()
     summary = {
-        "stage": "A3",
+        "stage": stage,
         "valid": False,
         "expected_games": len(schedule),
         "completed_games": 0,
         "games": [],
         "fallbacks": 0,
-        "purpose": "engineering_acceptance_only",
+        "purpose": purpose,
     }
     registry = None
     started = time.monotonic()
@@ -53,7 +61,8 @@ def run_batch(
         rule = GameRule.default_tenhou()
         root = Path(__file__).resolve().parents[1]
         manifest = {
-            "stage": "A3",
+            "stage": stage,
+            "purpose": purpose,
             "config": deepcopy(config),
             "schedule": schedule,
             "rilab_commit": subprocess.check_output(
@@ -161,14 +170,15 @@ def _run_game(config, registry, spec, out, stride, *, full, budget):
     env = RiichiEnv(
         game_mode="4p-red-half", rule=GameRule.default_tenhou(), seed=spec["seed"]
     )
-    agents = [
-        MjaiBotAgent(
-            p,
-            registry[name],
-            create_adapter(config["backends"][name]["adapter_profile"]),
+    agents = []
+    for p, name in enumerate(spec["seats"]):
+        backend = registry[name]
+        adapter = (
+            backend.create_adapter()
+            if hasattr(backend, "create_adapter")
+            else create_adapter(config["backends"][name]["adapter_profile"])
         )
-        for p, name in enumerate(spec["seats"])
-    ]
+        agents.append(MjaiBotAgent(p, backend, adapter))
     digest = hashlib.sha256()
     written = 0
     seat_events = [0] * 4

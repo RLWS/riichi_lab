@@ -1,0 +1,23 @@
+api:
+  host: 127.0.0.1
+  port: 61569
+  enable_docs: true
+  request_timeout_seconds: 5
+  max_legal_actions: 64
+  debug_log_requests: false
+  debug_log_responses: false
+  debug_log_max_body_chars: 20000
+  debug_log_logger: uvicorn.error
+device: cpu
+models:
+  turn:
+    checkpoint: runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/best_turn.pt
+  response:
+    checkpoint: runs/2026-10-28_p800_multitask_full_state_v2/multitask/checkpoints/best_response.pt
+    pass_bias:
+      default: 1.5
+      recall: 1.0
+      conservative: 2.0
+    no_yaku_call_penalty: 0.0
+security:
+  allow_without_api_key: true

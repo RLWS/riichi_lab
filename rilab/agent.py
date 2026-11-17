@@ -16,7 +16,9 @@ from rilab.tracker.state_tracker import StateTracker
 
 class MjaiBotAgent:
     def __init__(self, player_id: int, backend, adapter, *, match_rounds: int = 8):
-        if backend.profile != adapter.profile:
+        if hasattr(backend, "validate_adapter"):
+            backend.validate_adapter(adapter)
+        elif backend.profile != adapter.profile:
             raise AdapterError("backend/profile injection mismatch")
         self.player_id = player_id
         self.backend = backend
@@ -36,7 +38,16 @@ class MjaiBotAgent:
         context = self.tracker.context(legal)
         if self.pending_riichi and self.pending_riichi.hand_id != context.hand_id:
             self.pending_riichi = None
-        state = self.adapter.project(self.tracker.snapshot(context))
+        snapshot = self.tracker.snapshot(context)
+        if hasattr(self.adapter, "project_for_task"):
+            state = self.adapter.project_for_task(context.task, snapshot)
+        else:
+            state = self.adapter.project(snapshot)
+        profile = (
+            self.adapter.profile_for_task(context.task)
+            if hasattr(self.adapter, "profile_for_task")
+            else self.adapter.profile
+        )
         if self.pending_riichi:
             plan = self.pending_riichi
             if not self.tracker.pending[self.player_id]:
@@ -78,7 +89,7 @@ class MjaiBotAgent:
         self.last_decision = {
             "player_id": self.player_id,
             "backend_id": self.backend.backend_id,
-            "profile": self.adapter.profile,
+            "profile": profile,
             "hand_id": context.hand_id,
             "task": context.task,
             "new_events": events,
