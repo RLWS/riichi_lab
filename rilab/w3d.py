@@ -67,13 +67,14 @@ def _meld_objects(own_melds: list[dict]) -> list[Meld]:
         kind = meld.get("kind")
         if kind not in MELD_TYPES:
             continue
-        counts = Counter(meld.get("consumed_tiles", []))
-        if meld.get("called_tile"):
-            counts[meld["called_tile"]] += 1
+        consumed = meld.get("consumed_tiles", [])
+        counts = Counter(consumed)
+        called = meld.get("called_tile")
+        if called and (kind != "ankan" or called not in consumed):
+            counts[called] += 1
         tiles = []
         for tile, count in counts.items():
             tiles.extend(_tile_ids(tile, int(count)))
-        called = meld.get("called_tile")
         melds.append(
             Meld(
                 MELD_TYPES[kind],
@@ -92,9 +93,13 @@ def _visible_counts(state: dict) -> Counter:
         visible.update(discards)
     for melds in state.get("all_melds", []):
         for meld in melds:
-            visible.update(meld.get("consumed_tiles", []))
-            if meld.get("called_tile"):
-                visible[meld["called_tile"]] += 1
+            consumed = meld.get("consumed_tiles", [])
+            visible.update(consumed)
+            called = meld.get("called_tile")
+            if called and (
+                meld.get("kind") != "ankan" or called not in consumed
+            ):
+                visible[called] += 1
     visible.update(state.get("hand", {}))
     visible.update(state.get("dora_indicators", []))
     return visible

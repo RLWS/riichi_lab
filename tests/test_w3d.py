@@ -3,7 +3,9 @@ from __future__ import annotations
 from rilab.w3d import (
     TILE_TYPE_IDS,
     _max_remaining_candidate,
+    _meld_objects,
     _paired_stats,
+    _visible_counts,
     aggregate,
     evaluate_hand,
     evaluate_post_discard,
@@ -87,6 +89,36 @@ def test_evaluate_post_discard_rejects_missing_tile() -> None:
     result = evaluate_post_discard(_state(hand), "9s", riichi=False)
     assert result["ok"] is False
     assert "discard not in hand" in result["error"]
+
+
+def test_ankan_does_not_double_count_called_tile() -> None:
+    ankan = {
+        "kind": "ankan",
+        "consumed_tiles": ["0p", "5p", "5p", "5p"],
+        "called_tile": "0p",
+        "source": 0,
+    }
+    melds = _meld_objects([ankan])
+    assert len(melds) == 1
+    assert len(melds[0].tiles) == 4
+    visible = _visible_counts(_state({}, all_melds=[[ankan]]))
+    assert sum(visible.values()) == 4
+    assert visible["0p"] == 1
+    assert visible["5p"] == 3
+
+
+def test_kakan_keeps_the_added_tile() -> None:
+    kakan = {
+        "kind": "kakan",
+        "consumed_tiles": ["1z", "1z", "1z"],
+        "called_tile": "1z",
+        "source": 2,
+    }
+    melds = _meld_objects([kakan])
+    assert len(melds) == 1
+    assert len(melds[0].tiles) == 4
+    visible = _visible_counts(_state({}, all_melds=[[kakan]]))
+    assert visible["1z"] == 4
 
 
 def test_max_remaining_candidate_prefers_more_remaining() -> None:
