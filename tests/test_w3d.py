@@ -120,6 +120,27 @@ def test_kakan_keeps_the_added_tile() -> None:
     assert visible["1z"] == 4
 
 
+def test_evaluate_hand_counts_visible_red_five() -> None:
+    hand = {
+        "1m": 1,
+        "2m": 1,
+        "3m": 1,
+        "4m": 1,
+        "5m": 2,
+        "6m": 1,
+        "7m": 1,
+        "8m": 1,
+        "9m": 1,
+        "1p": 1,
+        "2p": 1,
+        "3p": 1,
+    }
+    state = _state(hand, all_discards=[["0m"]])
+    result = evaluate_hand(state, hand, riichi=True)
+    assert result["waits"] == ["5m"]
+    assert result["remaining"] == 1
+
+
 def test_visible_counts_normalizes_red_fives() -> None:
     hand_state = _state(
         {"0m": 1, "5m": 2},
