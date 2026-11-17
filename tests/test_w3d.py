@@ -103,8 +103,7 @@ def test_ankan_does_not_double_count_called_tile() -> None:
     assert len(melds[0].tiles) == 4
     visible = _visible_counts(_state({}, all_melds=[[ankan]]))
     assert sum(visible.values()) == 4
-    assert visible["0p"] == 1
-    assert visible["5p"] == 3
+    assert visible["5p"] == 4
 
 
 def test_kakan_keeps_the_added_tile() -> None:
@@ -119,6 +118,19 @@ def test_kakan_keeps_the_added_tile() -> None:
     assert len(melds[0].tiles) == 4
     visible = _visible_counts(_state({}, all_melds=[[kakan]]))
     assert visible["1z"] == 4
+
+
+def test_visible_counts_normalizes_red_fives() -> None:
+    hand_state = _state(
+        {"0m": 1, "5m": 2},
+        all_discards=[["5m"]],
+    )
+    assert _visible_counts(hand_state)["5m"] == 4
+    discard_state = _state(
+        {"5m": 3},
+        all_discards=[["0m"]],
+    )
+    assert _visible_counts(discard_state)["5m"] == 4
 
 
 def test_max_remaining_candidate_prefers_more_remaining() -> None:

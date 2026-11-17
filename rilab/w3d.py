@@ -27,6 +27,16 @@ MELD_TYPES = {
     "kakan": rust_core.MeldType.Kakan,
 }
 OPEN_MELDS = {"chi", "pon", "daiminkan"}
+RED_FIVE = {"0m": "5m", "0p": "5p", "0s": "5s"}
+
+
+def _visible_add(counter: Counter, tiles) -> None:
+    if isinstance(tiles, dict):
+        items = tiles.items()
+    else:
+        items = ((tile, 1) for tile in tiles)
+    for tile, count in items:
+        counter[RED_FIVE.get(tile, tile)] += int(count)
 
 
 def _tile_type_ids() -> list[int]:
@@ -90,18 +100,16 @@ def _meld_objects(own_melds: list[dict]) -> list[Meld]:
 def _visible_counts(state: dict) -> Counter:
     visible = Counter()
     for discards in state.get("all_discards", []):
-        visible.update(discards)
+        _visible_add(visible, discards)
     for melds in state.get("all_melds", []):
         for meld in melds:
             consumed = meld.get("consumed_tiles", [])
-            visible.update(consumed)
+            _visible_add(visible, consumed)
             called = meld.get("called_tile")
-            if called and (
-                meld.get("kind") != "ankan" or called not in consumed
-            ):
-                visible[called] += 1
-    visible.update(state.get("hand", {}))
-    visible.update(state.get("dora_indicators", []))
+            if called and (meld.get("kind") != "ankan" or called not in consumed):
+                _visible_add(visible, [called])
+    _visible_add(visible, state.get("hand", {}))
+    _visible_add(visible, state.get("dora_indicators", []))
     return visible
 
 
