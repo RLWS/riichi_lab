@@ -130,27 +130,45 @@ This is the pre-registered dilution check, not evidence of no effect.
 
 ---
 
-## 6. Why the veto fired so rarely
+## 6. Trigger rate (post hoc, unverified diagnostic)
 
-The veto opportunity was much narrower than the W3e `B_extra` subset.
+The only reproducible trigger count is the formal one: **8 applied vetoes in 512
+treatment games, 6 games with at least one veto, and 6 first-veto pairs**
+(`stage1/counts.json`, `stage2/counts.json`, `pooled/report.json`). This is the
+count used for the extension decision and for the "operationally narrow"
+statement in section 7.
 
-Count-only diagnostic from the game logs (no hand outcomes):
+I also looked post hoc at why the trigger was so rare. That look is **not** part
+of the pre-registered analysis, is **not** a shadow replay, and is **not**
+directly comparable to W3e:
 
-| Batch | Arm | Focal Riichi under opponent threat and `turn_number > 12` | Old Turn would discard |
-|---|---|---:|---:|
-| W3e Stage 1 | B (v1.4.0 Turn) | 45 | 14 |
-| W5 Stage 1 | C (v1.4.0 Turn) | 47 | 2 |
+- W3e Stage 1 B: 45 focal Riichi states with `opp_riichi_late` and 14 where old
+  Turn would discard. This is derived from W3e `events.jsonl`, which was
+  produced by a state-based v1.3.0 Turn shadow replay.
+- W5 Stage 1 C: 47 focal Riichi events under an approximate late-threat count
+  from `games/*.mjai.jsonl`, and 2 applied vetoes from `counts.json`.
 
-Both experiments used the same v1.4.0/v1.3.0 service pair and three fixed
-v1.3.0 opponents. The number of late-threat focal Riichi declarations is almost
-identical, but under the W5 seeds the old Turn model also declared Riichi in
-most of those states. The old-vs-new divergence that W3e found is therefore
-much rarer in the W5 seed range, and a 128-seed budget still yields only 6
-first-veto pairs.
+The W5 numbers came from an **ad hoc, deleted script**, not from a committed
+analysis path:
 
-This is itself a relevant result: the W3e `opp_riichi_late` subset should not be
-treated as a stable ~30% share of late-threat Riichi states. It was
-seed-sensitive.
+- W5 stored decision state only for applied vetoes. The 47 is therefore a
+  game-log event count, not a count of captured decision states. It approximates
+  the decision-time condition using the focal player's own draw count and
+  opponent `reach_accepted` events, and it was not checked against the live
+  state for all 47 events.
+- The 2 is the applied-veto count. It is exact for the states where the veto
+  backend actually made a decision, but it is not an independent v1.3.0 replay
+  over all 47 events.
+- A separate 2-seed engineering probe (16 games, deleted) re-ran both services
+  with full focal-turn states and replayed v1.3.0 on 5 captured late-threat
+  states: 2 discard, 3 Riichi. That validates the serving path for those seeds,
+  but it does not establish the 47/2 rate.
+
+Because the denominator, the numerator, and the W3e comparison use different
+methods and different seeds, the 47/2 comparison is recorded here only as an
+**unverified ad hoc diagnostic**, not as evidence. The formal, reproducible
+statement is the trigger count above; no claim about a stable W3e divergence
+rate is made.
 
 ---
 
