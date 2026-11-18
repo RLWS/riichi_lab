@@ -1,0 +1,106 @@
+# W3e pre-registered plan: Turn-only replication of the "risky extra riichi" hypothesis.
+# See docs/w3e-turn-riichi-preregistration-2026-11-18.md.
+# A = old v1.3.0 Turn + old v1.3.0 Response; B = new v1.4.0 Turn + old v1.3.0 Response.
+# Response is fixed to v1.3.0 in both arms. C/D are intentionally absent.
+plan_version: 1
+purpose: w3e_turn_riichi
+registered_at: "2026-11-18"
+base_commit: 2d643c5341430fcb4496156cdd45184846203b9a
+
+engine:
+  game_mode: 4p-red-half
+  rule: default_tenhou
+  smoke_seed_range: [43501, 43502]
+  stage1_seed_range: [43001, 43064]
+  stage2_seed_range: [43065, 43128]
+
+services:
+  v130:
+    source_root: outputs/v140_engineering_8seeds_20261112_113340/v1_3_0
+    service_config: configs/v1_4_0_validation/service_v130.yaml
+    weights_root: ../train_mj
+    adapter_profile: full_state_v2
+    revision:
+      tag: v1.3.0
+      commit: 1e5092f344fb69bcdf4697f683f2ecf15b9865d8
+    model_identity:
+      turn_sha256: 30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90
+      response_sha256: e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51
+    timeout_seconds: 30.0
+    response:
+      pass_bias: 1.5
+      no_yaku_call_penalty: 0.0
+  v140:
+    source_root: outputs/v140_engineering_8seeds_20261112_113340/v1_4_0
+    service_config: configs/v1_4_0_validation/service_v140.yaml
+    weights_root: ../train_mj
+    adapter_profile: full_state_v3
+    revision:
+      tag: null
+      commit: 57e8fb336ed4aa7b19afd8ca1ef4ee4c41a96ed2
+    model_identity:
+      turn_sha256: eeaa87b9c122fd49dd917758f299430764d305acc69d46f8a84c333448646cfe
+      response_sha256: 41403f23015ee6cc364f48975bbffd6124122a717a760eccc127d01efa18e3df
+    timeout_seconds: 30.0
+    response:
+      action_biases:
+        ron: 0.0
+        kan: 1.5
+        pon: 1.6
+        chi: 1.8
+      no_yaku_call_penalty: 0.0
+
+arms:
+  A: {turn: v130, response: v130}
+  B: {turn: v140, response: v130}
+
+capture:
+  tasks: [turn]
+  players: focal
+  selected_kinds: [riichi_discard]
+  store_full_state: true
+  description: >-
+    Store full state only for focal-seat Turn decisions whose executed action is
+    riichi_discard. All other decisions keep the compact state-stripped form.
+
+analysis:
+  primary_endpoint: b_extra_vs_a_mirror_deal_rate
+  primary_unit: unique_hand
+  direction: b_extra_higher_deal_rate
+  confidence_level: 0.95
+  wilson_z: 1.959963984540054
+  bootstrap_resamples: 10000
+  bootstrap_seed: 20261118
+  minimum_unique_hands_per_group: 24
+  replication_min_risk_difference: 0.10
+  rejection_max_upper_bound: 0.10
+  extension:
+    stage1_seeds: stage1
+    stage2_seeds: stage2
+    count_field: b_extra_unique_hands
+    extend_if_below: 24
+    decision_basis: count_only_no_outcomes
+    pooled_analysis_when_extended: true
+  forbidden_seed_ranges:
+    - [40001, 40008]
+    - [41001, 41128]
+    - [42001, 42128]
+  secondary:
+    - b_extra_vs_a_mirror_win_rate
+    - b_extra_vs_a_mirror_income_loss
+    - b_extra_vs_a_mirror_opp_riichi_late_deal_rate
+    - b_extra_vs_a_mirror_shape
+    - b_extra_vs_b_both_riichi_deal_rate
+    - both_riichi_discard_agreement
+  multiplicity: exploratory_unadjusted
+
+artifacts:
+  max_bytes: 2000000000
+  snapshot_stride: 100
+  full_snapshots_first_run: false
+
+notes:
+  - W2 formal seeds 42001-42128, W1 seeds 41001-41128, and A3 seeds 40001-40008 are forbidden.
+  - Smoke seeds 43501-43502 are engineering-only and excluded from formal statistics.
+  - No retraining, no calibration change, no chi/pon/riichi penalty tuning.
+  - W2 formal verdict remains insufficient; v1.3.0 default and v1.4.0 candidate status are unchanged.
