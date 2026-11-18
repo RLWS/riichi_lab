@@ -196,10 +196,10 @@ inspect win/deal/income/loss before this decision.
   fixed before rerunning the same seeds; the failure is disclosed.
 
 Sample-size projection from W3d, **not an outcome and not a guarantee**: W2 B had about
-2.2 focal riichi hands per 4-rotation seed, and W3d's sampled divergence rate was 8/106
-≈ 7.5%. Stage 1 (256 B games) therefore projects to roughly 40 `B_extra` hands and
-roughly 95 `A_mirror` hands. The 24-hand threshold is a minimum precision gate, not a
-power calculation.
+2.2 focal riichi hands per B game (about 8.8 per four-rotation seed), and W3d's sampled
+divergence rate was 8/106 ≈ 7.5%. Stage 1 (256 B games) therefore projects to roughly
+40 `B_extra` hands and roughly 95 `A_mirror` hands. The 24-hand threshold is a minimum
+precision gate, not a power calculation.
 
 ### 3.4 Secondary endpoints (all exploratory, unadjusted)
 
