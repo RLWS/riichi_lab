@@ -1,6 +1,6 @@
 # W3e Stage 1 count-phase report (2026-11-18)
 
-- Status: **count-only phase complete; outcome analysis intentionally not run**
+- Status: **count-only phase complete**; outcome analysis was run later, see `train_mj/docs/w3e-turn-riichi-result-2026-11-18.md`. This document remains the count-only snapshot.
 - Branch: `codex/w3e-turn-riichi`
 - Batch code commit: `283fb47852d2447027685d6d31bb4a61e48a8ae3`
 - Plan commit: `37861ad` plus doc-only clarification `19bcc7d`
@@ -99,7 +99,7 @@ This follows the registered rule exactly. Seeds `43065-43128` remain unused.
 - `outputs/w3e_turn_20261118/stage1/counts.json` has `outcomes_inspected: false`.
 - `outputs/w3e_turn_20261118/stage1/events.jsonl` contains 1,472 rows and no
   `win`, `deal`, `income`, `loss`, `hand`, `win_rate`, or `deal_rate` fields.
-- `scripts/run_w3e_turn_riichi.py --phase analyze` has **not** been run.
+- `scripts/run_w3e_turn_riichi.py --phase analyze` was **not run at the time this count snapshot was written**; it was run later after the extension decision, see the result document.
 - The W2 formal verdict, v1.3.0 default, and v1.4.0 candidate status are unchanged.
 
 ---
