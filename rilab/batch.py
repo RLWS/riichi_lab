@@ -30,7 +30,15 @@ def run_batch(
     schedule=None,
     stage="A3",
     purpose="engineering_acceptance_only",
+    capture_filter=None,
 ):
+    """Run a fixed schedule.
+
+    ``capture_filter`` is an optional ``callable(spec, record) -> bool``.  When
+    supplied, only matching decision records keep their full ``state``; all other
+    records use the normal compact form with ``state`` stripped.  The default
+    (``None``) preserves the historical snapshot-stride behaviour exactly.
+    """
     schedule = expand_schedule(config) if schedule is None else schedule
     if (
         config["engine"]["game_mode"] != "4p-red-half"
@@ -124,6 +132,7 @@ def run_batch(
                 stride,
                 full=policy.get("full_snapshots_first_run", True),
                 budget=limit - used_bytes,
+                capture_filter=capture_filter,
             )
             summary["games"].append(result)
             summary["completed_games"] += 1
@@ -162,7 +171,7 @@ def run_batch(
                 registry.close()
 
 
-def _run_game(config, registry, spec, out, stride, *, full, budget):
+def _run_game(config, registry, spec, out, stride, *, full, budget, capture_filter=None):
     game_id = spec["game_id"]
     spool = out / "decisions" / f"{game_id}.full.jsonl.gz"
     sampled = out / "decisions" / f"{game_id}.jsonl.gz"
@@ -227,7 +236,11 @@ def _run_game(config, registry, spec, out, stride, *, full, budget):
                     record["elapsed_ms"] = 1000 * (time.monotonic() - tick)
                     text = encode(record) + "\n"
                     complete.write(text)
-                    if full or result["decisions"] % stride == 0:
+                    if capture_filter is not None:
+                        keep_state = bool(capture_filter(spec, record))
+                    else:
+                        keep_state = full or result["decisions"] % stride == 0
+                    if keep_state:
                         compact.write(text)
                     else:
                         compact.write(

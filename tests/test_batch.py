@@ -128,6 +128,44 @@ def test_batch_real_engine_replay_and_artifact_audit(one_game, tmp_path, full):
         audit_batch(path)
 
 
+def test_capture_filter_keeps_only_matching_full_states(one_game, tmp_path):
+    one_game["artifacts"]["full_snapshots_first_run"] = False
+
+    def keep(spec, record):
+        return (
+            record["player_id"] == spec["focal_seat"]
+            and record["task"] == "turn"
+        )
+
+    first = run_batch(
+        one_game,
+        tmp_path / "captured",
+        backend_factory=Backend,
+        capture_filter=keep,
+    )
+    assert first["valid"]
+    focal = first["games"][0]["focal_seat"]
+    with gzip.open(
+        tmp_path / "captured" / "decisions/g00000.jsonl.gz", "rt", encoding="utf-8"
+    ) as handle:
+        records = [json.loads(line) for line in handle]
+    kept = [
+        record
+        for record in records
+        if record["player_id"] == focal and record["task"] == "turn"
+    ]
+    other = [
+        record
+        for record in records
+        if not (record["player_id"] == focal and record["task"] == "turn")
+    ]
+    assert kept
+    assert all("state" in record for record in kept)
+    assert other
+    assert all("state" not in record for record in other)
+    assert audit_batch(tmp_path / "captured") == first["games"]
+
+
 @pytest.mark.parametrize("failure", ["inference", "metadata", "capacity", "disk"])
 def test_failure_keeps_invalid_run_and_closes_backends(
     one_game, tmp_path, monkeypatch, failure
