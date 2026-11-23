@@ -128,7 +128,7 @@ Get-Content "$validationRun/review.json"
 
 ## 7. 线上排位：独立启动服务，再跑一个有界批次
 
-排位 CLI 不会自动启动模型服务。首次使用下面的 v1.3.0 / 8000 端口流程，与默认 `arena_ranked.yaml` 对齐；不要直接套用 `arena_ranked_v120.yaml` / `arena_ranked_v130.yaml`，它们使用 8012/8013、独立 token/key 变量，且局数为 100 的占位计划。
+排位 CLI 不会自动启动模型服务。首次使用下面的 v1.3.0 / 8000 端口流程，与默认 `arena_ranked.yaml` 对齐；不要直接套用 `arena_ranked_v120.yaml` / `arena_ranked_v130.yaml`，它们使用 8012/8013、独立 token/key 变量。v1.2.0 示例为 100 局占位计划，v1.3.0 当前配对批次为 500 局。
 
 在**终端 A**（仓库根目录）导出固定源码并再次核验权重，然后启动服务、保持终端运行。这样已 active、跳过第 6 节的机器人也可以独立部署：
 

@@ -71,6 +71,8 @@ def make_session(config, backend, *, validation=True, secrets=(), **limits):
         send_reserve_seconds=online["send_reserve_seconds"],
         inbound_estimate_seconds=online["inbound_estimate_seconds"],
         finish_timeout_seconds=online["finish_timeout_seconds"],
+        inference_extension_seconds=online.get("inference_extension_seconds", 0),
+        retry_transient_prediction=online.get("retry_transient_prediction", False),
         secrets=secrets,
         **limits,
     )

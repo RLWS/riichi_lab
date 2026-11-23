@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
+import httpx
 import pytest
 from websockets.asyncio.server import serve
 import yaml
@@ -223,6 +224,33 @@ def test_fallback_counts_accumulate_across_games(tmp_path):
     )
     assert len(connections) == 2 and result["fallbacks"] == 2
     assert result["stop_reasons"] == ["fallback_limit"]
+
+
+@pytest.mark.parametrize("recover", [True, False])
+def test_adjacent_degraded_predictions_stop_across_games(tmp_path, recover):
+    class IntermittentBackend(RankedBackend):
+        async def predict(self, task, state, candidates):
+            self.calls += 1
+            if not recover or self.calls % 2:
+                raise httpx.ReadError("private transport failure")
+            return {"selected_action": candidates[0]}
+
+    def limits(config):
+        config["online"]["retry_transient_prediction"] = True
+        config["ranked"]["stop"].update(
+            max_fallbacks=3,
+            max_fallbacks_per_game=1,
+            max_consecutive_degraded_predictions=1,
+        )
+
+    result, connections, backend = asyncio.run(
+        batch(tmp_path, game, IntermittentBackend(), change=limits)
+    )
+    assert len(connections) == result["games_completed"] == 2
+    assert backend.calls == 4
+    assert result["fallbacks"] == (0 if recover else 2)
+    assert result["inference_retries"] == result["peak_degraded_prediction_streak"] == 2
+    assert result["stop_reasons"] == ["consecutive_degraded_predictions"]
 
 
 @pytest.mark.parametrize("change_at", [1, 2, 3])

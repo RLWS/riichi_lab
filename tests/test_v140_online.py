@@ -20,7 +20,7 @@ def test_v140_ranked_budget_and_validation_keep_frozen_model():
     before = deepcopy(config)
     validation = validation_config(config)
     assert config == before
-    assert config["ranked"]["max_games"] == 10
+    assert config["ranked"]["max_games"] == 500
     assert config["backend"]["api_key_env"] == "TRAIN_MJ_API_KEY_V140"
     assert validation["online"]["match_rounds"] == 4
     assert validation["backend"] == config["backend"]

@@ -86,6 +86,15 @@ def load_ranked_config(path):
         raise ValueError("platform and HTTP credentials must be independent")
     for key in ("send_reserve_seconds", "inbound_estimate_seconds"):
         positive(online[key], key, zero=True)
+    positive(
+        online.get("inference_extension_seconds", 0),
+        "inference_extension_seconds",
+        zero=True,
+    )
+    if online.get("inference_extension_seconds", 0) > 1:
+        raise ValueError("ranked inference extension must be at most one second")
+    if type(online.get("retry_transient_prediction", False)) is not bool:
+        raise ValueError("invalid ranked retry_transient_prediction")
     positive(online["finish_timeout_seconds"], "finish_timeout_seconds")
     positive(backend["timeout_seconds"], "backend timeout")
     positive(batch["max_games"], "max_games", integer=True)
@@ -104,7 +113,8 @@ def load_ranked_config(path):
         "min_bank_ms",
         "min_deadline_margin_ms",
     }
-    if set(limits) != expected:
+    optional = {"max_fallbacks_per_game", "max_consecutive_degraded_predictions"}
+    if not expected <= limits.keys() or limits.keys() - expected - optional:
         raise ValueError("ranked stop thresholds must be explicit and complete")
     for key in expected:
         positive(
@@ -113,7 +123,28 @@ def load_ranked_config(path):
             zero=key != "max_server_elapsed_ms",
             integer=key in {"max_fallbacks", "max_defaulted"},
         )
+    for key in limits.keys() & optional:
+        positive(limits[key], key, zero=True, integer=True)
     return deepcopy(config)
+
+
+def update_prediction_streak(records, previous):
+    degraded = {
+        r["request_id"]
+        for r in records
+        if r["kind"] in {"inference_retry", "inference_failure"}
+        or (r["kind"] == "reply" and r["fallback"])
+    }
+    peak = previous
+    for record in records:
+        if record["kind"] != "prepared" or record["forced_riichi_discard"]:
+            continue
+        if record["request_id"] in degraded:
+            previous += 1
+            peak = max(peak, previous)
+        else:
+            previous = 0
+    return previous, peak
 
 
 def stop_reasons(report, records, limits, totals):
@@ -121,7 +152,7 @@ def stop_reasons(report, records, limits, totals):
     if not report["protocol_passed"]:
         reasons.append("session_or_protocol_failure")
     if any(
-        r["kind"] == "inference_failure" or r.get("reason") == "prediction_error"
+        r["kind"] == "inference_failure" and not r.get("transient", False)
         for r in records
     ):
         reasons.append("inference_failure")
@@ -142,6 +173,14 @@ def stop_reasons(report, records, limits, totals):
         reasons.append("missing_or_invalid_ack_timing")
     if totals["fallbacks"] > limits["max_fallbacks"]:
         reasons.append("fallback_limit")
+    per_game = limits.get("max_fallbacks_per_game")
+    if per_game is not None and len(report["fallback_request_ids"]) > per_game:
+        reasons.append("game_fallback_limit")
+    streak = limits.get("max_consecutive_degraded_predictions")
+    if streak is not None and totals["peak_degraded_prediction_streak"] > streak:
+        reasons.append("consecutive_degraded_predictions")
+    if any(r["kind"] == "server_default_required" for r in records):
+        reasons.append("local_action_deadline_or_no_legal_reply")
     if totals["defaulted"] > limits["max_defaulted"]:
         reasons.append("defaulted_limit")
     elapsed = report["server_elapsed_ms"]
@@ -184,7 +223,13 @@ async def run_ranked(
     backend = None
     session = None
     games = []
-    totals = {"fallbacks": 0, "defaulted": 0}
+    totals = {
+        "fallbacks": 0,
+        "defaulted": 0,
+        "inference_retries": 0,
+        "peak_degraded_prediction_streak": 0,
+    }
+    streak = 0
     batch = config["ranked"]
     started = time.perf_counter()
     deadline = (
@@ -297,6 +342,13 @@ async def run_ranked(
             )
             totals["fallbacks"] += len(report["fallback_request_ids"])
             totals["defaulted"] += len(report["defaulted_request_ids"])
+            totals["inference_retries"] += sum(
+                r["kind"] == "inference_retry" for r in session.records
+            )
+            streak, peak = update_prediction_streak(session.records, streak)
+            totals["peak_degraded_prediction_streak"] = max(
+                totals["peak_degraded_prediction_streak"], peak
+            )
             reasons = stop_reasons(report, session.records, batch["stop"], totals)
             write_json(game_dir / "review.json", report)
             games.append(

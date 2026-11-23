@@ -127,7 +127,7 @@ cat "$validation_run/review.json"
 
 ## 6. 有界排位：终端 A 启动服务
 
-排位 CLI 不自动启动模型服务。以下使用 v1.3.0、端口 8000，与 `arena_ranked.yaml` 对齐。`arena_ranked_v120.yaml` / `arena_ranked_v130.yaml` 使用 8012/8013、独立 token/key 变量和 100 局占位预算，不能直接套用。
+排位 CLI 不自动启动模型服务。以下使用 v1.3.0、端口 8000，与 `arena_ranked.yaml` 对齐。`arena_ranked_v120.yaml` / `arena_ranked_v130.yaml` 使用 8012/8013、独立 token/key 变量，不能直接套用。v1.2.0 示例为 100 局占位计划，v1.3.0 当前配对批次为 500 局。
 
 在终端 A 进入仓库根目录，导出源码、核验权重，启动服务：
 

@@ -1,6 +1,5 @@
 # 真实排位批次配置：机器人 B / 后端 v1.3.0（full_state_v2）。
-# 预算与阈值暂沿用 B2 保守示例值，开局前必须由部署者确定真实预算。
-# 端口遵循 arena_selfplay.yaml 双实例约定（8001=v1.3.0）；运行前须与实际部署核对。
+# 双臂对照批次，v1.3.0 后端监听 8013。
 # 平台 token 只经环境变量 RIICHI_DEV_BOT_TOKEN_V130 传入，不写入本文件。
 online:
   endpoint_ranked: wss://game.riichi.dev/ws/ranked
@@ -9,6 +8,8 @@ online:
   send_reserve_seconds: 0.5
   inbound_estimate_seconds: 0.5
   finish_timeout_seconds: 5.0
+  inference_extension_seconds: 0.75
+  retry_transient_prediction: true
 backend:
   adapter_profile: full_state_v2
   api_base: http://127.0.0.1:8013
@@ -18,19 +19,21 @@ backend:
     tag: v1.3.0
     commit: 1e5092f344fb69bcdf4697f683f2ecf15b9865d8
     branch_hint: codex/full-state-features
-  # 部署者声明，须与实际部署清单一致；API 不提供权重哈希。
+  # 已部署的 final.inference.pt 同时承载 Turn 和 Response；哈希在部署侧核验。
   model_identity:
-    turn_sha256: 30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90
-    response_sha256: e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51
+    turn_sha256: 7e6ed0b8aa6161ecc0a0699f8a7f701393d9cce81ec31b65a5f239b261654e99
+    response_sha256: 7e6ed0b8aa6161ecc0a0699f8a7f701393d9cce81ec31b65a5f239b261654e99
   response:
     pass_bias: null  # 使用该实例服务端默认（v1.3.0 api_local: pass_bias=1.5）。
 ranked:
-  max_games: 100  # 占位：真实局数待定。
+  max_games: 500
   max_total_seconds: 0  # 0 不限制；正数到时后等待当前对局结束，不再开新局。
   session_timeout_seconds: 7200
   matchmaking_timeout_seconds: 300
   stop:
-    max_fallbacks: 0
+    max_fallbacks: 3
+    max_fallbacks_per_game: 1
+    max_consecutive_degraded_predictions: 1
     max_defaulted: 0
     max_server_elapsed_ms: 8000
     min_bank_ms: 1000

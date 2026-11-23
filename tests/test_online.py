@@ -3,6 +3,7 @@
 import asyncio
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import httpx
 import pytest
@@ -13,7 +14,8 @@ from rilab.adapters import create_adapter
 from rilab.backends.http_backend import AsyncHttpPredictBackend
 from rilab.online.client import connect_session
 from rilab.online.policy import OnlinePolicy, compatible, wire_action
-from rilab.online.session import Budget, OnlineSession
+from rilab.online import session as session_module
+from rilab.online.session import Budget, OnlineSession, Request, SessionState
 from rilab.tracker.state_tracker import StateTracker
 
 FIXTURES = Path(__file__).parent / "fixtures/http_contract"
@@ -278,6 +280,164 @@ def test_budget_dynamic_fields_and_network_allowances():
             inbound=0,
             reserve=0,
         )
+
+
+def test_ranked_budget_accepts_observed_slow_prediction(monkeypatch):
+    clock = SimpleNamespace(now=100.0)
+    monkeypatch.setattr(
+        session_module, "time", SimpleNamespace(perf_counter=lambda: clock.now)
+    )
+
+    class SlowPrediction(Backend):
+        async def predict(self, task, state, candidates):
+            self.calls += 1
+            clock.now += 2.039
+            return {"selected_action": candidates[0]}
+
+    async def scenario(ws, session):
+        session.inbound = session.reserve = 0.5
+        await send(ws, request(rid=554, grace=3000, bank=15000))
+        assert json.loads(await ws.recv())["request_id"] == 554
+        await send(ws, {"type": "action_ack", "request_id": 554, "status": "accepted"})
+        await finish(ws)
+
+    session, summary = asyncio.run(
+        exchange(scenario, SlowPrediction(), inference_extension_seconds=0.75)
+    )
+    assert summary["replies"] == 1
+    reply = next(r for r in session.records if r["kind"] == "reply")
+    assert reply["elapsed_seconds"] == pytest.approx(2.039)
+    assert not reply["fallback"]
+    prepared = next(r for r in session.records if r["kind"] == "prepared")
+    assert prepared["inference_cutoff_ms"] == 2750
+    assert prepared["send_cutoff_ms"] == 17000
+
+
+@pytest.mark.parametrize(
+    "grace,bank,deadline,target,hard",
+    [(3000, 0, 18000, 1.95, 2), (3000, 15000, 1010, -0.04, 0.01)],
+)
+def test_extension_respects_smaller_deadline_and_leaves_dispatch_margin(
+    grace, bank, deadline, target, hard
+):
+    budget = Budget.read(
+        {"grace_ms": grace, "bank_ms": bank, "deadline_ms": deadline},
+        0,
+        inbound=0.5,
+        reserve=0.5,
+        inference_extension=0.75,
+    )
+    assert budget.target == pytest.approx(target)
+    assert budget.deadline == pytest.approx(hard)
+
+
+def test_action_is_not_sent_if_serialization_crosses_deadline(monkeypatch):
+    clock = SimpleNamespace(now=10.0)
+
+    def encode(payload, **kwargs):
+        clock.now += 0.02
+        return json.dumps(payload, **kwargs)
+
+    monkeypatch.setattr(
+        session_module, "time", SimpleNamespace(perf_counter=lambda: clock.now)
+    )
+    monkeypatch.setattr(session_module, "json", SimpleNamespace(dumps=encode))
+    session = OnlineSession(OnlinePolicy(create_adapter("full_state_v2")), Backend())
+    session.state = SessionState.Playing
+    decision = Request(
+        1,
+        Budget(10.0, 10.01),
+        prepared=SimpleNamespace(wires=({"type": "none"},)),
+    )
+
+    async def send_after_deadline(_):
+        pytest.fail("platform action sent past the cutoff")
+
+    asyncio.run(session.reply(SimpleNamespace(send=send_after_deadline), decision, 0))
+    assert decision.ended and not decision.sent
+    assert session.records[-1]["kind"] == "server_default_required"
+
+
+@pytest.mark.parametrize(
+    "grace,error,outcome,attempts",
+    [
+        (500, "read_once", "prediction", 2),
+        (500, "read_twice", "fallback", 2),
+        (120, "read_once", "fallback", 1),
+        (500, "timeout", "fallback", 1),
+        (500, "status", "fallback", 1),
+    ],
+)
+def test_ranked_prediction_retry_is_budgeted_and_submits_once(
+    grace, error, outcome, attempts
+):
+    async def check():
+        model_payload = json.loads((FIXTURES / "baseline_models.json").read_text())[
+            "models"
+        ]
+        models = model_payload["models"]
+        payloads = []
+
+        async def handler(req):
+            if req.url.path == "/v1/models":
+                return httpx.Response(200, json=model_payload)
+            payload = json.loads(req.content)
+            payloads.append(payload)
+            if error == "read_twice" or (error == "read_once" and len(payloads) == 1):
+                raise httpx.ReadError("private HTTP diagnostics", request=req)
+            if error == "timeout":
+                raise httpx.ReadTimeout("private HTTP diagnostics", request=req)
+            if error == "status":
+                return httpx.Response(503, text="private HTTP diagnostics")
+            return httpx.Response(
+                200,
+                json={
+                    "task": "turn",
+                    "model": models["turn"],
+                    "selected_action": payload["legal_actions"][0],
+                },
+            )
+
+        async with httpx.AsyncClient(
+            base_url="http://test", transport=httpx.MockTransport(handler)
+        ) as client:
+            backend = AsyncHttpPredictBackend(
+                "ranked",
+                {
+                    "adapter_profile": "full_state_v2",
+                    "api_base": "http://test",
+                    "timeout_seconds": 1,
+                    "response": {"pass_bias": 0},
+                },
+                client=client,
+            )
+            await backend.warmup()
+
+            async def scenario(ws, session):
+                await send(ws, request(rid=873, grace=grace))
+                assert json.loads(await ws.recv())["request_id"] == 873
+                await send(
+                    ws, {"type": "action_ack", "request_id": 873, "status": "accepted"}
+                )
+                await finish(ws)
+                await ws.wait_closed()
+
+            session, summary = await exchange(
+                scenario, backend, retry_transient_prediction=True
+            )
+        assert summary["replies"] == 1 and not summary["faults"]
+        assert len(payloads) == attempts and all(p == payloads[0] for p in payloads)
+        replies = [r for r in session.records if r["kind"] == "reply"]
+        assert len(replies) == 1 and replies[0]["fallback"] == (outcome == "fallback")
+        retries = [r for r in session.records if r["kind"] == "inference_retry"]
+        assert len(retries) == attempts - 1
+        failures = [r for r in session.records if r["kind"] == "inference_failure"]
+        assert len(failures) == int(outcome == "fallback")
+        if failures:
+            assert failures[0]["transient"] == error.startswith("read")
+        assert "private HTTP diagnostics" not in json.dumps(session.records)
+
+    asyncio.run(check())
 
 
 def test_semantics_consumed_order_red_tiles_and_optional_fields():

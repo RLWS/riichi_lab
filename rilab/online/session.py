@@ -9,8 +9,20 @@ import json
 import math
 import time
 
+import httpx
+
 from rilab.decision import AdapterError
 from rilab.mapping.action_mapping import resolve_selection
+
+
+TRANSIENT_PREDICTION_ERRORS = (
+    httpx.ConnectError,
+    httpx.ReadError,
+    httpx.WriteError,
+    httpx.RemoteProtocolError,
+)
+MIN_RETRY_BUDGET_SECONDS = 0.15
+FALLBACK_DISPATCH_SECONDS = 0.05
 
 
 class SessionState(str, Enum):
@@ -27,7 +39,7 @@ class Budget:
     deadline: float
 
     @classmethod
-    def read(cls, fields, received, *, inbound, reserve):
+    def read(cls, fields, received, *, inbound, reserve, inference_extension=0):
         values = [fields[k] for k in ("deadline_ms", "grace_ms", "bank_ms")]
         if any(
             type(v) not in (int, float) or not math.isfinite(v) or v < 0 for v in values
@@ -36,7 +48,10 @@ class Budget:
         deadline, grace, bank = (v / 1000 for v in values)
         # Take the stricter limit if a server advertises inconsistent fields.
         hard = received + min(deadline, grace + bank) - inbound - reserve
-        return cls(min(hard, received + grace - inbound - reserve), hard)
+        target = received + grace - inbound - reserve + inference_extension
+        # When using the extension, leave time for the timer to dispatch a fallback.
+        cutoff = hard - FALLBACK_DISPATCH_SECONDS if inference_extension else hard
+        return cls(min(cutoff, target), hard)
 
 
 @dataclass
@@ -68,11 +83,14 @@ class OnlineSession:
         log_byte_limit=64 * 1024 * 1024,
         secrets=(),
         start_timeout_seconds=None,
+        inference_extension_seconds=0.0,
+        retry_transient_prediction=False,
     ):
         for value in (
             send_reserve_seconds,
             inbound_estimate_seconds,
             finish_timeout_seconds,
+            inference_extension_seconds,
         ):
             if not math.isfinite(value) or value < 0:
                 raise ValueError("invalid session timing configuration")
@@ -87,6 +105,8 @@ class OnlineSession:
         self.validation = validation
         self.reserve, self.inbound = send_reserve_seconds, inbound_estimate_seconds
         self.finish_timeout = finish_timeout_seconds
+        self.inference_extension = inference_extension_seconds
+        self.retry_transient_prediction = retry_transient_prediction
         self.queue = asyncio.Queue(maxsize=queue_limit)
         self.log_limit, self.secrets = log_limit, tuple(s for s in secrets if s)
         self.log_bytes, self.log_byte_limit = 0, log_byte_limit
@@ -188,9 +208,27 @@ class OnlineSession:
     async def infer(self, request):
         p = request.prepared
         try:
-            result = await self.backend.predict(
-                p.task, json.loads(p.state_json), json.loads(p.candidates_json)
-            )
+            for attempt in (1, 2):
+                try:
+                    result = await self.backend.predict(
+                        p.task, json.loads(p.state_json), json.loads(p.candidates_json)
+                    )
+                    break
+                except TRANSIENT_PREDICTION_ERRORS as exc:
+                    remaining = request.budget.target - time.perf_counter()
+                    if (
+                        not self.retry_transient_prediction
+                        or attempt == 2
+                        or remaining < MIN_RETRY_BUDGET_SECONDS
+                    ):
+                        raise
+                    self.queue.put_nowait(
+                        (
+                            "prediction_retry",
+                            (request.request_id, type(exc).__name__),
+                            time.perf_counter(),
+                        )
+                    )
             binding = resolve_selection(result["selected_action"], list(p.bindings))
             index = next(i for i, b in enumerate(p.bindings) if b is binding)
             await self.queue.put(
@@ -202,7 +240,12 @@ class OnlineSession:
             await self.queue.put(
                 (
                     "prediction_error",
-                    (request.request_id, type(exc).__name__),
+                    (
+                        request.request_id,
+                        type(exc).__name__,
+                        self.retry_transient_prediction
+                        and isinstance(exc, TRANSIENT_PREDICTION_ERRORS),
+                    ),
                     time.perf_counter(),
                 )
             )
@@ -214,7 +257,14 @@ class OnlineSession:
     async def reply(self, ws, request, index, *, fallback=False, reason=None):
         if request.ended or request.sent or self.state != SessionState.Playing:
             return
-        if index is None or time.perf_counter() >= request.budget.deadline:
+        action = (
+            None
+            if index is None
+            else dict(request.prepared.wires[index], request_id=request.request_id)
+        )
+        encoded = None if action is None else json.dumps(action)
+        remaining = request.budget.deadline - time.perf_counter()
+        if encoded is None or remaining <= 0:
             self.end_request(request)
             self.policy.clear()
             if index is None:
@@ -225,12 +275,10 @@ class OnlineSession:
                 reason=reason or "no_legal_reply_budget",
             )
             return
-        action = dict(request.prepared.wires[index], request_id=request.request_id)
         # Mark before awaiting I/O: a partial/failed send is never retried.
         request.sent, request.sent_index = True, index
-        remaining = request.budget.deadline - time.perf_counter()
         async with asyncio.timeout(remaining):
-            await ws.send(json.dumps(action))
+            await ws.send(encoded)
         self.end_request(request)
         self.record(
             "reply",
@@ -258,7 +306,11 @@ class OnlineSession:
         request = Request(
             rid,
             Budget.read(
-                message["time"], received, inbound=self.inbound, reserve=self.reserve
+                message["time"],
+                received,
+                inbound=self.inbound,
+                reserve=self.reserve,
+                inference_extension=self.inference_extension,
             ),
         )
         request.received = received
@@ -283,6 +335,8 @@ class OnlineSession:
             ],
             forced_riichi_discard=p.forced_index is not None,
             budget=message["time"],
+            inference_cutoff_ms=round((request.budget.target - received) * 1000, 3),
+            send_cutoff_ms=round((request.budget.deadline - received) * 1000, 3),
         )
         if p.forced_index is not None:
             await self.reply(ws, request, p.forced_index)
@@ -435,12 +489,26 @@ class OnlineSession:
                     raise AdapterError(payload)
                 if kind == "message":
                     await self.message(ws, payload, received)
+                elif kind == "prediction_retry":
+                    rid, error_type = payload
+                    self.record(
+                        "inference_retry",
+                        request_id=rid,
+                        error_type=error_type,
+                        elapsed_ms=round(
+                            (received - self.requests[rid].received) * 1000, 3
+                        ),
+                    )
                 elif kind in ("prediction", "prediction_error", "timeout"):
                     rid = payload if kind == "timeout" else payload[0]
                     r = self.requests[rid]
                     if kind == "prediction_error":
                         self.record(
-                            "inference_failure", request_id=rid, error_type=payload[1]
+                            "inference_failure",
+                            request_id=rid,
+                            error_type=payload[1],
+                            transient=payload[2],
+                            elapsed_ms=round((received - r.received) * 1000, 3),
                         )
                     if r.ended or r.sent or self.faults:
                         self.record("late_result_ignored", request_id=rid)

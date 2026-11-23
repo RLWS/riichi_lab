@@ -99,8 +99,16 @@ def test_probe_accepts_legacy_metadata_without_feature_schema(capsys):
 @pytest.mark.parametrize(
     "mode,config_name,prefix",
     [
-        ("ranked", "arena_ranked_v120.yaml", "ranked_v1.2.0_legacy_v1_2_r8_g100_pbdefault"),
-        ("ranked", "arena_ranked_v130.yaml", "ranked_v1.3.0_full_state_v2_r8_g100_pbdefault"),
+        (
+            "ranked",
+            "arena_ranked_v120.yaml",
+            "ranked_v1.2.0_legacy_v1_2_r8_g100_pbdefault",
+        ),
+        (
+            "ranked",
+            "arena_ranked_v130.yaml",
+            "ranked_v1.3.0_full_state_v2_r8_g500_pbdefault",
+        ),
         ("validate", "arena_online.yaml", "validate_full_state_v2_r4_pbdefault"),
     ],
 )
@@ -139,11 +147,19 @@ def test_online_preserves_explicit_output_directory(mode, capsys):
     )
     result = {"completed": True, "faults": [], "validation_result": {"passed": True}}
     with patch(runner, new_callable=AsyncMock, return_value=result) as run:
-        assert main(
-            [
-                "arena-online", "--mode", mode, "--config", "custom.yaml",
-                "--output-dir", "my-run",
-            ]
-        ) == 0
+        assert (
+            main(
+                [
+                    "arena-online",
+                    "--mode",
+                    mode,
+                    "--config",
+                    "custom.yaml",
+                    "--output-dir",
+                    "my-run",
+                ]
+            )
+            == 0
+        )
     run.assert_awaited_once_with("custom.yaml", "my-run")
     assert json.loads(capsys.readouterr().out)["output_dir"] == "my-run"
