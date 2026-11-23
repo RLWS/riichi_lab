@@ -1,0 +1,23 @@
+{
+  "cutoff_utc": "2026-11-18 10:57:16",
+  "accounts": [
+    493,
+    521
+  ],
+  "window": 200,
+  "request_interval_seconds": 0.6,
+  "link_tolerance_seconds": 120,
+  "output": "outputs/w4_20261118",
+  "snapshot": "../train_mj/outputs/online_review_20261117/cloud_snapshot.json",
+  "cloud_root": "/usr/local/rlws/riichi_lab/outputs",
+  "expected_model_identity": {
+    "493": {
+      "turn_sha256": "30f2811cd86beebad57d4da1428272b25b598fb64a6231b5a1760e11ec08bf90",
+      "response_sha256": "e1d8c58a2aa61cef23852f15fe5bb9c65014bc3916c52756fb8c4cd1cd956c51"
+    },
+    "521": {
+      "turn_sha256": "eeaa87b9c122fd49dd917758f299430764d305acc69d46f8a84c333448646cfe",
+      "response_sha256": "41403f23015ee6cc364f48975bbffd6124122a717a760eccc127d01efa18e3df"
+    }
+  }
+}
